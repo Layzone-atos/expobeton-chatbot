@@ -1,0 +1,9 @@
+version: "3.1"
+
+actions:
+  - action_answer_and_suggest
+  - action_answer_expobeton
+  - action_ask_feedback_rating
+  - action_thankyou_positive
+  - action_thankyou_negative
+  - action_end_conversation

@@ -1,0 +1,6 @@
+flows:
+  hello:
+    description: Flow for greeting the user with multilingual support and name extraction
+    name: hello
+    steps:
+      - action: action_answer_expobeton

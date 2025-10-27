@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test End Conversation Button</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: linear-gradient(135deg, #0A2A66 0%, #1e3a8a 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px 0;
+            width: 100%;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .log {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🧪 Test End Conversation</h1>
+        <p>Click the button below to test sending conversation data to the backend:</p>
+        
+        <button onclick="testEndConversation()">
+            🏁 TEST: End Conversation & Send Email
+        </button>
+        
+        <div id="log" class="log">
+            <div class="log-entry info">Ready to test...</div>
+        </div>
+    </div>
+
+    <script>
+        const RASA_SERVER_URL = 'http://localhost:5005';
+        
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function testEndConversation() {
+            log('🚀 Starting test...', 'info');
+            
+            // Test data
+            const testData = {
+                sender: 'test_browser_' + Date.now(),
+                message: '/end_conversation',
+                metadata: {
+                    messages: [
+                        {
+                            sender: 'user',
+                            text: 'Bonjour, je m\'appelle Louis Atos',
+                            timestamp: new Date().toISOString()
+                        },
+                        {
+                            sender: 'bot',
+                            text: 'Bonjour Louis Atos ! Enchanté de faire votre connaissance !',
+                            timestamp: new Date().toISOString()
+                        },
+                        {
+                            sender: 'user',
+                            text: 'C\'est quoi ExpoBeton?',
+                            timestamp: new Date().toISOString()
+                        },
+                        {
+                            sender: 'bot',
+                            text: 'ExpoBeton RDC est le salon international de la construction...',
+                            timestamp: new Date().toISOString()
+                        }
+                    ],
+                    user_info: {
+                        name: 'Louis Atos',
+                        phone: '+243 123 456 789',
+                        email: 'louis@test.com'
+                    },
+                    session_id: 'test_browser_session',
+                    ended_at: new Date().toISOString(),
+                    total_messages: 4
+                }
+            };
+            
+            log('📦 Payload prepared', 'info');
+            log('   Session: ' + testData.sender, 'info');
+            log('   Messages: ' + testData.metadata.messages.length, 'info');
+            log('   User: ' + testData.metadata.user_info.name, 'info');
+            
+            try {
+                log('📤 Sending request to: ' + RASA_SERVER_URL + '/webhooks/rest/webhook', 'info');
+                
+                const response = await fetch(`${RASA_SERVER_URL}/webhooks/rest/webhook`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                log('📥 Response received: ' + response.status + ' ' + response.statusText, 'info');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ SUCCESS! Response data:', 'success');
+                    log('   ' + JSON.stringify(data, null, 2), 'success');
+                    log('', 'info');
+                    log('🎉 Email should be sent to bot@expobetonrdc.com', 'success');
+                    log('📧 Check your email inbox!', 'success');
+                } else {
+                    log('❌ FAILED! Status: ' + response.status, 'error');
+                    const text = await response.text();
+                    log('   Response: ' + text, 'error');
+                }
+                
+            } catch (error) {
+                log('❌ ERROR: ' + error.message, 'error');
+                log('   ' + error.stack, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

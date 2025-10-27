@@ -1,0 +1,20 @@
+# Dockerfile for Rasa Server
+FROM rasa/rasa:3.6.20-full
+
+# Set working directory
+WORKDIR /app
+
+# Copy project files
+COPY . /app
+
+# Copy trained model
+COPY models/expobeton-french.tar.gz /app/models/
+
+# Expose Rasa port
+EXPOSE 5005
+
+# Set environment variables
+ENV RASA_MODEL=/app/models/expobeton-french.tar.gz
+
+# Run Rasa server
+CMD ["run", "--enable-api", "--port", "5005", "--cors", "*", "--debug"]

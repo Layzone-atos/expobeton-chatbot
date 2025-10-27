@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpoBeton RDC - Chatbot Demo</title>
+    <link rel="stylesheet" href="chat-widget.css">
+</head>
+<body>
+    <!-- Demo Page Content -->
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🏗️ ExpoBeton RDC</h1>
+            <p>Bienvenue sur notre site web de démonstration</p>
+            <p class="demo-subtitle">Le chatbot est disponible en bas à droite 👇</p>
+        </div>
+        
+        <div class="demo-content">
+            <h2>À propos d'ExpoBeton RDC</h2>
+            <p>ExpoBeton RDC est le premier salon international du béton et des infrastructures en République Démocratique du Congo.</p>
+            
+            <div class="demo-features">
+                <div class="feature-card">
+                    <h3>📅 Événement</h3>
+                    <p>Découvrez les dates et le programme</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 Thème</h3>
+                    <p>Innovation et développement durable</p>
+                </div>
+                <div class="feature-card">
+                    <h3>👥 Ambassadeurs</h3>
+                    <p>Rejoignez notre programme</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Widget -->
+    <div id="chat-widget">
+        <!-- Floating Chat Button -->
+        <div id="chat-button" class="chat-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="28" height="28">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+            </svg>
+            <span class="notification-badge" id="notification-badge" style="display: none;">1</span>
+        </div>
+
+        <!-- Chat Window -->
+        <div id="chat-window" class="chat-window" style="display: none;">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-content">
+                    <div class="bot-avatar">🤖</div>
+                    <div class="chat-title">
+                        <h3>Assistant ExpoBeton</h3>
+                        <p class="chat-status">En ligne</p>
+                    </div>
+                </div>
+                <button id="close-chat" class="close-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- User Info Form -->
+            <div id="user-info-form" class="user-info-form">
+                <div class="form-content">
+                    <h3>👋 Bienvenue chez ExpoBeton RDC!</h3>
+                    <p>Pour mieux vous servir, veuillez remplir ces informations:</p>
+                    
+                    <form id="user-form">
+                        <div class="form-group">
+                            <label for="user-name">Nom complet <span class="required">*</span></label>
+                            <input type="text" id="user-name" name="name" required placeholder="Ex: Jean Dupont">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="user-phone">Numéro de téléphone <span class="optional">(optionnel)</span></label>
+                            <input type="tel" id="user-phone" name="phone" placeholder="Ex: +243 XX XXX XXXX">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="user-email">Email <span class="optional">(optionnel)</span></label>
+                            <input type="email" id="user-email" name="email" placeholder="Ex: jean@example.com">
+                        </div>
+                        
+                        <button type="submit" class="submit-button">
+                            Commencer la conversation
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Chat Messages Container -->
+            <div id="chat-messages" class="chat-messages" style="display: none;">
+                <div id="messages-list" class="messages-list">
+                    <!-- Messages will be added here dynamically -->
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div id="chat-input-container" class="chat-input-container" style="display: none;">
+                <div class="chat-input-wrapper">
+                    <input 
+                        type="text" 
+                        id="chat-input" 
+                        class="chat-input" 
+                        placeholder="Tapez votre message..."
+                        autocomplete="off"
+                    >
+                    <button id="send-button" class="send-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="typing-indicator" id="typing-indicator" style="display: none;">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="chat-actions">
+                    <button id="end-conversation-button" class="end-conversation-button">
+                        🏁 Terminer la conversation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="chat-widget.js"></script>
+</body>
+</html>

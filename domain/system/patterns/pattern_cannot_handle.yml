@@ -1,0 +1,5 @@
+responses:
+  utter_no_relevant_answer_found:
+    - text: I’m sorry, I don’t have the specific information you’re looking for. I recommend reaching out directly to our team at info@expobetonrdc.com, and they’ll be able to assist you further.
+      metadata:
+        rephrase: True

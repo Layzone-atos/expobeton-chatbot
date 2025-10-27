@@ -1,0 +1,7 @@
+responses:
+  utter_suggest_followup:
+    - text: |
+        Voici quelques questions que vous pouvez poser :
+        - Quelles entreprises ont participé à l'événement ?
+        - Y aura-t-il une prochaine édition ?
+        - Comment s'inscrire pour la prochaine édition ?

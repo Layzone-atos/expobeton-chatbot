@@ -1,0 +1,15 @@
+
+[project]
+name = "prod-rasa-d3f2c138"
+version = "0.1.0"
+description = "Add your description for your Rasa bot here"
+readme = "README.md"
+dependencies = [
+    "rasa-pro>=3.13",
+    "cohere>=5.0",
+    "numpy>=1.24.0",
+    "python-dotenv>=1.0.0",
+    "flask>=2.3.0",
+    "flask-cors>=4.0.0"
+]
+requires-python = ">=3.10"

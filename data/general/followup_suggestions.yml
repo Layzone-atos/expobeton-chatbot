@@ -1,0 +1,5 @@
+flows:
+  followup_suggestions:
+    description: Propose des questions de suivi pertinentes après une réponse.
+    steps:
+      - action: utter_suggest_followup

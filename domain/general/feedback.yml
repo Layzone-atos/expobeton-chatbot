@@ -1,0 +1,27 @@
+slots:
+  feedback_rating:
+    type: categorical
+    values: [thumbs_up, thumbs_down]
+    mappings:
+      - type: from_llm
+
+# Responses disabled - using custom actions for multilingual support
+# responses:
+#   utter_ask_feedback_rating:
+#     - text: "Nous aimerions connaître votre avis! Comment trouvez-vous notre service?"
+#       buttons:
+#         - title: "👍 Excellent"
+#           payload: "/SetSlots(feedback_rating=thumbs_up)"
+#         - title: "👎 Peut être amélioré"
+#           payload: "/SetSlots(feedback_rating=thumbs_down)"
+
+# responses:
+#   utter_thankyou_positive:
+#     - text: "C'est merveilleux à entendre! Merci d'avoir pris le temps de nous donner votre avis. 🌟"
+#     - text: "Nous sommes ravis d'avoir pu vous aider! Merci pour vos commentaires positifs! 😊"
+#     - text: "Formidable! Nous sommes ravis que vous ayez eu une excellente expérience. Merci pour votre retour! 🎉"
+
+#   utter_thankyou_negative:
+#     - text: "Nous apprécions que vous ayez pris le temps de nous donner votre avis. Nous travaillons toujours à améliorer notre service."
+#     - text: "Merci pour vos commentaires honnêtes. Nous les utiliserons pour améliorer notre service."
+#     - text: "Merci de nous avoir fait part de vos remarques. Vos commentaires nous aident à améliorer notre assistant."

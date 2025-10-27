@@ -1,0 +1,5 @@
+stories:
+- story: Réponse avec suggestion
+  steps:
+  - intent: ask_event_dates
+  - action: action_answer_and_suggest

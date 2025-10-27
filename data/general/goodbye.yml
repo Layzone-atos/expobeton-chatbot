@@ -1,0 +1,6 @@
+flows: 
+  goodbye_flow:
+    description: Handle user goodbye and thank you messages with multilingual support
+    steps:
+      - action: action_answer_expobeton
+      - link: leave_feedback

@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+ENV/
+
+# Rasa
+.rasa/
+models/*.tar.gz
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+action_server.log
+rasa_server.log
+conversations.log
+unanswered_questions.log
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Rasa specific
+graph.html
+story_graph.dot

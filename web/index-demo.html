@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpoBeton RDC - Chatbot Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0A2A66;
+            margin-top: 0;
+        }
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #0A2A66;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .code-box {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ ExpoBeton RDC - Chatbot Widget</h1>
+        
+        <div class="info-box">
+            <h3>✅ Widget actif!</h3>
+            <p>Le chatbot est maintenant disponible en bas à droite de votre écran.</p>
+            <p><strong>Cliquez sur le bouton flottant 💬 pour démarrer une conversation!</strong></p>
+        </div>
+        
+        <h2>📋 Installation sur votre site</h2>
+        
+        <p>Pour intégrer ce chatbot sur n'importe quelle page de votre site, ajoutez simplement cette ligne avant la balise <code>&lt;/body&gt;</code>:</p>
+        
+        <div class="code-box">
+            <code>&lt;!-- ExpoBeton RDC Chatbot Widget --&gt;<br>
+&lt;script src="https://expobetonrdc.com/chat/chat-widget-standalone.js"&gt;&lt;/script&gt;</code>
+        </div>
+        
+        <h2>🎯 Fonctionnalités</h2>
+        <ul>
+            <li>✅ Bouton flottant discret</li>
+            <li>✅ Formulaire de contact initial</li>
+            <li>✅ Réponses intelligentes sur ExpoBeton RDC</li>
+            <li>✅ Tracking des conversations</li>
+            <li>✅ Emails automatiques à bot@expobetonrdc.com</li>
+            <li>✅ Auto-fermeture après 10 min d'inactivité</li>
+            <li>✅ Compatible mobile et desktop</li>
+            <li>✅ Ne nécessite aucune configuration côté serveur</li>
+        </ul>
+        
+        <h2>🔧 Configuration</h2>
+        <p>Le widget est configuré pour pointer vers votre backend PythonAnywhere.</p>
+        <p><strong>Important:</strong> Modifiez l'URL dans <code>chat-widget-standalone.js</code> ligne 16:</p>
+        
+        <div class="code-box">
+            <code>const RASA_SERVER_URL = 'https://<strong style="color: #fbbf24;">VOTRE_USERNAME</strong>.pythonanywhere.com';</code>
+        </div>
+        
+        <h2>📦 Fichiers à uploader sur votre serveur</h2>
+        <ol>
+            <li><strong>chat-widget-standalone.js</strong> - Le script du widget</li>
+            <li><strong>index-demo.html</strong> - Cette page de démo (optionnel)</li>
+        </ol>
+        
+        <p>Uploadez ces fichiers dans un dossier <code>/chat/</code> sur votre hébergement partagé.</p>
+        
+        <h2>🌐 Intégration WordPress</h2>
+        <p>Si votre site est sous WordPress:</p>
+        <ol>
+            <li>Allez dans <strong>Apparence → Personnaliser → CSS additionnel</strong></li>
+            <li>Ou ajoutez dans <strong>Apparence → Éditeur de thème → footer.php</strong> avant <code>&lt;/body&gt;</code></li>
+        </ol>
+        
+        <div class="code-box">
+            <code>&lt;?php if (!is_admin()) : ?&gt;<br>
+    &lt;script src="<?php echo home_url('/chat/chat-widget-standalone.js'); ?>"&gt;&lt;/script&gt;<br>
+&lt;?php endif; ?&gt;</code>
+        </div>
+        
+    </div>
+    
+    <!-- LE WIDGET EST CHARGÉ ICI -->
+    <script src="chat-widget-standalone.js"></script>
+</body>
+</html>

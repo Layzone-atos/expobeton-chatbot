@@ -1,0 +1,45 @@
+services:
+  # Action Server Service
+  - type: web
+    name: expobeton-actions
+    env: docker
+    dockerfilePath: ./Dockerfile.actions
+    plan: free
+    envVars:
+      - key: COHERE_API_KEY
+        sync: false
+      - key: SMTP_SERVER
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: NOTIFICATION_EMAIL
+        sync: false
+    healthCheckPath: /health
+    
+  # Rasa Server Service
+  - type: web
+    name: expobeton-rasa
+    env: docker
+    dockerfilePath: ./Dockerfile.rasa
+    plan: free
+    envVars:
+      - key: RASA_MODEL
+        value: /app/models/expobeton-french.tar.gz
+      - key: ACTION_ENDPOINT_URL
+        value: https://expobeton-actions.onrender.com/webhook
+    healthCheckPath: /
+    
+  # Static Web Service (for chat widget)
+  - type: web
+    name: expobeton-web
+    env: static
+    buildCommand: echo "No build needed"
+    staticPublishPath: ./web
+    routes:
+      - type: rewrite
+        source: /webhooks/rest/webhook
+        destination: https://expobeton-rasa.onrender.com/webhooks/rest/webhook

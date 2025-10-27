@@ -1,0 +1,14 @@
+recipe: default.v1
+language: fr
+assistant_id: upbeat-goal
+pipeline:
+- name: SearchReadyLLMCommandGenerator
+  llm:
+    model_group: cohere-command
+  flow_retrieval:
+    active: false
+  # Enable multilingual support
+  language_hint: auto
+policies:
+- name: RulePolicy
+- name: FlowPolicy

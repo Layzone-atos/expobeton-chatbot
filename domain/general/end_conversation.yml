@@ -1,0 +1,8 @@
+version: "3.1"
+
+intents:
+  - end_conversation
+
+responses:
+  utter_end_conversation:
+    - text: "👋 Merci pour votre visite! La conversation a été enregistrée et envoyée par email."

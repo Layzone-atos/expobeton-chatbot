@@ -1,0 +1,21 @@
+version: "3.1"
+
+flows:
+  ask_about_expobeton:
+    description: |
+      Answer ANY and ALL questions related to ExpoBeton RDC, including:
+      - General event information (what, when, where)
+      - Event dates, location, and venue details  
+      - Theme, topics, and conference content
+      - Registration, participation, and tickets
+      - Sponsorship and partnership opportunities
+      - Ambassador program (how to become an ambassador, benefits, requirements)
+      - Founders and leadership team (Jean Bamanisa, Momo Sungunza)
+      - Pricing, fees, and costs
+      - Exhibitors and participants
+      - Any other questions about the event or organization
+      
+      This flow should handle ALL user questions, even if we don't have the answer.
+    steps:
+      - action: action_answer_expobeton
+        next: END

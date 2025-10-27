@@ -1,0 +1,11 @@
+flows:
+  pattern_search:
+    name: pattern_search
+    description: Flow for handling knowledge-based questions
+    steps:
+      - id: trigger_search
+        action: action_trigger_search
+        next: suggest_followup
+      - id: suggest_followup
+        action: utter_suggest_followup
+        next: END

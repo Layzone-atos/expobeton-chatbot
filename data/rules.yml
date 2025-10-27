@@ -1,0 +1,7 @@
+version: "3.1"
+
+rules:
+  - rule: Handle end conversation command
+    steps:
+      - intent: end_conversation
+      - action: action_end_conversation
