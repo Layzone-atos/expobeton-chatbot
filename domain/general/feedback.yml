@@ -3,7 +3,7 @@ slots:
     type: categorical
     values: [thumbs_up, thumbs_down]
     mappings:
-      - type: from_llm
+      - type: custom
 
 # Responses disabled - using custom actions for multilingual support
 # responses:

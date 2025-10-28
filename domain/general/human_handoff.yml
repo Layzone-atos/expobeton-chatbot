@@ -6,7 +6,7 @@ slots:
  confirm_human_handoff:
     type: "categorical"
     mappings:
-      - type: "from_llm"
+      - type: "custom"
     values:
       - "Yes"
       - "No" 
