@@ -1,10 +1,8 @@
 // Chat Widget Configuration
-// Rasa Server URL - Update this after deployment
-// For local development: 'http://localhost:5005'
-// For production: Use your Render.com URL or relative path
+// Rasa Server URL - Auto-detect environment
 const RASA_SERVER_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:5005/webhooks/rest/webhook'
-    : 'https://expobeton-rasa.onrender.com/webhooks/rest/webhook'; // ← UPDATE THIS AFTER RENDER DEPLOYMENT
+    : 'https://expobeton-rasa.onrender.com/webhooks/rest/webhook';
 
 const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
 
