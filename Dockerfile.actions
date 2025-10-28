@@ -21,7 +21,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY actions /app/actions
 COPY domain /app/domain
 COPY endpoints.yml /app/
-COPY .env /app/
+
+# Note: .env is not copied - use Render's environment variables instead
 
 # Expose action server port
 EXPOSE 5055
