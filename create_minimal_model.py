@@ -49,6 +49,7 @@ def create_minimal_model():
                 "nodes": {},
                 "config": {}
             },
+            "training_type": "both",
             "trained_on": []
         }
         
