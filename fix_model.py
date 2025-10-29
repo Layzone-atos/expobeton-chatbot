@@ -7,26 +7,35 @@ import shutil
 from pathlib import Path
 
 def fix_slot_mappings(domain):
-    """Fix invalid slot mappings in domain."""
-    if "slots" not in domain:
-        return domain
+    """Fix invalid slot mappings and None values in domain."""
     
-    for slot_name, slot_config in domain["slots"].items():
-        if "mappings" in slot_config:
-            # Ensure mappings is a list
-            if slot_config["mappings"] is None:
-                slot_config["mappings"] = []
-            for mapping in slot_config["mappings"]:
-                # Replace invalid mapping types with 'custom'
-                if mapping.get("type") in ["from_llm", "controlled"]:
-                    print(f"  ✅ Fixed slot '{slot_name}': {mapping['type']} → custom")
-                    mapping["type"] = "custom"
+    # Recursively fix all None values to empty lists
+    def fix_none_to_list(obj):
+        """Convert all None values to empty lists recursively."""
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                if value is None:
+                    obj[key] = []
+                    print(f"  ✅ Fixed '{key}': None → []")
+                elif isinstance(value, (dict, list)):
+                    fix_none_to_list(value)
+        elif isinstance(obj, list):
+            for item in obj:
+                if isinstance(item, (dict, list)):
+                    fix_none_to_list(item)
     
-    # Ensure all required domain fields are lists, not None
-    for field in ["intents", "entities", "actions", "forms", "e2e_actions"]:
-        if field in domain and domain[field] is None:
-            print(f"  ✅ Fixed domain field '{field}': None → []")
-            domain[field] = []
+    # Fix None values first
+    fix_none_to_list(domain)
+    
+    # Fix slot mappings
+    if "slots" in domain and domain["slots"]:
+        for slot_name, slot_config in domain["slots"].items():
+            if "mappings" in slot_config and slot_config["mappings"]:
+                for mapping in slot_config["mappings"]:
+                    # Replace invalid mapping types with 'custom'
+                    if mapping.get("type") in ["from_llm", "controlled"]:
+                        print(f"  ✅ Fixed slot '{slot_name}': {mapping['type']} → custom")
+                        mapping["type"] = "custom"
     
     return domain
 
