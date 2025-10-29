@@ -13,25 +13,34 @@ def create_minimal_model():
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir = Path(tmpdir)
         
+        # Create minimal domain with default fallback
+        domain = {
+            "version": "3.1",
+            "session_config": {
+                "session_expiration_time": 60,
+                "carry_over_slots_to_new_session": True
+            },
+            "intents": [
+                {"nlu_fallback": {"use_entities": []}}
+            ],
+            "entities": [],
+            "slots": {},
+            "responses": {
+                "utter_default": [
+                    {"text": "Bonjour! Je suis le chatbot ExpoBeton RDC. Comment puis-je vous aider?"}
+                ]
+            },
+            "actions": ["action_default_fallback"],
+            "forms": {},
+            "e2e_actions": []
+        }
+        
         # Create minimal metadata
         metadata = {
             "model_id": "expobeton-french",
             "trained_at": "2025-10-29T14:00:00+00:00",
             "rasa_open_source_version": "3.6.20",
-            "domain": {
-                "version": "3.1",
-                "session_config": {
-                    "session_expiration_time": 60,
-                    "carry_over_slots_to_new_session": True
-                },
-                "intents": [],
-                "entities": [],
-                "slots": {},
-                "responses": {},
-                "actions": [],
-                "forms": {},
-                "e2e_actions": []
-            },
+            "domain": domain,
             "trained_on": []
         }
         
