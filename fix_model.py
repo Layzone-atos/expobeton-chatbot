@@ -13,11 +13,20 @@ def fix_slot_mappings(domain):
     
     for slot_name, slot_config in domain["slots"].items():
         if "mappings" in slot_config:
+            # Ensure mappings is a list
+            if slot_config["mappings"] is None:
+                slot_config["mappings"] = []
             for mapping in slot_config["mappings"]:
                 # Replace invalid mapping types with 'custom'
                 if mapping.get("type") in ["from_llm", "controlled"]:
                     print(f"  ✅ Fixed slot '{slot_name}': {mapping['type']} → custom")
                     mapping["type"] = "custom"
+    
+    # Ensure all required domain fields are lists, not None
+    for field in ["intents", "entities", "actions", "forms", "e2e_actions"]:
+        if field in domain and domain[field] is None:
+            print(f"  ✅ Fixed domain field '{field}': None → []")
+            domain[field] = []
     
     return domain
 
