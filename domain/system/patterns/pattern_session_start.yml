@@ -21,4 +21,4 @@ slots:
     type: text
     initial_value: "Expert Expo Béton"
     mappings:
-      - type: controlled
+      - type: custom

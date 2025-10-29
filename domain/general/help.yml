@@ -8,7 +8,7 @@ slots:
       - Quel est le programme de l'événement ?
       - Comment puis-je participer ?
     mappings:
-      - type: controlled
+      - type: custom
 
 
 responses: 
