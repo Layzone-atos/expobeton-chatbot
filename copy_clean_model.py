@@ -41,6 +41,12 @@ def copy_and_clean_model():
                 ]
             }
         
+        # Clear train_schema and predict_schema to remove Rasa Pro components
+        if "train_schema" in metadata:
+            metadata["train_schema"] = {"nodes": {}, "config": {}}
+        if "predict_schema" in metadata:
+            metadata["predict_schema"] = {"nodes": {}, "config": {}}
+        
         # Save simplified metadata
         with open(metadata_file, 'w', encoding='utf-8') as f:
             json.dump(metadata, f, indent=2, ensure_ascii=False)
