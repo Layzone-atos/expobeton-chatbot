@@ -1,8 +1,8 @@
 // Chat Widget Configuration
 // Rasa Server URL - Auto-detect environment
 const RASA_SERVER_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:5005/webhooks/rest/webhook'
-    : 'https://expobeton-rasa.onrender.com/webhooks/rest/webhook';
+    ? 'http://localhost:5005'
+    : 'https://expobeton-rasa.onrender.com';
 
 const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
 
