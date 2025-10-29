@@ -15,6 +15,7 @@ def create_minimal_model():
         
         # Create minimal metadata
         metadata = {
+            "model_id": "expobeton-french",
             "trained_at": "2025-10-29T14:00:00+00:00",
             "rasa_open_source_version": "3.6.20",
             "domain": {
