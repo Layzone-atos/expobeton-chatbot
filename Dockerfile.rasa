@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy project files
 COPY . /app
 
-# Train model during build (ensures fresh model with corrected domain)
-RUN rasa train --fixed-model-name expobeton-french
+# Train model during build - specify domain directory explicitly
+RUN rasa train --fixed-model-name expobeton-french --domain domain --data data
 
 # Expose Rasa port
 EXPOSE 5005
