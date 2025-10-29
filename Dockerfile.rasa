@@ -1,5 +1,5 @@
-# Dockerfile for Rasa Pro Server
-FROM rasa/rasa-pro:3.8.7-full
+# Dockerfile for Rasa Server
+FROM rasa/rasa:3.6.20-full
 
 # Set working directory
 WORKDIR /app
