@@ -36,6 +36,7 @@ def create_empty_model():
         
         # Create minimal metadata
         metadata = {
+            "version": "3.1",
             "model_id": "expobeton-french",
             "trained_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%S+00:00"),
             "rasa_open_source_version": "3.6.20",
