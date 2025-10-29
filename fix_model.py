@@ -69,15 +69,33 @@ def fix_model():
             with open(metadata_file, 'r', encoding='utf-8') as f:
                 metadata = json.load(f)
             
-            # Fix domain in metadata
+            # Recursively fix ALL None values in entire metadata
+            def fix_none_to_list(obj):
+                """Convert all None values to empty lists recursively."""
+                if isinstance(obj, dict):
+                    for key, value in obj.items():
+                        if value is None:
+                            obj[key] = []
+                            print(f"  ✅ Fixed '{key}': None → []")
+                        elif isinstance(value, (dict, list)):
+                            fix_none_to_list(value)
+                elif isinstance(obj, list):
+                    for item in obj:
+                        if isinstance(item, (dict, list)):
+                            fix_none_to_list(item)
+            
+            print("🛠️  Fixing ALL None values in metadata...")
+            fix_none_to_list(metadata)
+            
+            # Fix domain slot mappings
             if "domain" in metadata:
                 print("🛠️  Fixing slot mappings...")
                 metadata["domain"] = fix_slot_mappings(metadata["domain"])
                 
-                # Write back metadata
-                print("💾 Saving fixed metadata...")
-                with open(metadata_file, 'w', encoding='utf-8') as f:
-                    json.dump(metadata, f, indent=2, ensure_ascii=False)
+            # Write back metadata
+            print("💾 Saving fixed metadata...")
+            with open(metadata_file, 'w', encoding='utf-8') as f:
+                json.dump(metadata, f, indent=2, ensure_ascii=False)
         
         # Repackage model
         print("📦 Repackaging model...")
