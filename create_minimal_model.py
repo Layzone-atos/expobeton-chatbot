@@ -41,6 +41,10 @@ def create_minimal_model():
             "trained_at": "2025-10-29T14:00:00+00:00",
             "rasa_open_source_version": "3.6.20",
             "domain": domain,
+            "train_schema": {
+                "nodes": {},
+                "config": {}
+            },
             "trained_on": []
         }
         
