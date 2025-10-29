@@ -42,7 +42,7 @@ def fix_slot_mappings(domain):
 def fix_model():
     """Extract model, fix domain, and repackage."""
     
-    source_model = Path("models/expobeton-fallback.tar.gz")
+    source_model = Path("models/20251025-130456-pizzicato-peach.tar.gz")
     target_model = Path("models/expobeton-french.tar.gz")
     
     if not source_model.exists():
