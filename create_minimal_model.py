@@ -45,6 +45,10 @@ def create_minimal_model():
                 "nodes": {},
                 "config": {}
             },
+            "predict_schema": {
+                "nodes": {},
+                "config": {}
+            },
             "trained_on": []
         }
         
