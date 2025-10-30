@@ -31,19 +31,23 @@ def copy_and_clean_model():
             # Add minimal working intents and responses
             domain["intents"] = [
                 {"greet": {"use_entities": []}},
+                {"ask_expobeton_info": {"use_entities": []}},
                 {"nlu_fallback": {"use_entities": []}}
             ]
             domain["entities"] = []
             domain["slots"] = {}
-            domain["actions"] = ["utter_greet", "utter_default"]
+            domain["actions"] = ["utter_greet", "utter_expobeton_info", "utter_default"]
             domain["forms"] = {}
             domain["e2e_actions"] = []
             domain["responses"] = {
                 "utter_greet": [
-                    {"text": "Bonjour! Je suis le chatbot ExpoBeton RDC. Comment puis-je vous aider?"}
+                    {"text": "Bonjour {{user_name}}! Je suis le chatbot ExpoBeton RDC. Comment puis-je vous aider?"}
+                ],
+                "utter_expobeton_info": [
+                    {"text": "ExpoBeton RDC est un événement majeur dédié au béton en République Démocratique du Congo. Il présente les dernières innovations, technologies et tendances du secteur du béton."}
                 ],
                 "utter_default": [
-                    {"text": "Bonjour! Je suis le chatbot ExpoBeton RDC. Comment puis-je vous aider?"}
+                    {"text": "Bonjour {{user_name}}! Je suis le chatbot ExpoBeton RDC. Comment puis-je vous aider?"}
                 ]
             }
         
@@ -67,6 +71,11 @@ rules:
     steps:
       - intent: greet
       - action: utter_greet
+
+  - rule: Answer ExpoBeton info
+    steps:
+      - intent: ask_expobeton_info
+      - action: utter_expobeton_info
 
   - rule: Default fallback
     steps:
