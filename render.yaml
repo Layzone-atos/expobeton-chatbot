@@ -31,6 +31,8 @@ services:
         value: /app/models/expobeton-french.tar.gz
       - key: ACTION_ENDPOINT_URL
         value: https://expobeton-actions.onrender.com/webhook
+      - key: RASA_LICENSE
+        value: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwODk0MDJjOS00NDIyLTQ5MzktYjc5OC0zYjdmMWEwM2MzNmUiLCJpYXQiOjE3NjEzOTY1MDIsIm5iZiI6MTc2MTM5NjUwMCwic2NvcGUiOiJyYXNhOnBybyByYXNhOnBybzpjaGFtcGlvbiByYXNhOnZvaWNlIiwiZXhwIjoxODU2MDkwOTAwLCJlbWFpbCI6ImJvdEBleHBvYmV0b25yZGMuY29tIiwiY29tcGFueSI6IlJhc2EgQ2hhbXBpb25zIn0.yMrH3Z4cMDR13sj79yqiVhUohkRqgfE4iwYt81-vJlzGEy-KRE7bSuvMP5_mX5aBSF0Mtl_a0g8D2wfiKUA8o_4Q92Hvd7jB393GdS1bzs2gr0b44IgHm2sxXP3QzWtOI_iXGqdI-N_7vu1zpcfK8ig_nKYGMFqJ4LT9rnAeFU9OjwV70LReStA-kQ7Oo_TypRb_vzOXE647rxmFDO1OeTxR_1nYaBgdV-FsWP8_MNkX8dYNDtVwgP1cebZGYfvKbo0yneU1xhLbl4ztumMjcNzjC_ptr1HQ-nXJdvSSwJifpkhD_8ukYxWPFeG7tYJrayON6VtpxpPgKTFdEb67PQ
     healthCheckPath: /
     
   # Static Web Service (for chat widget)
