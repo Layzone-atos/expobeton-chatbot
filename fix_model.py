@@ -105,7 +105,15 @@ def fix_model():
             if "domain" in metadata:
                 print("🛠️  Fixing slot mappings...")
                 metadata["domain"] = fix_slot_mappings(metadata["domain"])
-                
+            
+            # Clear train_schema and predict_schema to remove Rasa Pro components
+            if "train_schema" in metadata:
+                metadata["train_schema"] = {"nodes": {}, "config": {}}
+                print("  ✅ Cleared train_schema")
+            if "predict_schema" in metadata:
+                metadata["predict_schema"] = {"nodes": {}, "config": {}}
+                print("  ✅ Cleared predict_schema")
+            
             # Write back metadata
             print("💾 Saving fixed metadata...")
             with open(metadata_file, 'w', encoding='utf-8') as f:
