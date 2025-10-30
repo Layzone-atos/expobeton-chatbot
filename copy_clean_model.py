@@ -68,8 +68,31 @@ def copy_and_clean_model():
         with open(metadata_file, 'w', encoding='utf-8') as f:
             json.dump(metadata, f, indent=2, ensure_ascii=False)
         
+        # Create minimal NLU training data
+        data_dir = tmpdir / "data"
+        data_dir.mkdir(exist_ok=True)
+        nlu_file = data_dir / "nlu.yml"
+        with open(nlu_file, 'w', encoding='utf-8') as f:
+            f.write("""version: \"3.1\"
+nlu:
+- intent: greet
+  examples: |
+    - bonjour
+    - salut
+    - hello
+    - hi
+    - Bonjour, je m'appelle [Louis Atos](user_name)
+
+- intent: ask_expobeton_info
+  examples: |
+    - c'est quoi expobeton
+    - qu'est-ce que expobeton
+    - expobeton c'est quoi
+    - qu'est-ce que l'expobeton
+""")
+        
         # Create minimal rules.yml
-        rules_file = tmpdir / "rules.yml"
+        rules_file = data_dir / "rules.yml"
         with open(rules_file, 'w', encoding='utf-8') as f:
             f.write("""version: \"3.1\"
 
