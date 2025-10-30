@@ -35,7 +35,14 @@ def copy_and_clean_model():
                 {"nlu_fallback": {"use_entities": []}}
             ]
             domain["entities"] = []
-            domain["slots"] = {}
+            domain["slots"] = {
+                "user_name": {
+                    "type": "text",
+                    "mappings": [
+                        {"type": "from_text"}
+                    ]
+                }
+            }
             domain["actions"] = ["utter_greet", "utter_expobeton_info", "utter_default"]
             domain["forms"] = {}
             domain["e2e_actions"] = []
