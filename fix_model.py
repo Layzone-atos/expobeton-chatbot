@@ -35,6 +35,11 @@ def fix_slot_mappings(domain):
                 slot_config["type"] = "categorical"
                 print(f"  ✅ Fixed slot '{slot_name}': strict_categorical → categorical")
             
+            # Remove invalid attributes
+            if "is_builtin" in slot_config:
+                del slot_config["is_builtin"]
+                print(f"  ✅ Removed is_builtin from slot '{slot_name}'")
+            
             # Ensure mappings key exists
             if "mappings" not in slot_config or slot_config["mappings"] is None:
                 slot_config["mappings"] = []
