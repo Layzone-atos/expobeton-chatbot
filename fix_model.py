@@ -30,6 +30,11 @@ def fix_slot_mappings(domain):
     # Fix slot mappings
     if "slots" in domain and domain["slots"]:
         for slot_name, slot_config in domain["slots"].items():
+            # Fix invalid slot types
+            if slot_config.get("type") == "strict_categorical":
+                slot_config["type"] = "categorical"
+                print(f"  ✅ Fixed slot '{slot_name}': strict_categorical → categorical")
+            
             # Ensure mappings key exists
             if "mappings" not in slot_config or slot_config["mappings"] is None:
                 slot_config["mappings"] = []
