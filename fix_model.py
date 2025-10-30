@@ -30,7 +30,11 @@ def fix_slot_mappings(domain):
     # Fix slot mappings
     if "slots" in domain and domain["slots"]:
         for slot_name, slot_config in domain["slots"].items():
-            if "mappings" in slot_config and slot_config["mappings"]:
+            # Ensure mappings key exists
+            if "mappings" not in slot_config or slot_config["mappings"] is None:
+                slot_config["mappings"] = []
+                print(f"  ✅ Added mappings to slot '{slot_name}'")
+            elif slot_config["mappings"]:
                 for mapping in slot_config["mappings"]:
                     # Replace invalid mapping types with 'custom'
                     if mapping.get("type") in ["from_llm", "controlled"]:
