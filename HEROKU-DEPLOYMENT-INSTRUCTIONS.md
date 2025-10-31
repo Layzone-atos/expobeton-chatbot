@@ -50,7 +50,8 @@ The deployment uses two Docker containers:
 ## Recent Changes
 - Removed RASA_MODEL environment variable to allow dynamic model loading
 - Updated Dockerfiles to ensure proper model training during build
-
+- Added cache-busting mechanism to force fresh model training
+- Updated model name to avoid conflicts with cached versions
 
 # Heroku Deployment Instructions
 
