@@ -38,5 +38,5 @@ RUN echo "Model training completed"
 # Expose Rasa port
 EXPOSE 5005
 
-# Run Rasa server on fixed port, Heroku will handle port mapping
-CMD ["rasa", "run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0"]
+# Run Rasa server explicitly specifying the newly trained model
+CMD ["rasa", "run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0", "--model", "models/expobeton-french.tar.gz"]
