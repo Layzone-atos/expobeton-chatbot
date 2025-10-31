@@ -52,6 +52,7 @@ The deployment uses two Docker containers:
 - Updated Dockerfiles to ensure proper model training during build
 - Added cache-busting mechanism to force fresh model training
 - Updated model name to avoid conflicts with cached versions
+- Forced fresh build by clearing Heroku cache
 
 # Heroku Deployment Instructions
 
