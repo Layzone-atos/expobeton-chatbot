@@ -19,8 +19,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy project files
 COPY . /app
 
-# Copy pre-trained model (trained locally to avoid OOM on Render free tier)
-COPY models/expobeton-french.tar.gz /app/models/
+# Train a new model during build
+RUN rasa train --fixed-model-name expobeton-french --out models/
 
 # Expose Rasa port
 EXPOSE 5005
