@@ -25,6 +25,9 @@ COPY . /app
 # Remove any existing model files to force retraining
 RUN rm -rf models/*
 
+# Add a cache-busting step
+RUN echo "Cache busting step - $(date)" > cache_bust.txt
+
 # Train a new model during build
 RUN rasa train --fixed-model-name expobeton-french --out models/
 
