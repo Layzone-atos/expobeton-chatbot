@@ -1,0 +1,32 @@
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements-heroku.txt /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements-heroku.txt
+
+# Copy project files
+COPY . /app
+
+# Remove any existing model files to force retraining
+RUN rm -rf models/*
+
+# Train a new model during build
+RUN rasa train --fixed-model-name expobeton-railway --out models/
+
+# Expose both ports
+EXPOSE 5005 5055
+
+# Default command (can be overridden)
+CMD ["rasa", "run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0", "--model", "models/expobeton-railway.tar.gz"]
