@@ -15,10 +15,10 @@ COPY requirements-heroku.txt /app/
 # Add debugging - check what's in the directory
 RUN ls -la
 
-# Install Python dependencies
+# Install Python dependencies with more verbose output
 RUN echo "Installing Python dependencies..." && \
     pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements-heroku.txt && \
+    pip install --no-cache-dir -v -r requirements-heroku.txt && \
     echo "Python dependencies installed successfully."
 
 # Add debugging - check what version was actually installed
