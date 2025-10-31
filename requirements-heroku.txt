@@ -1,4 +1,4 @@
-rasa-pro==3.14.1
-rasa-sdk==3.14.0
+rasa-pro==3.10.27
+rasa-sdk==3.10.27
 flask==3.1.2
 python-dotenv==1.1.1
