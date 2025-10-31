@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  rasa:
+    build:
+      context: .
+      dockerfile: Dockerfile.rasa
+    ports:
+      - "5005:5005"
+    environment:
+      - RASA_PRO_LICENSE=${RASA_PRO_LICENSE}
+      - RASA_LICENSE=${RASA_LICENSE}
+    volumes:
+      - ./models:/app/models
+    depends_on:
+      - actions
+
+  actions:
+    build:
+      context: .
+      dockerfile: Dockerfile.actions
+    ports:
+      - "5055:5055"
+    environment:
+      - ACTION_ENDPOINT_URL=http://actions:5055/webhook

@@ -12,41 +12,21 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements
 COPY requirements-heroku.txt /app/
 
-# Add debugging - check what's in the directory
-RUN ls -la
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements-heroku.txt
 
-# Install Python dependencies with more verbose output
-RUN echo "Installing Python dependencies..." && \
-    pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -v -r requirements-heroku.txt && \
-    echo "Python dependencies installed successfully."
-
-# Add debugging - check what version was actually installed
-RUN pip list | grep rasa
-
-# Copy project files (excluding any model files)
+# Copy project files
 COPY . /app
-
-# Add debugging - check what's in the directory after copying
-RUN ls -la
 
 # Remove any existing model files to force retraining
 RUN rm -rf models/*
 
-# Add a cache-busting step
-RUN echo "Cache busting step - $(date)" > cache_bust.txt
-
-# Train a new model during build with a different name to avoid conflicts
-RUN echo "Training model..." && \
-    rasa train --fixed-model-name expobeton-heroku --out models/ && \
-    echo "Model training completed successfully."
-
-# Add debugging - check the model info
-RUN ls -la models/
-RUN echo "Model training completed"
+# Train a new model during build
+RUN rasa train --fixed-model-name expobeton-railway --out models/
 
 # Expose Rasa port
 EXPOSE 5005
 
-# Run Rasa server explicitly specifying the newly trained model
-CMD ["rasa", "run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0", "--model", "models/expobeton-heroku.tar.gz"]
+# Run Rasa server
+CMD ["rasa", "run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0", "--model", "models/expobeton-railway.tar.gz"]
