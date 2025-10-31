@@ -1,8 +1,20 @@
-# Dockerfile for Action Server
-FROM europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:3.10.27
+FROM python:3.10-slim
 
 # Set working directory
 WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements-heroku.txt /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements-heroku.txt
 
 # Copy project files
 COPY actions /app/actions
@@ -13,4 +25,4 @@ COPY endpoints.yml /app/
 EXPOSE 5055
 
 # Run action server on fixed port, Heroku will handle port mapping
-CMD ["run", "actions", "--port", "5055"]
+CMD ["rasa", "run", "actions", "--port", "5055"]
