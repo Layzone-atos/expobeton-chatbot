@@ -1,0 +1,12 @@
+recipe: default.v1
+language: fr
+assistant_id: upbeat-goal
+
+pipeline:
+  - name: WhitespaceTokenizer
+  - name: CountVectorsFeaturizer
+
+policies:
+  - name: RulePolicy
+    core_fallback_threshold: 0.3
+    core_fallback_action_name: action_default_fallback

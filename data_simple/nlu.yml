@@ -1,0 +1,17 @@
+version: "3.1"
+
+nlu:
+  - intent: greet
+    examples: |
+      - bonjour
+      - salut
+      - hello
+      - hi
+      - Bonjour, je m'appelle [Louis Atos](user_name)
+  
+  - intent: ask_expobeton
+    examples: |
+      - c'est quoi expobeton
+      - qu'est-ce que expo béton
+      - parle moi d'expobeton
+      - qu'est-ce que l'expobeton

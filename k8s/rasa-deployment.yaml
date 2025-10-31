@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expobeton-rasa
+  labels:
+    app: expobeton-rasa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expobeton-rasa
+  template:
+    metadata:
+      labels:
+        app: expobeton-rasa
+    spec:
+      containers:
+      - name: rasa
+        image: europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:3.10.27
+        ports:
+        - containerPort: 5005
+        env:
+        - name: RASA_LICENSE
+          value: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwODk0MDJjOS00NDIyLTQ5MzktYjc5OC0zYjdmMWEwM2MzNmUiLCJpYXQiOjE3NjEzOTY1MDIsIm5iZiI6MTc2MTM5NjUwMCwic2NvcGUiOiJyYXNhOnBybyByYXNhOnBybzpjaGFtcGlvbiByYXNhOnZvaWNlIiwiZXhwIjoxODU2MDkwOTAwLCJlbWFpbCI6ImJvdEBleHBvYmV0b25yZGMuY29tIiwiY29tcGFueSI6IlJhc2EgQ2hhbXBpb25zIn0.yMrH3Z4cMDR13sj79yqiVhUohkRqgfE4iwYt81-vJlzGEy-KRE7bSuvMP5_mX5aBSF0Mtl_a0g8D2wfiKUA8o_4Q92Hvd7jB393GdS1bzs2gr0b44IgHm2sxXP3QzWtOI_iXGqdI-N_7vu1zpcfK8ig_nKYGMFqJ4LT9rnAeFU9OjwV70LReStA-kQ7Oo_TypRb_vzOXE647rxmFDO1OeTxR_1nYaBgdV-FsWP8_MNkX8dYNDtVwgP1cebZGYfvKbo0yneU1xhLbl4ztumMjcNzjC_ptr1HQ-nXJdvSSwJifpkhD_8ukYxWPFeG7tYJrayON6VtpxpPgKTFdEb67PQ"
+        - name: RASA_PRO_LICENSE
+          value: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwODk0MDJjOS00NDIyLTQ5MzktYjc5OC0zYjdmMWEwM2MzNmUiLCJpYXQiOjE3NjEzOTY1MDIsIm5iZiI6MTc2MTM5NjUwMCwic2NvcGUiOiJyYXNhOnBybyByYXNhOnBybzpjaGFtcGlvbiByYXNhOnZvaWNlIiwiZXhwIjoxODU2MDkwOTAwLCJlbWFpbCI6ImJvdEBleHBvYmV0b25yZGMuY29tIiwiY29tcGFueSI6IlJhc2EgQ2hhbXBpb25zIn0.yMrH3Z4cMDR13sj79yqiVhUohkRqgfE4iwYt81-vJlzGEy-KRE7bSuvMP5_mX5aBSF0Mtl_a0g8D2wfiKUA8o_4Q92Hvd7jB393GdS1bzs2gr0b44IgHm2sxXP3QzWtOI_iXGqdI-N_7vu1zpcfK8ig_nKYGMFqJ4LT9rnAeFU9OjwV70LReStA-kQ7Oo_TypRb_vzOXE647rxmFDO1OeTxR_1nYaBgdV-FsWP8_MNkX8dYNDtVwgP1cebZGYfvKbo0yneU1xhLbl4ztumMjcNzjC_ptr1HQ-nXJdvSSwJifpkhD_8ukYxWPFeG7tYJrayON6VtpxpPgKTFdEb67PQ"
+        - name: RASA_MODEL
+          value: "/app/models/expobeton-french.tar.gz"
+        volumeMounts:
+        - name: model-storage
+          mountPath: /app/models
+        command: ["rasa"]
+        args: ["run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0"]
+      volumes:
+      - name: model-storage
+        configMap:
+          name: rasa-models
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expobeton-rasa-service
+spec:
+  selector:
+    app: expobeton-rasa
+  ports:
+    - protocol: TCP
+      port: 5005
+      targetPort: 5005
+  type: LoadBalancer

@@ -1,0 +1,772 @@
+{
+  "domain": {
+    "version": "3.1",
+    "actions": [
+      "flow_ask_about_expobeton",
+      "flow_leave_feedback",
+      "flow_followup_suggestions",
+      "flow_goodbye_flow",
+      "flow_hello",
+      "flow_help",
+      "flow_human_handoff",
+      "flow_show_faqs",
+      "flow_cannot_handle",
+      "flow_pattern_completed",
+      "flow_pattern_correction",
+      "flow_pattern_search",
+      "flow_pattern_session_start",
+      "flow_pattern_cancel_flow",
+      "flow_pattern_cannot_handle",
+      "flow_pattern_chitchat",
+      "flow_pattern_clarification",
+      "flow_pattern_code_change",
+      "flow_pattern_collect_information",
+      "flow_pattern_continue_interrupted",
+      "flow_pattern_human_handoff",
+      "flow_pattern_internal_error",
+      "flow_pattern_repeat_bot_messages",
+      "flow_pattern_restart",
+      "flow_pattern_skip_question",
+      "flow_pattern_user_silence",
+      "flow_pattern_validate_slot",
+      "action_human_handoff",
+      "action_answer_and_suggest",
+      "action_answer_expobeton"
+    ],
+    "responses": {
+      "utter_ask_continue_interrupted_flow_confirmation": [
+        {
+          "text": "Would you like to continue with {{context.interrupted_flow_options}}?",
+          "metadata": {
+            "rephrase": true,
+            "template": "jinja"
+          }
+        }
+      ],
+      "utter_ask_interrupted_flow_to_continue": [
+        {
+          "text": "Would you like to resume {{context.interrupted_flow_options}}?",
+          "metadata": {
+            "rephrase": true,
+            "template": "jinja"
+          }
+        }
+      ],
+      "utter_ask_rephrase": [
+        {
+          "text": "I’m sorry I am unable to understand you, could you please rephrase?"
+        }
+      ],
+      "utter_ask_still_there": [
+        {
+          "text": "Hello, are you still there?",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_boolean_slot_rejection": [
+        {
+          "text": "Sorry, the value you provided, `{{value}}`, is not valid. Please respond with a valid value.",
+          "metadata": {
+            "rephrase": true,
+            "template": "jinja"
+          }
+        }
+      ],
+      "utter_can_do_something_else": [
+        {
+          "text": "What else can I help you with?",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_cannot_handle": [
+        {
+          "text": "I'm sorry, I'm not trained to help with that."
+        }
+      ],
+      "utter_categorical_slot_rejection": [
+        {
+          "text": "Sorry, you responded with an invalid value - `{{value}}`. Please select one of the available options.",
+          "metadata": {
+            "rephrase": true,
+            "template": "jinja"
+          }
+        }
+      ],
+      "utter_clarification_options_rasa": [
+        {
+          "text": "I can help, but I need more information. Which of these would you like to do: {{context.clarification_options}}?",
+          "metadata": {
+            "rephrase": true,
+            "template": "jinja"
+          }
+        }
+      ],
+      "utter_corrected_previous_input": [
+        {
+          "text": "Ok, I am updating {{ context.corrected_slots.keys()|join(', ') }} to {{ context.new_slot_values | join(', ') }} respectively.",
+          "metadata": {
+            "rephrase": true,
+            "template": "jinja"
+          }
+        }
+      ],
+      "utter_float_slot_rejection": [
+        {
+          "text": "Sorry, it seems the value you provided `{{value}}` is not a valid number. Please provide a valid number in your response.",
+          "metadata": {
+            "rephrase": true,
+            "template": "jinja"
+          }
+        }
+      ],
+      "utter_flow_cancelled_rasa": [
+        {
+          "text": "Okay, stopping {{ context.canceled_name }}.",
+          "metadata": {
+            "rephrase": true,
+            "template": "jinja"
+          }
+        }
+      ],
+      "utter_free_chitchat_response": [
+        {
+          "text": "Sorry, I'm not able to answer that right now.",
+          "metadata": {
+            "rephrase": true,
+            "rephrase_prompt": "You are an incredibly friendly assistant. Generate a short\nresponse to the user's comment in simple english.\n\nUser: {{current_input}}\nResponse:\n"
+          }
+        }
+      ],
+      "utter_human_handoff_not_available": [
+        {
+          "text": "I understand you want to be connected to a human agent, but that's something I cannot help you with at the moment. Is there something else I can help you with?",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_inform_code_change": [
+        {
+          "text": "There has been an update to my code. I need to wrap up our running dialogue and start from scratch.",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_inform_hangup": [
+        {
+          "text": "I haven’t heard from you, so I’ll end our conversation shortly.",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_internal_error_rasa": [
+        {
+          "text": "Sorry, I am having trouble with that. Please try again in a few minutes."
+        }
+      ],
+      "utter_no_knowledge_base": [
+        {
+          "text": "I am afraid, I don't know the answer. At this point, I don't have access to a knowledge base.",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_no_relevant_answer_found": [
+        {
+          "text": "I’m sorry, I don’t have the specific information you’re looking for. I recommend reaching out directly to our team at info@expobetonrdc.com, and they’ll be able to assist you further.",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_skip_question_answer": [
+        {
+          "text": "I'm here to provide you with the best assistance, and in order to do so, I kindly request that we complete this step together. Your input is essential for a seamless experience!",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_user_input_empty_error_rasa": [
+        {
+          "text": "I see an empty message. What can I assist you with?"
+        }
+      ],
+      "utter_user_input_too_long_error_rasa": [
+        {
+          "text": "I'm sorry, but your message is too long for me to process. Please keep your message concise and within {% if context.info.max_characters %}{{context.info.max_characters}} characters.{% else %}a reasonable length.{% endif %}",
+          "metadata": {
+            "template": "jinja"
+          }
+        }
+      ],
+      "utter_welcome": [
+        {
+          "text": "Bienvenue ! Je suis {agent_name} 👋, votre assistant virtuel pour l'Expo Béton RDC 2025. Je suis ici pour vous accompagner dans votre découverte du Salon International de la Construction et des Infrastructures.\n\n**La 10ème Édition s'est passée du 8 au 11 Octobre 2025**\n*\"Le thème était 100 milliards USD pour rebâtir la RDC post-conflit\"*\n\nVoici quelques exemples de questions que vous pouvez me poser :\n{example_questions}\n\nEnsemble, construisons l'avenir infrastructuel de la RDC ! 🏗️\n"
+        }
+      ],
+      "utter_help": [
+        {
+          "text": "Comment puis-je vous accompagner aujourd'hui concernant Expo Béton RDC 2025 ?",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_top_faqs": [
+        {
+          "text": "Try out some of these questions you can use to get me to search your knowledge base:\n\n- 🤖 What is Rasa?\n- 💬 What is CALM?\n- 🔄 What is a flow?\n- ⚙️ How do I customize my agent?\n- 🧠 How does Rasa use LLMs?\n",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_ask_confirm_human_handoff": [
+        {
+          "text": "Do you want to be connected to a human agent?",
+          "buttons": [
+            {
+              "payload": "/SetSlots(confirm_human_handoff=Yes)",
+              "title": "Yes"
+            },
+            {
+              "payload": "/SetSlots(confirm_human_handoff=No)",
+              "title": "No"
+            }
+          ]
+        }
+      ],
+      "utter_transferring_to_human": [
+        {
+          "text": "You will be transfered to a human agent in a few moments."
+        }
+      ],
+      "utter_human_handoff_cancelled": [
+        {
+          "text": "Ok, I understand you don't want to be connected to a human agent. Is there something else I can help you with?",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_transfer_to_manager": [
+        {
+          "text": "I will transfer the following summary of our conversation to the Callback Manager:\n{summary}"
+        }
+      ],
+      "utter_what_can_you_do": [
+        {
+          "text": "I can help you with a few basics like:\n- Connecting you to a human\n- Help you try out the FAQs\n- Collect your feedback\n",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_hello": [
+        {
+          "text": "Hi there! Nice to meet you!",
+          "metadata": {
+            "rephrase": true
+          }
+        }
+      ],
+      "utter_goodbye": [
+        {
+          "text": "Thanks for stopping by — take care!"
+        },
+        {
+          "text": "Thanks for the chat. Have a great day!"
+        },
+        {
+          "text": "Catch you later! Feel free to reach out anytime."
+        },
+        {
+          "text": "Goodbye for now — we're here if you need anything."
+        },
+        {
+          "text": "Take care! Let us know if you have any other questions."
+        }
+      ],
+      "utter_suggest_followup": [
+        {
+          "text": "Voici quelques questions que vous pouvez poser :\n- Quelles entreprises ont participé à l'événement ?\n- Y aura-t-il une prochaine édition ?\n- Comment s'inscrire pour la prochaine édition ?\n"
+        }
+      ],
+      "utter_ask_feedback_rating": [
+        {
+          "text": "We'd love to hear about your experience! How are we doing?",
+          "buttons": [
+            {
+              "title": "👍 Great",
+              "payload": "/SetSlots(feedback_rating=thumbs_up)"
+            },
+            {
+              "title": "👎 Could be better",
+              "payload": "/SetSlots(feedback_rating=thumbs_down)"
+            }
+          ]
+        }
+      ],
+      "utter_thankyou_positive": [
+        {
+          "text": "That's wonderful to hear! We appreciate you taking the time to provide us with feedback. 🌟"
+        },
+        {
+          "text": "So glad we could help! Thanks for the positive feedback! 😊"
+        },
+        {
+          "text": "Amazing! We're thrilled you had a great experience. Thank you for your feedback! 🎉"
+        }
+      ],
+      "utter_thankyou_negative": [
+        {
+          "text": "We appreciate you taking the time to provide us with feedback. We're always working to improve our service."
+        },
+        {
+          "text": "Thank you for your honest feedback. We'll use it to make our service better."
+        },
+        {
+          "text": "Thanks for letting us know. Your feedback helps us improve our agent."
+        }
+      ]
+    },
+    "slots": {
+      "language": {
+        "type": "strict_categorical",
+        "initial_value": "en",
+        "values": [
+          "en"
+        ],
+        "mappings": [],
+        "is_builtin": true
+      },
+      "confirm_correction": {
+        "type": "bool",
+        "mappings": [
+          {
+            "type": "from_llm"
+          }
+        ]
+      },
+      "silence_timeout": {
+        "type": "float",
+        "initial_value": 7.0,
+        "max_value": 1000000
+      },
+      "consecutive_silence_timeouts": {
+        "type": "float",
+        "initial_value": 0.0,
+        "max_value": 1000000
+      },
+      "interrupted_flow_to_continue": {
+        "type": "text",
+        "mappings": [
+          {
+            "type": "from_llm"
+          }
+        ]
+      },
+      "continue_interrupted_flow_confirmation": {
+        "type": "bool",
+        "mappings": [
+          {
+            "type": "from_llm"
+          }
+        ]
+      },
+      "agent_name": {
+        "type": "text",
+        "initial_value": "Expert Expo Béton",
+        "mappings": [
+          {
+            "type": "controlled"
+          }
+        ]
+      },
+      "confirm_human_handoff": {
+        "type": "categorical",
+        "mappings": [
+          {
+            "type": "from_llm"
+          }
+        ],
+        "values": [
+          "Yes",
+          "No"
+        ]
+      },
+      "example_questions": {
+        "type": "text",
+        "initial_value": "- Qu'est-ce que l'Expo Béton ?\n- Quel est le programme de l'événement ?\n- Comment puis-je participer ?\n",
+        "mappings": [
+          {
+            "type": "controlled"
+          }
+        ]
+      },
+      "feedback_rating": {
+        "type": "categorical",
+        "values": [
+          "thumbs_up",
+          "thumbs_down"
+        ],
+        "mappings": [
+          {
+            "type": "from_llm"
+          }
+        ]
+      }
+    },
+    "session_config": {
+      "session_expiration_time": 60,
+      "carry_over_slots_to_new_session": true
+    }
+  },
+  "trained_at": "2025-10-25T11:04:58.475226",
+  "model_id": "10b2d195df44420e84bb6459b8d61251",
+  "assistant_id": "upbeat-goal",
+  "rasa_open_source_version": "3.14.1",
+  "train_schema": {
+    "nodes": {
+      "schema_validator": {
+        "needs": {
+          "importer": "__importer__"
+        },
+        "uses": "rasa.graph_components.validators.default_recipe_validator.DefaultV1RecipeValidator",
+        "constructor_name": "create",
+        "fn": "validate",
+        "config": {},
+        "eager": false,
+        "is_target": false,
+        "is_input": true,
+        "resource": null
+      },
+      "finetuning_validator": {
+        "needs": {
+          "importer": "schema_validator"
+        },
+        "uses": "rasa.graph_components.validators.finetuning_validator.FinetuningValidator",
+        "constructor_name": "create",
+        "fn": "validate",
+        "config": {
+          "validate_core": true,
+          "validate_nlu": true
+        },
+        "eager": false,
+        "is_target": false,
+        "is_input": true,
+        "resource": null
+      },
+      "flows_provider": {
+        "needs": {
+          "importer": "finetuning_validator"
+        },
+        "uses": "rasa.graph_components.providers.flows_provider.FlowsProvider",
+        "constructor_name": "create",
+        "fn": "provide_train",
+        "config": {},
+        "eager": false,
+        "is_target": true,
+        "is_input": true,
+        "resource": null
+      },
+      "domain_provider": {
+        "needs": {
+          "importer": "finetuning_validator"
+        },
+        "uses": "rasa.graph_components.providers.domain_provider.DomainProvider",
+        "constructor_name": "create",
+        "fn": "provide_train",
+        "config": {},
+        "eager": false,
+        "is_target": true,
+        "is_input": true,
+        "resource": null
+      },
+      "nlu_training_data_provider": {
+        "needs": {
+          "importer": "finetuning_validator"
+        },
+        "uses": "rasa.graph_components.providers.nlu_training_data_provider.NLUTrainingDataProvider",
+        "constructor_name": "create",
+        "fn": "provide",
+        "config": {
+          "language": "en",
+          "persist": false
+        },
+        "eager": false,
+        "is_target": false,
+        "is_input": true,
+        "resource": null
+      },
+      "train_SearchReadyLLMCommandGenerator0": {
+        "needs": {
+          "domain": "domain_provider",
+          "training_data": "nlu_training_data_provider",
+          "flows": "flows_provider"
+        },
+        "uses": "rasa.dialogue_understanding.generator.single_step.search_ready_llm_command_generator.SearchReadyLLMCommandGenerator",
+        "constructor_name": "create",
+        "fn": "train",
+        "config": {
+          "llm": {
+            "model_group": "cohere-command"
+          },
+          "flow_retrieval": {
+            "active": false
+          }
+        },
+        "eager": false,
+        "is_target": true,
+        "is_input": false,
+        "resource": null
+      },
+      "domain_for_core_training_provider": {
+        "needs": {
+          "domain": "domain_provider"
+        },
+        "uses": "rasa.graph_components.providers.domain_for_core_training_provider.DomainForCoreTrainingProvider",
+        "constructor_name": "create",
+        "fn": "provide",
+        "config": {},
+        "eager": false,
+        "is_target": false,
+        "is_input": true,
+        "resource": null
+      },
+      "forms_provider": {
+        "needs": {
+          "domain": "domain_provider"
+        },
+        "uses": "rasa.graph_components.providers.forms_provider.FormsProvider",
+        "constructor_name": "create",
+        "fn": "provide",
+        "config": {},
+        "eager": false,
+        "is_target": false,
+        "is_input": true,
+        "resource": null
+      },
+      "responses_provider": {
+        "needs": {
+          "domain": "domain_provider"
+        },
+        "uses": "rasa.graph_components.providers.responses_provider.ResponsesProvider",
+        "constructor_name": "create",
+        "fn": "provide",
+        "config": {},
+        "eager": false,
+        "is_target": false,
+        "is_input": true,
+        "resource": null
+      },
+      "story_graph_provider": {
+        "needs": {
+          "importer": "finetuning_validator"
+        },
+        "uses": "rasa.graph_components.providers.story_graph_provider.StoryGraphProvider",
+        "constructor_name": "create",
+        "fn": "provide_train",
+        "config": {
+          "exclusion_percentage": null
+        },
+        "eager": false,
+        "is_target": false,
+        "is_input": true,
+        "resource": null
+      },
+      "training_tracker_provider": {
+        "needs": {
+          "story_graph": "story_graph_provider",
+          "domain": "domain_for_core_training_provider"
+        },
+        "uses": "rasa.graph_components.providers.training_tracker_provider.TrainingTrackerProvider",
+        "constructor_name": "create",
+        "fn": "provide",
+        "config": {
+          "debug_plots": false,
+          "augmentation_factor": 50
+        },
+        "eager": false,
+        "is_target": false,
+        "is_input": false,
+        "resource": null
+      },
+      "train_FlowPolicy0": {
+        "needs": {
+          "domain": "domain_for_core_training_provider",
+          "training_trackers": "training_tracker_provider"
+        },
+        "uses": "rasa.core.policies.flow_policy.FlowPolicy",
+        "constructor_name": "create",
+        "fn": "train",
+        "config": {},
+        "eager": false,
+        "is_target": true,
+        "is_input": false,
+        "resource": null
+      }
+    }
+  },
+  "predict_schema": {
+    "nodes": {
+      "nlu_message_converter": {
+        "needs": {
+          "messages": "__message__"
+        },
+        "uses": "rasa.graph_components.converters.nlu_message_converter.NLUMessageConverter",
+        "constructor_name": "load",
+        "fn": "convert_user_message",
+        "config": {},
+        "eager": true,
+        "is_target": false,
+        "is_input": false,
+        "resource": null
+      },
+      "flows_provider": {
+        "needs": {},
+        "uses": "rasa.graph_components.providers.flows_provider.FlowsProvider",
+        "constructor_name": "load",
+        "fn": "provide_inference",
+        "config": {},
+        "eager": true,
+        "is_target": false,
+        "is_input": false,
+        "resource": {
+          "name": "flows_provider",
+          "output_fingerprint": "0517c7672cc848988899fa89da4bc949"
+        }
+      },
+      "domain_provider": {
+        "needs": {},
+        "uses": "rasa.graph_components.providers.domain_provider.DomainProvider",
+        "constructor_name": "load",
+        "fn": "provide_inference",
+        "config": {},
+        "eager": true,
+        "is_target": false,
+        "is_input": false,
+        "resource": {
+          "name": "domain_provider",
+          "output_fingerprint": "6371b583e289406da73ae9327805f1f4"
+        }
+      },
+      "run_SearchReadyLLMCommandGenerator0": {
+        "needs": {
+          "domain": "domain_provider",
+          "tracker": "__tracker__",
+          "flows": "flows_provider",
+          "messages": "nlu_message_converter"
+        },
+        "uses": "rasa.dialogue_understanding.generator.single_step.search_ready_llm_command_generator.SearchReadyLLMCommandGenerator",
+        "constructor_name": "load",
+        "fn": "process",
+        "config": {
+          "llm": {
+            "model_group": "cohere-command"
+          },
+          "flow_retrieval": {
+            "active": false
+          }
+        },
+        "eager": true,
+        "is_target": false,
+        "is_input": false,
+        "resource": {
+          "name": "train_SearchReadyLLMCommandGenerator0",
+          "output_fingerprint": "1036dfeac76542c39ed89456fc442f0f"
+        }
+      },
+      "run_RegexMessageHandler": {
+        "needs": {
+          "messages": "run_SearchReadyLLMCommandGenerator0",
+          "domain": "domain_provider"
+        },
+        "uses": "rasa.nlu.classifiers.regex_message_handler.RegexMessageHandler",
+        "constructor_name": "load",
+        "fn": "process",
+        "config": {},
+        "eager": true,
+        "is_target": false,
+        "is_input": false,
+        "resource": null
+      },
+      "command_processor": {
+        "needs": {
+          "domain": "domain_provider",
+          "tracker": "__tracker__",
+          "flows": "flows_provider"
+        },
+        "uses": "rasa.dialogue_understanding.processor.command_processor_component.CommandProcessorComponent",
+        "constructor_name": "load",
+        "fn": "execute_commands",
+        "config": {},
+        "eager": true,
+        "is_target": false,
+        "is_input": false,
+        "resource": {
+          "name": "command_processor",
+          "output_fingerprint": "a16cf125dd3f4f7b9aeef557c0883f87"
+        }
+      },
+      "run_FlowPolicy0": {
+        "needs": {
+          "domain": "domain_provider",
+          "tracker": "__tracker__",
+          "flows": "flows_provider",
+          "rule_only_data": "rule_only_data_provider"
+        },
+        "uses": "rasa.core.policies.flow_policy.FlowPolicy",
+        "constructor_name": "load",
+        "fn": "predict_action_probabilities",
+        "config": {},
+        "eager": true,
+        "is_target": false,
+        "is_input": false,
+        "resource": {
+          "name": "train_FlowPolicy0",
+          "output_fingerprint": "cae54dc477ff4d7382a9742414ce6816"
+        }
+      },
+      "rule_only_data_provider": {
+        "needs": {},
+        "uses": "rasa.graph_components.providers.rule_only_provider.RuleOnlyDataProvider",
+        "constructor_name": "load",
+        "fn": "provide",
+        "config": {},
+        "eager": true,
+        "is_target": false,
+        "is_input": false,
+        "resource": null
+      },
+      "select_prediction": {
+        "needs": {
+          "policy0": "run_FlowPolicy0",
+          "domain": "domain_provider",
+          "tracker": "__tracker__"
+        },
+        "uses": "rasa.core.policies.ensemble.DefaultPolicyPredictionEnsemble",
+        "constructor_name": "load",
+        "fn": "combine_predictions_from_kwargs",
+        "config": {},
+        "eager": true,
+        "is_target": false,
+        "is_input": false,
+        "resource": null
+      }
+    }
+  },
+  "training_type": 3,
+  "project_fingerprint": null,
+  "core_target": "select_prediction",
+  "nlu_target": "run_RegexMessageHandler",
+  "language": "en",
+  "additional_languages": null
+}

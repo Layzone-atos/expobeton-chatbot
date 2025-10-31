@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rasa-models
+data:
+  # Le modèle sera ajouté ici via kubectl
+  # kubectl create configmap rasa-models --from-file=models/expobeton-french.tar.gz

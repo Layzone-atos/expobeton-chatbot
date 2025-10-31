@@ -1,0 +1,23 @@
+version: "3.1"
+
+intents:
+  - greet
+  - ask_expobeton
+
+responses:
+  utter_greet:
+    - text: "Bonjour {{user_name}}! Je suis l'Expert Expo Béton. Comment puis-je vous aider ?"
+  
+  utter_expobeton:
+    - text: "Expo Béton RDC est un événement majeur dédié au secteur du béton en République Démocratique du Congo. Il présente les dernières innovations, technologies et tendances du secteur."
+
+flows:
+  greet:
+    description: Saluer l'utilisateur
+    steps:
+      - action: utter_greet
+  
+  explain_expobeton:
+    description: Expliquer ce qu'est Expo Béton
+    steps:
+      - action: utter_expobeton

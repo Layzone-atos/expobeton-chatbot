@@ -1,0 +1,571 @@
+flows:
+  ask_about_expobeton:
+    steps:
+    - id: ask_about_expobeton_0_action_answer_expobeton
+      action: action_answer_expobeton
+      next: END
+      metadata:
+        line_numbers: 20-21
+    description: |
+      Answer ANY and ALL questions related to ExpoBeton RDC, including:
+      - General event information (what, when, where)
+      - Event dates, location, and venue details  
+      - Theme, topics, and conference content
+      - Registration, participation, and tickets
+      - Sponsorship and partnership opportunities
+      - Ambassador program (how to become an ambassador, benefits, requirements)
+      - Founders and leadership team (Jean Bamanisa, Momo Sungunza)
+      - Pricing, fees, and costs
+      - Exhibitors and participants
+      - Any other questions about the event or organization
+
+      This flow should handle ALL user questions, even if we don't have the answer.
+    file_path: data\general\expobeton_info.yml
+    run_pattern_completed: true
+  leave_feedback:
+    steps:
+    - id: leave_feedback_0_collect_feedback_rating
+      description: Ask user for thumbs up or thumbs down feedback
+      next: feedback_response
+      metadata:
+        line_numbers: 8-9
+      collect: feedback_rating
+      utter: utter_ask_feedback_rating
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: feedback_response
+      noop: true
+      next:
+      - if: slots.feedback_rating == "thumbs_up"
+        then: positive_response
+      - else: negative_response
+      metadata:
+        line_numbers: 10-15
+    - id: positive_response
+      action: utter_thankyou_positive
+      next: END
+      metadata:
+        line_numbers: 16-18
+    - id: negative_response
+      action: utter_thankyou_negative
+      next: END
+      metadata:
+        line_numbers: 19-21
+    name: leaving feedback
+    description: This flow collects simple thumbs up or thumbs down feedback
+    if: 'False'
+    file_path: data\general\feedback.yml
+    run_pattern_completed: true
+  followup_suggestions:
+    steps:
+    - id: followup_suggestions_0_utter_suggest_followup
+      action: utter_suggest_followup
+      next: END
+      metadata:
+        line_numbers: 5-5
+    description: Propose des questions de suivi pertinentes après une réponse.
+    file_path: data\general\followup_suggestions.yml
+    run_pattern_completed: true
+  goodbye_flow:
+    steps:
+    - id: goodbye_flow_0_utter_goodbye
+      action: utter_goodbye
+      next: goodbye_flow_1_link_leave_feedback
+      metadata:
+        line_numbers: 5-5
+    - id: goodbye_flow_1_link_leave_feedback
+      link: leave_feedback
+      metadata:
+        line_numbers: 6-6
+    description: Handle user goodbye messages, say farewell, and collect feedback
+    file_path: data\general\goodbye.yml
+    run_pattern_completed: true
+  hello:
+    steps:
+    - id: hello_0_utter_hello
+      action: utter_hello
+      next: END
+      metadata:
+        line_numbers: 6-6
+    name: hello
+    description: Flow for greeting the user hello
+    file_path: data\general\hello.yml
+    run_pattern_completed: true
+  help:
+    steps:
+    - id: help_0_utter_what_can_you_do
+      action: utter_what_can_you_do
+      next: END
+      metadata:
+        line_numbers: 6-6
+    name: help
+    description: Answer the users question on what the agent can do to help them
+    file_path: data\general\help.yml
+    run_pattern_completed: true
+  human_handoff:
+    steps:
+    - id: human_handoff_0_collect_confirm_human_handoff
+      next:
+      - if: slots.confirm_human_handoff is "Yes"
+        then:
+        - id: human_handoff_1_utter_transferring_to_human
+          action: utter_transferring_to_human
+          next: human_handoff_2_action_human_handoff
+          metadata:
+            line_numbers: 11-11
+        - id: human_handoff_2_action_human_handoff
+          action: action_human_handoff
+          next: END
+          metadata:
+            line_numbers: 12-13
+      - else:
+        - id: human_handoff_3_utter_human_handoff_cancelled
+          action: utter_human_handoff_cancelled
+          next: END
+          metadata:
+            line_numbers: 15-16
+      metadata:
+        line_numbers: 6-16
+      collect: confirm_human_handoff
+      utter: utter_ask_confirm_human_handoff
+      ask_before_filling: true
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    description: When you are unable to handle the request or the user is frustrated - offers to hand the user over to a live human agent.
+    file_path: data\general\human_handoff.yml
+    run_pattern_completed: true
+  show_faqs:
+    steps:
+    - id: show_faqs_0_utter_top_faqs
+      action: utter_top_faqs
+      next: END
+      metadata:
+        line_numbers: 6-6
+    name: show_faqs
+    description: Show users the most frequently asked questions about Rasa and CALM
+    file_path: data\general\show_faqs.yml
+    run_pattern_completed: true
+  cannot_handle:
+    steps:
+    - id: cannot_handle_0_utter_no_relevant_answer_found
+      action: utter_no_relevant_answer_found
+      next: END
+      metadata:
+        line_numbers: 7-7
+    description: Handle cases where no relevant answer is found
+    if: 'False'
+    file_path: data\system\patterns\pattern_cannot_handle.yml
+    run_pattern_completed: true
+  pattern_completed:
+    steps:
+    - id: pattern_completed_0_noop
+      noop: true
+      next: END
+      metadata:
+        line_numbers: 6-7
+    description: A flow has been completed and there is nothing else to be done
+    if: 'False'
+    file_path: data\system\patterns\pattern_completed.yml
+    run_pattern_completed: true
+  pattern_correction:
+    steps:
+    - id: pattern_correction_0_action_correct_flow_slot
+      action: action_correct_flow_slot
+      next: END
+      metadata:
+        line_numbers: 6-7
+    name: pattern correction
+    description: Handle a correction of a slot value.
+    file_path: data\system\patterns\pattern_correction.yml
+    run_pattern_completed: true
+  pattern_search:
+    steps:
+    - id: trigger_search
+      action: action_trigger_search
+      next: suggest_followup
+      metadata:
+        line_numbers: 6-8
+    - id: suggest_followup
+      action: utter_suggest_followup
+      next: END
+      metadata:
+        line_numbers: 9-11
+    name: pattern_search
+    description: Flow for handling knowledge-based questions
+    file_path: data\system\patterns\pattern_search.yml
+    run_pattern_completed: true
+  pattern_session_start:
+    steps:
+    - id: pattern_session_start_0_utter_welcome
+      action: utter_welcome
+      next: END
+      metadata:
+        line_numbers: 8-8
+    name: pattern session start
+    description: Flow for starting the conversation
+    nlu_trigger:
+    - intent:
+        name: session_start
+        confidence_threshold: 0.0
+    file_path: data\system\patterns\pattern_session_start.yml
+    run_pattern_completed: true
+  pattern_cancel_flow:
+    steps:
+    - id: pattern_cancel_flow_0_action_cancel_flow
+      action: action_cancel_flow
+      next: pattern_cancel_flow_1_utter_flow_cancelled_rasa
+      metadata:
+        line_numbers: 147-147
+    - id: pattern_cancel_flow_1_utter_flow_cancelled_rasa
+      action: utter_flow_cancelled_rasa
+      next: END
+      metadata:
+        line_numbers: 148-149
+    name: pattern_cancel_flow
+    description: Conversation repair flow that starts when a flow is cancelled
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_cannot_handle:
+    steps:
+    - id: pattern_cannot_handle_0_noop
+      noop: true
+      next:
+      - if: context.reason is "cannot_handle_chitchat"
+        then:
+        - id: pattern_cannot_handle_1_utter_cannot_handle
+          action: utter_cannot_handle
+          next: END
+          metadata:
+            line_numbers: 160-162
+      - if: context.reason is "cannot_handle_not_supported"
+        then:
+        - id: pattern_cannot_handle_2_utter_cannot_handle
+          action: utter_cannot_handle
+          next: END
+          metadata:
+            line_numbers: 165-168
+      - if: context.reason is "cannot_handle_no_relevant_answer"
+        then:
+        - id: pattern_cannot_handle_3_utter_no_relevant_answer_found
+          action: utter_no_relevant_answer_found
+          next: END
+          metadata:
+            line_numbers: 171-173
+      - else:
+        - id: pattern_cannot_handle_4_utter_ask_rephrase
+          action: utter_ask_rephrase
+          next: END
+          metadata:
+            line_numbers: 175-177
+      metadata:
+        line_numbers: 154-177
+    name: pattern_cannot_handle
+    description: Conversation repair flow for addressing failed command generation scenarios
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_chitchat:
+    steps:
+    - id: pattern_chitchat_0_utter_cannot_handle
+      action: utter_cannot_handle
+      next: END
+      metadata:
+        line_numbers: 182-185
+    name: pattern chitchat
+    description: Conversation repair flow for off-topic interactions that won't disrupt the main conversation
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_clarification:
+    steps:
+    - id: pattern_clarification_0_action_clarify_flows
+      action: action_clarify_flows
+      next: pattern_clarification_1_utter_clarification_options_rasa
+      metadata:
+        line_numbers: 190-190
+    - id: pattern_clarification_1_utter_clarification_options_rasa
+      action: utter_clarification_options_rasa
+      next: END
+      metadata:
+        line_numbers: 191-192
+    name: pattern clarification
+    description: Conversation repair flow for handling ambiguous requests that could match multiple flows
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_code_change:
+    steps:
+    - id: pattern_code_change_0_utter_inform_code_change
+      action: utter_inform_code_change
+      next: pattern_code_change_1_action_clean_stack
+      metadata:
+        line_numbers: 197-197
+    - id: pattern_code_change_1_action_clean_stack
+      action: action_clean_stack
+      next: END
+      metadata:
+        line_numbers: 198-199
+    name: pattern code change
+    description: Conversation repair flow for cleaning the stack after an assistant update
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_collect_information:
+    steps:
+    - id: start
+      action: action_run_slot_rejections
+      next: pattern_collect_information_1_validate_{{context.collect}}
+      metadata:
+        line_numbers: 204-205
+    - id: pattern_collect_information_1_validate_{{context.collect}}
+      action: validate_{{context.collect}}
+      next:
+      - if: slots.{{context.collect}} is not null
+        then: END
+      - else: ask_collect
+      metadata:
+        line_numbers: 206-210
+    - id: ask_collect
+      action: '{{context.utter}}'
+      next: pattern_collect_information_3_{{context.collect_action}}
+      metadata:
+        line_numbers: 211-212
+    - id: pattern_collect_information_3_{{context.collect_action}}
+      action: '{{context.collect_action}}'
+      next: pattern_collect_information_4_action_listen
+      metadata:
+        line_numbers: 213-213
+    - id: pattern_collect_information_4_action_listen
+      action: action_listen
+      next: start
+      metadata:
+        line_numbers: 214-216
+    name: pattern collect information
+    description: Flow for collecting information from users
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_continue_interrupted:
+    steps:
+    - id: pattern_continue_interrupted_0_noop
+      noop: true
+      next:
+      - if: context.multiple_flows_interrupted
+        then: collect_interrupted_flow_to_continue
+      - else: collect_continue_interrupted_flow_confirmation
+      metadata:
+        line_numbers: 227-231
+    - id: collect_interrupted_flow_to_continue
+      description: Fill this slot with the name of the flow the user wants to continue. If the user does not want to continue any of the interrupted flows, fill this slot with 'none'.
+      next:
+      - if: slots.interrupted_flow_to_continue is not "none"
+        then:
+        - id: pattern_continue_interrupted_2_action_continue_interrupted_flow
+          action: action_continue_interrupted_flow
+          next: END
+          metadata:
+            line_numbers: 238-239
+      - else:
+        - id: pattern_continue_interrupted_3_action_cancel_interrupted_flows
+          action: action_cancel_interrupted_flows
+          next: END
+          metadata:
+            line_numbers: 241-242
+      metadata:
+        line_numbers: 232-242
+      collect: interrupted_flow_to_continue
+      utter: utter_ask_interrupted_flow_to_continue
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: collect_continue_interrupted_flow_confirmation
+      description: If the user wants to continue the interrupted flow, fill this slot with true. If the user does not want to continue the interrupted flow, fill this slot with false.
+      next:
+      - if: slots.continue_interrupted_flow_confirmation
+        then:
+        - id: pattern_continue_interrupted_5_action_continue_interrupted_flow
+          action: action_continue_interrupted_flow
+          next: END
+          metadata:
+            line_numbers: 249-250
+      - else:
+        - id: pattern_continue_interrupted_6_action_cancel_interrupted_flows
+          action: action_cancel_interrupted_flows
+          next: END
+          metadata:
+            line_numbers: 252-254
+      metadata:
+        line_numbers: 243-254
+      collect: continue_interrupted_flow_confirmation
+      utter: utter_ask_continue_interrupted_flow_confirmation
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    name: pattern continue interrupted
+    description: Conversation repair flow for managing when users switch between different flows
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_human_handoff:
+    steps:
+    - id: pattern_human_handoff_0_utter_human_handoff_not_available
+      action: utter_human_handoff_not_available
+      next: END
+      metadata:
+        line_numbers: 271-272
+    name: pattern human handoff
+    description: Conversation repair flow for switching users to a human agent if their request can't be handled
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_internal_error:
+    steps:
+    - id: pattern_internal_error_0_noop
+      noop: true
+      next:
+      - if: context.error_type is "rasa_internal_error_user_input_too_long"
+        then:
+        - id: pattern_internal_error_1_utter_user_input_too_long_error_rasa
+          action: utter_user_input_too_long_error_rasa
+          next: END
+          metadata:
+            line_numbers: 281-282
+      - if: context.error_type is "rasa_internal_error_user_input_empty"
+        then:
+        - id: pattern_internal_error_2_utter_user_input_empty_error_rasa
+          action: utter_user_input_empty_error_rasa
+          next: END
+          metadata:
+            line_numbers: 285-286
+      - else:
+        - id: pattern_internal_error_3_utter_internal_error_rasa
+          action: utter_internal_error_rasa
+          next: END
+          metadata:
+            line_numbers: 288-290
+      metadata:
+        line_numbers: 277-290
+    name: pattern_internal_error
+    description: Conversation repair flow for informing users about internal errors
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_repeat_bot_messages:
+    steps:
+    - id: pattern_repeat_bot_messages_0_action_repeat_bot_messages
+      action: action_repeat_bot_messages
+      next: END
+      metadata:
+        line_numbers: 295-296
+    name: pattern repeat bot messages
+    description: Conversation repair flow for repeating previous messages
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_restart:
+    steps:
+    - id: pattern_restart_0_action_restart
+      action: action_restart
+      next: END
+      metadata:
+        line_numbers: 303-304
+    name: pattern restart
+    description: Flow for restarting the conversation
+    nlu_trigger:
+    - intent:
+        name: restart
+        confidence_threshold: 0.0
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_skip_question:
+    steps:
+    - id: pattern_skip_question_0_utter_skip_question_answer
+      action: utter_skip_question_answer
+      next: END
+      metadata:
+        line_numbers: 324-325
+    name: pattern skip question
+    description: Conversation repair flow for managing user intents to skip questions (steps)
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true
+  pattern_user_silence:
+    steps:
+    - id: pattern_user_silence_0_noop
+      noop: true
+      next:
+      - if: slots.consecutive_silence_timeouts = 0.0
+        then: set_slots_consecutive_silence_timeouts
+      - if: slots.consecutive_silence_timeouts = 1.0
+        then: set_slots_consecutive_silence_timeouts_2
+      - if: slots.consecutive_silence_timeouts > 1.0
+        then: message_utter_inform_hangup
+      - else: END
+      metadata:
+        line_numbers: 334-342
+    - id: set_slots_consecutive_silence_timeouts
+      set_slots:
+      - consecutive_silence_timeouts: 1.0
+      next: pattern_user_silence_2_action_repeat_bot_messages
+      metadata:
+        line_numbers: 343-345
+    - id: pattern_user_silence_2_action_repeat_bot_messages
+      action: action_repeat_bot_messages
+      next: END
+      metadata:
+        line_numbers: 346-347
+    - id: set_slots_consecutive_silence_timeouts_2
+      set_slots:
+      - consecutive_silence_timeouts: 2.0
+      next: pattern_user_silence_4_utter_ask_still_there
+      metadata:
+        line_numbers: 348-350
+    - id: pattern_user_silence_4_utter_ask_still_there
+      action: utter_ask_still_there
+      next: END
+      metadata:
+        line_numbers: 351-352
+    - id: message_utter_inform_hangup
+      action: utter_inform_hangup
+      next: pattern_user_silence_6_action_hangup
+      metadata:
+        line_numbers: 353-354
+    - id: pattern_user_silence_6_action_hangup
+      action: action_hangup
+      next: END
+      metadata:
+        line_numbers: 355-356
+    name: pattern react to silence
+    description: Reacting to user silence in voice bots
+    nlu_trigger:
+    - intent:
+        name: silence_timeout
+        confidence_threshold: 0.0
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    persisted_slots:
+    - consecutive_silence_timeouts
+    run_pattern_completed: true
+  pattern_validate_slot:
+    steps:
+    - id: start
+      action: action_run_slot_rejections
+      next:
+      - if: slots.{{context.validate}} is not null
+        then: END
+      - else: ask_refill
+      metadata:
+        line_numbers: 361-366
+    - id: ask_refill
+      action: '{{context.refill_utter}}'
+      next: pattern_validate_slot_2_{{context.refill_action}}
+      metadata:
+        line_numbers: 367-368
+    - id: pattern_validate_slot_2_{{context.refill_action}}
+      action: '{{context.refill_action}}'
+      next: pattern_validate_slot_3_action_listen
+      metadata:
+        line_numbers: 369-369
+    - id: pattern_validate_slot_3_action_listen
+      action: action_listen
+      next: start
+      metadata:
+        line_numbers: 370-371
+    name: pattern validate slot
+    description: Flow for running validations on slots
+    file_path: F:\Louison\Layhosting\Clients\Expo beton\prod-rasa-d3f2c138\.venv\lib\site-packages\rasa\dialogue_understanding\patterns\default_flows_for_patterns.yml
+    run_pattern_completed: true

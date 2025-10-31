@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expobeton-web
+  labels:
+    app: expobeton-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expobeton-web
+  template:
+    metadata:
+      labels:
+        app: expobeton-web
+    spec:
+      containers:
+      - name: web
+        image: caddy:2-alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: web-content
+          mountPath: /usr/share/caddy
+        - name: caddy-config
+          mountPath: /etc/caddy/Caddyfile
+          subPath: Caddyfile
+      volumes:
+      - name: web-content
+        configMap:
+          name: web-content
+      - name: caddy-config
+        configMap:
+          name: caddy-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expobeton-web-service
+spec:
+  selector:
+    app: expobeton-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

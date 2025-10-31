@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: actions-code
+data:
+  actions.py: |
+    from rasa_sdk import Action
+    from rasa_sdk.events import SlotSet
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    import os
+    
+    class ActionHumanHandoff(Action):
+        def name(self):
+            return "action_human_handoff"
+    
+        def run(self, dispatcher, tracker, domain):
+            # Logique pour transférer à un humain
+            dispatcher.utter_message(text="Je vais vous mettre en contact avec un agent humain.")
+            return []
+    
+    class ActionAnswerAndSuggest(Action):
+        def name(self):
+            return "action_answer_and_suggest"
+    
+        def run(self, dispatcher, tracker, domain):
+            # Logique pour répondre et suggérer
+            dispatcher.utter_message(text="Voici quelques suggestions qui pourraient vous aider.")
+            return []
+    
+    class ActionAnswerExpobeton(Action):
+        def name(self):
+            return "action_answer_expobeton"
+    
+        def run(self, dispatcher, tracker, domain):
+            # Logique pour répondre sur ExpoBeton
+            dispatcher.utter_message(text="ExpoBeton RDC est un événement majeur dédié au béton en République Démocratique du Congo.")
+            return []

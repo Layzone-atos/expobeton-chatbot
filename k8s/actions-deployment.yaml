@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expobeton-actions
+  labels:
+    app: expobeton-actions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expobeton-actions
+  template:
+    metadata:
+      labels:
+        app: expobeton-actions
+    spec:
+      containers:
+      - name: actions
+        image: python:3.8-slim
+        ports:
+        - containerPort: 5055
+        env:
+        - name: COHERE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: expobeton-secrets
+              key: cohere-api-key
+        - name: SMTP_SERVER
+          value: "smtp.gmail.com"
+        - name: SMTP_PORT
+          value: "587"
+        - name: SMTP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: expobeton-secrets
+              key: smtp-username
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: expobeton-secrets
+              key: smtp-password
+        - name: NOTIFICATION_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: expobeton-secrets
+              key: notification-email
+        workingDir: /app
+        command: ["sh", "-c"]
+        args:
+          - |
+            pip install rasa-sdk==3.6.2 &&
+            python -m rasa_sdk --actions actions -p 5055 --host 0.0.0.0
+        volumeMounts:
+        - name: actions-code
+          mountPath: /app
+      volumes:
+      - name: actions-code
+        configMap:
+          name: actions-code
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expobeton-actions-service
+spec:
+  selector:
+    app: expobeton-actions
+  ports:
+    - protocol: TCP
+      port: 5055
+      targetPort: 5055
+  type: ClusterIP

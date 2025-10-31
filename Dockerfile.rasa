@@ -18,5 +18,5 @@ EXPOSE 5005
 # Set environment variables
 ENV RASA_MODEL=/app/models/expobeton-french.tar.gz
 
-# Démarrer Rasa - format correct
+# Run Rasa server on fixed port, Heroku will handle port mapping
 CMD ["run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0"]

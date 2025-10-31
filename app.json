@@ -1,0 +1,40 @@
+{
+  "name": "Expobeton Rasa Chatbot",
+  "description": "A Rasa-powered chatbot for Expobeton",
+  "keywords": [
+    "rasa",
+    "chatbot",
+    "nlp",
+    "ai"
+  ],
+  "website": "https://www.expobetonrdc.com/",
+  "repository": "https://github.com/your-username/expobeton-rasa",
+  "logo": "https://www.expobetonrdc.com/logo.png",
+  "success_url": "/",
+  "env": {
+    "ACTION_ENDPOINT_URL": {
+      "description": "The URL of the action endpoint",
+      "value": "https://expobeton-rasa-db7b1977a90f.herokuapp.com/webhook"
+    },
+    "RASA_MODEL": {
+      "description": "Path to the Rasa model file",
+      "value": "/app/models/expobeton-french.tar.gz"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": [],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}

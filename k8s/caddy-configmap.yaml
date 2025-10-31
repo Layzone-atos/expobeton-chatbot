@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: caddy-config
+data:
+  Caddyfile: |
+    :80 {
+        root * /usr/share/caddy
+        file_server
+        encode gzip
+        
+        # Proxy pour le webhook Rasa
+        reverse_proxy /webhooks/rest/webhook http://expobeton-rasa-service:5005
+        
+        # Headers CORS
+        header {
+            Access-Control-Allow-Origin  *
+            Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+            Access-Control-Allow-Headers "Content-Type, Authorization"
+        }
+    }

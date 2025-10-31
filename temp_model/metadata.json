@@ -1,0 +1,71 @@
+{
+  "version": "3.1",
+  "model_id": "expobeton-french",
+  "trained_at": "2025-10-31T01:03:54+00:00",
+  "rasa_open_source_version": "3.10.27",
+  "domain": {
+    "version": "3.1",
+    "session_config": {
+      "session_expiration_time": 60,
+      "carry_over_slots_to_new_session": true
+    },
+    "intents": [
+      {
+        "greet": {
+          "use_entities": true
+        }
+      },
+      {
+        "ask_expobeton": {
+          "use_entities": true
+        }
+      }
+    ],
+    "entities": [
+      "user_name"
+    ],
+    "slots": {
+      "user_name": {
+        "type": "text",
+        "mappings": [
+          {
+            "type": "from_text"
+          }
+        ]
+      }
+    },
+    "responses": {
+      "utter_greet": [
+        {
+          "text": "Bonjour {{user_name}}! Je suis l'Expert Expo Béton. Comment puis-je vous aider ?"
+        }
+      ],
+      "utter_expobeton": [
+        {
+          "text": "Expo Béton RDC est un événement majeur dédié au secteur du béton en République Démocratique du Congo. Il présente les dernières innovations, technologies et tendances du secteur."
+        }
+      ],
+      "utter_default": [
+        {
+          "text": "Désolé, je n'ai pas compris votre message. Pouvez-vous reformuler ?"
+        }
+      ]
+    },
+    "actions": [
+      "utter_greet",
+      "utter_expobeton",
+      "utter_default"
+    ],
+    "forms": {},
+    "e2e_actions": []
+  },
+  "train_schema": {
+    "nodes": {},
+    "config": {}
+  },
+  "predict_schema": {
+    "nodes": {},
+    "config": {}
+  },
+  "trained_on": []
+}

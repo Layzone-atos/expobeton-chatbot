@@ -1,0 +1,267 @@
+version: '3.1'
+actions:
+- flow_ask_about_expobeton
+- flow_leave_feedback
+- flow_followup_suggestions
+- flow_goodbye_flow
+- flow_hello
+- flow_help
+- flow_human_handoff
+- flow_show_faqs
+- flow_cannot_handle
+- flow_pattern_completed
+- flow_pattern_correction
+- flow_pattern_search
+- flow_pattern_session_start
+- flow_pattern_cancel_flow
+- flow_pattern_cannot_handle
+- flow_pattern_chitchat
+- flow_pattern_clarification
+- flow_pattern_code_change
+- flow_pattern_collect_information
+- flow_pattern_continue_interrupted
+- flow_pattern_human_handoff
+- flow_pattern_internal_error
+- flow_pattern_repeat_bot_messages
+- flow_pattern_restart
+- flow_pattern_skip_question
+- flow_pattern_user_silence
+- flow_pattern_validate_slot
+- action_human_handoff
+- action_answer_and_suggest
+- action_answer_expobeton
+responses:
+  utter_ask_continue_interrupted_flow_confirmation:
+  - text: Would you like to continue with {{context.interrupted_flow_options}}?
+    metadata:
+      rephrase: true
+      template: jinja
+  utter_ask_interrupted_flow_to_continue:
+  - text: Would you like to resume {{context.interrupted_flow_options}}?
+    metadata:
+      rephrase: true
+      template: jinja
+  utter_ask_rephrase:
+  - text: I’m sorry I am unable to understand you, could you please rephrase?
+  utter_ask_still_there:
+  - text: Hello, are you still there?
+    metadata:
+      rephrase: true
+  utter_boolean_slot_rejection:
+  - text: Sorry, the value you provided, `{{value}}`, is not valid. Please respond with a valid value.
+    metadata:
+      rephrase: true
+      template: jinja
+  utter_can_do_something_else:
+  - text: What else can I help you with?
+    metadata:
+      rephrase: true
+  utter_cannot_handle:
+  - text: I'm sorry, I'm not trained to help with that.
+  utter_categorical_slot_rejection:
+  - text: Sorry, you responded with an invalid value - `{{value}}`. Please select one of the available options.
+    metadata:
+      rephrase: true
+      template: jinja
+  utter_clarification_options_rasa:
+  - text: 'I can help, but I need more information. Which of these would you like to do: {{context.clarification_options}}?'
+    metadata:
+      rephrase: true
+      template: jinja
+  utter_corrected_previous_input:
+  - text: Ok, I am updating {{ context.corrected_slots.keys()|join(', ') }} to {{ context.new_slot_values | join(', ') }} respectively.
+    metadata:
+      rephrase: true
+      template: jinja
+  utter_float_slot_rejection:
+  - text: Sorry, it seems the value you provided `{{value}}` is not a valid number. Please provide a valid number in your response.
+    metadata:
+      rephrase: true
+      template: jinja
+  utter_flow_cancelled_rasa:
+  - text: Okay, stopping {{ context.canceled_name }}.
+    metadata:
+      rephrase: true
+      template: jinja
+  utter_free_chitchat_response:
+  - text: Sorry, I'm not able to answer that right now.
+    metadata:
+      rephrase: true
+      rephrase_prompt: |
+        You are an incredibly friendly assistant. Generate a short
+        response to the user's comment in simple english.
+
+        User: {{current_input}}
+        Response:
+  utter_human_handoff_not_available:
+  - text: I understand you want to be connected to a human agent, but that's something I cannot help you with at the moment. Is there something else I can help you with?
+    metadata:
+      rephrase: true
+  utter_inform_code_change:
+  - text: There has been an update to my code. I need to wrap up our running dialogue and start from scratch.
+    metadata:
+      rephrase: true
+  utter_inform_hangup:
+  - text: I haven’t heard from you, so I’ll end our conversation shortly.
+    metadata:
+      rephrase: true
+  utter_internal_error_rasa:
+  - text: Sorry, I am having trouble with that. Please try again in a few minutes.
+  utter_no_knowledge_base:
+  - text: I am afraid, I don't know the answer. At this point, I don't have access to a knowledge base.
+    metadata:
+      rephrase: true
+  utter_no_relevant_answer_found:
+  - text: I’m sorry, I don’t have the specific information you’re looking for. I recommend reaching out directly to our team at info@expobetonrdc.com, and they’ll be able to assist you further.
+    metadata:
+      rephrase: true
+  utter_skip_question_answer:
+  - text: I'm here to provide you with the best assistance, and in order to do so, I kindly request that we complete this step together. Your input is essential for a seamless experience!
+    metadata:
+      rephrase: true
+  utter_user_input_empty_error_rasa:
+  - text: I see an empty message. What can I assist you with?
+  utter_user_input_too_long_error_rasa:
+  - text: I'm sorry, but your message is too long for me to process. Please keep your message concise and within {% if context.info.max_characters %}{{context.info.max_characters}} characters.{% else %}a reasonable length.{% endif %}
+    metadata:
+      template: jinja
+  utter_welcome:
+  - text: |
+      Bienvenue ! Je suis {agent_name} 👋, votre assistant virtuel pour l'Expo Béton RDC 2025. Je suis ici pour vous accompagner dans votre découverte du Salon International de la Construction et des Infrastructures.
+
+      **La 10ème Édition s'est passée du 8 au 11 Octobre 2025**
+      *"Le thème était 100 milliards USD pour rebâtir la RDC post-conflit"*
+
+      Voici quelques exemples de questions que vous pouvez me poser :
+      {example_questions}
+
+      Ensemble, construisons l'avenir infrastructuel de la RDC ! 🏗️
+  utter_help:
+  - text: Comment puis-je vous accompagner aujourd'hui concernant Expo Béton RDC 2025 ?
+    metadata:
+      rephrase: true
+  utter_top_faqs:
+  - text: |
+      Try out some of these questions you can use to get me to search your knowledge base:
+
+      - 🤖 What is Rasa?
+      - 💬 What is CALM?
+      - 🔄 What is a flow?
+      - ⚙️ How do I customize my agent?
+      - 🧠 How does Rasa use LLMs?
+    metadata:
+      rephrase: true
+  utter_ask_confirm_human_handoff:
+  - text: Do you want to be connected to a human agent?
+    buttons:
+    - payload: /SetSlots(confirm_human_handoff=Yes)
+      title: Yes
+    - payload: /SetSlots(confirm_human_handoff=No)
+      title: No
+  utter_transferring_to_human:
+  - text: You will be transfered to a human agent in a few moments.
+  utter_human_handoff_cancelled:
+  - text: Ok, I understand you don't want to be connected to a human agent. Is there something else I can help you with?
+    metadata:
+      rephrase: true
+  utter_transfer_to_manager:
+  - text: |-
+      I will transfer the following summary of our conversation to the Callback Manager:
+      {summary}
+  utter_what_can_you_do:
+  - text: |
+      I can help you with a few basics like:
+      - Connecting you to a human
+      - Help you try out the FAQs
+      - Collect your feedback
+    metadata:
+      rephrase: true
+  utter_hello:
+  - text: Hi there! Nice to meet you!
+    metadata:
+      rephrase: true
+  utter_goodbye:
+  - text: Thanks for stopping by — take care!
+  - text: Thanks for the chat. Have a great day!
+  - text: Catch you later! Feel free to reach out anytime.
+  - text: Goodbye for now — we're here if you need anything.
+  - text: Take care! Let us know if you have any other questions.
+  utter_suggest_followup:
+  - text: |
+      Voici quelques questions que vous pouvez poser :
+      - Quelles entreprises ont participé à l'événement ?
+      - Y aura-t-il une prochaine édition ?
+      - Comment s'inscrire pour la prochaine édition ?
+  utter_ask_feedback_rating:
+  - text: We'd love to hear about your experience! How are we doing?
+    buttons:
+    - title: 👍 Great
+      payload: /SetSlots(feedback_rating=thumbs_up)
+    - title: 👎 Could be better
+      payload: /SetSlots(feedback_rating=thumbs_down)
+  utter_thankyou_positive:
+  - text: That's wonderful to hear! We appreciate you taking the time to provide us with feedback. 🌟
+  - text: So glad we could help! Thanks for the positive feedback! 😊
+  - text: Amazing! We're thrilled you had a great experience. Thank you for your feedback! 🎉
+  utter_thankyou_negative:
+  - text: We appreciate you taking the time to provide us with feedback. We're always working to improve our service.
+  - text: Thank you for your honest feedback. We'll use it to make our service better.
+  - text: Thanks for letting us know. Your feedback helps us improve our agent.
+slots:
+  language:
+    type: strict_categorical
+    initial_value: en
+    values:
+    - en
+    mappings: []
+    is_builtin: true
+  confirm_correction:
+    type: bool
+    mappings:
+    - type: from_llm
+  silence_timeout:
+    type: float
+    initial_value: 7.0
+    max_value: 1000000
+  consecutive_silence_timeouts:
+    type: float
+    initial_value: 0.0
+    max_value: 1000000
+  interrupted_flow_to_continue:
+    type: text
+    mappings:
+    - type: from_llm
+  continue_interrupted_flow_confirmation:
+    type: bool
+    mappings:
+    - type: from_llm
+  agent_name:
+    type: text
+    initial_value: Expert Expo Béton
+    mappings:
+    - type: controlled
+  confirm_human_handoff:
+    type: categorical
+    mappings:
+    - type: from_llm
+    values:
+    - Yes
+    - No
+  example_questions:
+    type: text
+    initial_value: |
+      - Qu'est-ce que l'Expo Béton ?
+      - Quel est le programme de l'événement ?
+      - Comment puis-je participer ?
+    mappings:
+    - type: controlled
+  feedback_rating:
+    type: categorical
+    values:
+    - thumbs_up
+    - thumbs_down
+    mappings:
+    - type: from_llm
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

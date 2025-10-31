@@ -27,5 +27,5 @@ COPY endpoints.yml /app/
 # Expose action server port
 EXPOSE 5055
 
-# Run action server
+# Run action server on fixed port, Heroku will handle port mapping
 CMD ["rasa", "run", "actions", "--port", "5055"]

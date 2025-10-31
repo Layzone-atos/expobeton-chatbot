@@ -1,0 +1,7 @@
+{
+  "version": "3.10.27",
+  "min_compatible_version": "3.10.0",
+  "domain": "domain_hash",
+  "config": "config_hash",
+  "training_data": "training_data_hash"
+}
