@@ -1,2 +1,2 @@
-web: rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-french.tar.gz
+web: rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-heroku.tar.gz
 worker: rasa run actions --port 5055
