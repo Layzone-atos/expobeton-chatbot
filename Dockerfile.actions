@@ -16,6 +16,9 @@ COPY requirements-heroku.txt /app/
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements-heroku.txt
 
+# Add debugging - check what version was actually installed
+RUN pip list | grep rasa
+
 # Copy project files
 COPY actions /app/actions
 COPY domain /app/domain
