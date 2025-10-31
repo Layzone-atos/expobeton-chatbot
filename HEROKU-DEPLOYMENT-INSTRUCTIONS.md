@@ -1,3 +1,57 @@
+# Heroku Deployment Instructions for Rasa Chatbot
+
+## Overview
+This document provides step-by-step instructions for deploying the Rasa chatbot to Heroku using Docker containers.
+
+## Prerequisites
+- Heroku account
+- Heroku CLI installed and logged in
+- Git installed
+- Docker installed (for local testing)
+
+## Deployment Steps
+
+1. **Initial Setup**
+   - Create a new Heroku app
+   - Connect the app to your GitHub repository
+   - Enable automatic deployments from the main branch
+
+2. **Configuration**
+   - Set required environment variables in Heroku
+   - Configure the Procfile for process management
+   - Set up the heroku.yml file for Docker deployment
+
+3. **Deployment**
+   - Push changes to the main branch to trigger automatic deployment
+   - Monitor the build logs in the Heroku dashboard
+
+4. **Verification**
+   - Check that both web and worker processes are running
+   - Test the Rasa API endpoints
+   - Verify that the action server is responding
+
+## Environment Variables
+The following environment variables should be set in Heroku:
+- ACTION_ENDPOINT_URL: URL for the action server endpoint
+- RASA_LICENSE: License key for Rasa Pro
+- RASA_PRO_LICENSE: Additional license key for Rasa Pro
+
+## Docker Configuration
+The deployment uses two Docker containers:
+- Web process: Runs the Rasa server
+- Worker process: Runs the action server
+
+## Troubleshooting
+- Check build logs in the Heroku dashboard for deployment errors
+- Verify that all required files are included in the repository
+- Ensure that the model is compatible with the installed Rasa version
+- Check that environment variables are correctly set
+
+## Recent Changes
+- Removed RASA_MODEL environment variable to allow dynamic model loading
+- Updated Dockerfiles to ensure proper model training during build
+
+
 # Heroku Deployment Instructions
 
 Since the Heroku CLI is not installed on your system, you'll need to install it first before you can deploy your application.
