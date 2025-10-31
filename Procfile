@@ -1,2 +1,2 @@
-web: rasa run --enable-api --port $PORT --cors "*" --debug
+web: rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0
 worker: rasa run actions --port 5055
