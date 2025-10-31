@@ -4,6 +4,10 @@
 This is your Rasa assistant project. Below are the basic commands to
 get started.
 
+## Heroku Deployment
+
+This project is configured for deployment to Heroku.
+
 ## Prerequisites
 Make sure you have [uv](https://docs.astral.sh/uv/) installed.
 
