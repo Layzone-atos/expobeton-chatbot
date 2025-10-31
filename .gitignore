@@ -13,7 +13,7 @@ ENV/
 .rasa/
 # Only ignore tar.gz files that are not the specific model we want to deploy
 models/*.tar.gz
-!models/expobeton-french.tar.gz
+!models/expobeton-heroku.tar.gz
 *.db
 *.db-shm
 *.db-wal
