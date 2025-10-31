@@ -12,6 +12,9 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements
 COPY requirements-heroku.txt /app/
 
+# Add debugging - check what's in the directory
+RUN ls -la
+
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements-heroku.txt
@@ -21,6 +24,9 @@ RUN pip list | grep rasa
 
 # Copy project files (excluding any model files)
 COPY . /app
+
+# Add debugging - check what's in the directory after copying
+RUN ls -la
 
 # Remove any existing model files to force retraining
 RUN rm -rf models/*
