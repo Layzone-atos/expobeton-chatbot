@@ -1,20 +1,7 @@
-FROM python:3.10-slim
+FROM europe-west3-docker.pkg.dev/rasa-releases/rasa-pro/rasa-pro:3.10.27
 
 # Set working directory
 WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements
-COPY requirements-heroku.txt /app/
-
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements-heroku.txt
 
 # Copy project files
 COPY . /app
@@ -29,4 +16,4 @@ EXPOSE 5005
 ENV RASA_MODEL=/app/models/expobeton-french.tar.gz
 
 # Run Rasa server on fixed port, Heroku will handle port mapping
-CMD ["rasa", "run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0"]
+CMD ["run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0"]
