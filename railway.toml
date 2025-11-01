@@ -1,6 +1,0 @@
-[build]
-builder = "docker"
-
-[deploy]
-healthcheckPath = "/"
-healthcheckTimeout = 300
