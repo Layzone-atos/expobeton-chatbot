@@ -3,9 +3,9 @@
 echo "🚀 Démarrage Rasa sur Railway..."
 echo "Port Railway: $PORT"
 
-# Entraînement
+# Entraînement du modèle
 echo "Entraînement du modèle..."
-rasa train --fixed-model-name expobeton-railway --out models/
+rasa train --config config_simple.yml --fixed-model-name expobeton-railway --out models/
 
 # Vérifier si le modèle a été créé
 if [ ! -f "models/expobeton-railway.tar.gz" ]; then

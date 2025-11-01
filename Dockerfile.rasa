@@ -28,7 +28,5 @@ RUN rasa train --config config_simple.yml --fixed-model-name expobeton-railway -
 # Expose port (this is for documentation only, Railway will use $PORT)
 EXPOSE 5005
 
-# Start Rasa server with Railway's dynamic port
-CMD echo "Starting Rasa server on Railway..." && \
-    echo "PORT environment variable: $PORT" && \
-    rasa run --enable-api --cors "*" --port $PORT --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz
+# Use our startup script
+CMD ["./railway_start.sh"]

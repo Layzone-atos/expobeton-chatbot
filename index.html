@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ExpoBeton Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .chat-container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            height: 500px;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            text-align: right;
+        }
+        .bot-message {
+            background-color: #f5f5f5;
+        }
+        .input-container {
+            display: flex;
+        }
+        #user-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #send-button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>ExpoBeton Chatbot</h1>
+    <div id="chat-container" class="chat-container"></div>
+    <div class="input-container">
+        <input type="text" id="user-input" placeholder="Tapez votre message ici..." />
+        <button id="send-button">Envoyer</button>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            messageDiv.textContent = text;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, true);
+            userInput.value = '';
+
+            try {
+                // Send message to Rasa
+                const response = await fetch('/webhooks/rest/webhook', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        sender: 'user'
+                    }),
+                });
+
+                const data = await response.json();
+                
+                // Add bot responses to chat
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        if (item.text) {
+                            addMessage(item.text, false);
+                        }
+                    });
+                } else {
+                    addMessage("Désolé, je n'ai pas compris. Pouvez-vous reformuler ?", false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage("Erreur de connexion au chatbot. Veuillez réessayer.", false);
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Add welcome message
+        addMessage("Bonjour ! Je suis l'assistant ExpoBeton. Comment puis-je vous aider aujourd'hui ?", false);
+    </script>
+</body>
+</html>
