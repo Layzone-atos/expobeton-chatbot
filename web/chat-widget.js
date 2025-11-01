@@ -2,7 +2,7 @@
 // Rasa Server URL - Auto-detect environment
 const RASA_SERVER_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:5005'
-    : 'https://expobeton-rasa.onrender.com';
+    : 'https://web-production-9f398e.up.railway.app';
 
 const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
 

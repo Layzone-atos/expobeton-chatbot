@@ -13,8 +13,8 @@
     // CONFIGURATION
     // ========================================
     
-    // URL de votre backend PythonAnywhere
-    const RASA_SERVER_URL = 'https://VOTRE_USERNAME.pythonanywhere.com';
+    // URL de votre backend Railway
+    const RASA_SERVER_URL = 'https://web-production-9f398e.up.railway.app';
     
     // Configuration du widget
     const CONFIG = {
