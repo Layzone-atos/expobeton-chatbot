@@ -24,6 +24,10 @@ COPY endpoints.yml /app/
 # Expose action server port
 EXPOSE 5055
 
+# Add a health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:5055/ || exit 1
+
 # Run action server with debugging
 CMD echo "Starting Rasa action server..." && \
     echo "Current directory: $(pwd)" && \

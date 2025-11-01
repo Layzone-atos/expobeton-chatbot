@@ -25,7 +25,11 @@ RUN rm -rf models/*
 # Expose Rasa port
 EXPOSE 5005
 
-# Train a new model during container startup
+# Add a health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:5005/ || exit 1
+
+# Train a new model during container startup with better error handling
 CMD echo "Training model..." && \
     rasa train --fixed-model-name expobeton-railway --out models/ && \
     echo "Model training completed. Starting Rasa server..." && \
