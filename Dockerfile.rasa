@@ -22,6 +22,12 @@ COPY . /app
 # Expose Rasa port
 EXPOSE 5005
 
-# Train model and start Rasa server
-CMD rasa train --fixed-model-name expobeton-railway --out models/ && \
-    rasa run --enable-api --port 5005 --cors "*" -i 0.0.0.0 --model models/expobeton-railway.tar.gz
+# Simple startup script
+CMD echo "Starting Rasa server setup..." && \
+    echo "Training model..." && \
+    rasa train --fixed-model-name expobeton-railway --out models/ && \
+    echo "Model training completed." && \
+    echo "Checking if model exists..." && \
+    ls -la models/ && \
+    echo "Starting Rasa server on port 5005..." && \
+    rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz
