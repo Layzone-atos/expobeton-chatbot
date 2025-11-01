@@ -29,14 +29,20 @@ EXPOSE 5005
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:5005/ || exit 1
 
-# Train a new model during container startup with better error handling
+# Train a new model during container startup with detailed debugging
 # and ensure the model file is created
-CMD echo "Training model..." && \
-    rasa train --fixed-model-name expobeton-railway --out models/ && \
+CMD echo "Checking training data..." && \
+    ls -la data/ && \
+    echo "Checking domain files..." && \
+    ls -la domain/ && \
+    echo "Training model with verbose output..." && \
+    rasa train --fixed-model-name expobeton-railway --out models/ --debug && \
     echo "Checking if model was created..." && \
     ls -la models/ && \
     if [ ! -f "models/expobeton-railway.tar.gz" ]; then \
         echo "ERROR: Model file was not created!"; \
+        echo "Listing all files in models directory:"; \
+        find models -type f; \
         exit 1; \
     fi && \
     echo "Model training completed. Starting Rasa server..." && \
