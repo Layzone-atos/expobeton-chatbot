@@ -1,2 +1,2 @@
-rasa==3.14.0
-rasa-sdk==3.14.0
+rasa==3.6.21
+rasa-sdk==3.6.2
