@@ -17,6 +17,10 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 PORT = int(os.environ.get('PORT', 5005))
 
 class CombinedHandler(SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        # Set the directory to serve files from
+        super().__init__(*args, directory=os.path.dirname(os.path.abspath(__file__)), **kwargs)
+    
     def do_GET(self):
         # Serve static files for web interface
         if self.path == '/' or self.path == '/index.html':
@@ -27,6 +31,12 @@ class CombinedHandler(SimpleHTTPRequestHandler):
         elif self.path.startswith('/chat-widget'):
             # Serve chat widget files
             pass
+        elif self.path == '/chat-widget.css':
+            self.path = '/web/chat-widget.css'
+        elif self.path == '/chat-widget.js':
+            self.path = '/web/chat-widget.js'
+        elif self.path == '/chat-widget-standalone.js':
+            self.path = '/web/chat-widget-standalone.js'
         else:
             # For other paths, check if it's a static file
             if '.' in self.path.split('/')[-1]:
@@ -36,13 +46,7 @@ class CombinedHandler(SimpleHTTPRequestHandler):
                 # No file extension, serve index.html (for SPA routing)
                 self.path = '/web/index.html'
         
-        # Set the correct working directory
-        original_cwd = os.getcwd()
-        try:
-            os.chdir(os.path.dirname(os.path.abspath(__file__)))
-            return SimpleHTTPRequestHandler.do_GET(self)
-        finally:
-            os.chdir(original_cwd)
+        return SimpleHTTPRequestHandler.do_GET(self)
     
     def do_POST(self):
         # Forward webhook requests to Rasa server
@@ -100,9 +104,6 @@ class CombinedHandler(SimpleHTTPRequestHandler):
         self.end_headers()
 
 def start_server():
-    # Change to the project directory
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    
     # Start the HTTP server
     server_address = ('', PORT)
     httpd = HTTPServer(server_address, CombinedHandler)
