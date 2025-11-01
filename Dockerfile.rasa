@@ -29,21 +29,33 @@ EXPOSE 5005
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:5005/ || exit 1
 
-# Train a new model during container startup with detailed debugging
-# and ensure the model file is created
-CMD echo "Checking training data..." && \
-    ls -la data/ && \
-    echo "Checking domain files..." && \
-    ls -la domain/ && \
-    echo "Training model with verbose output..." && \
-    rasa train --fixed-model-name expobeton-railway --out models/ --debug && \
-    echo "Checking if model was created..." && \
-    ls -la models/ && \
-    if [ ! -f "models/expobeton-railway.tar.gz" ]; then \
-        echo "ERROR: Model file was not created!"; \
-        echo "Listing all files in models directory:"; \
-        find models -type f; \
-        exit 1; \
-    fi && \
-    echo "Model training completed. Starting Rasa server..." && \
-    rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz
+# Create an entrypoint script that handles both training and running
+RUN echo '#!/bin/bash\n\
+echo "Starting entrypoint script..."\n\
+echo "Checking if model exists..."\n\
+if [ ! -f "models/expobeton-railway.tar.gz" ]; then\n\
+    echo "Model not found, training new model..."\n\
+    echo "Checking training data..."\n\
+    ls -la data/\n\
+    echo "Checking domain files..."\n\
+    ls -la domain/\n\
+    echo "Training model with verbose output..."\n\
+    rasa train --fixed-model-name expobeton-railway --out models/ --debug\n\
+    echo "Checking if model was created..."\n\
+    ls -la models/\n\
+    if [ ! -f "models/expobeton-railway.tar.gz" ]; then\n\
+        echo "ERROR: Model file was not created!"\n\
+        echo "Listing all files in models directory:"\n\
+        find models -type f\n\
+        exit 1\n\
+    fi\n\
+    echo "Model training completed successfully."\n\
+else\n\
+    echo "Model already exists, skipping training."\n\
+fi\n\
+echo "Starting Rasa server..."\n\
+exec rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz\n\
+' > entrypoint.sh && chmod +x entrypoint.sh
+
+# Use the entrypoint script
+ENTRYPOINT ["./entrypoint.sh"]
