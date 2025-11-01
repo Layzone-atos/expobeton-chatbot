@@ -36,6 +36,19 @@ echo "Checking project structure..."\n\
 echo "Current directory: $(pwd)"\n\
 echo "Listing root files:"\n\
 ls -la\n\
+echo "Checking if required files exist..."\n\
+if [ ! -f "domain.yml" ]; then\n\
+    echo "ERROR: domain.yml not found!"\n\
+    exit 1\n\
+fi\n\
+if [ ! -f "config.yml" ]; then\n\
+    echo "ERROR: config.yml not found!"\n\
+    exit 1\n\
+fi\n\
+if [ ! -f "credentials.yml" ]; then\n\
+    echo "ERROR: credentials.yml not found!"\n\
+    exit 1\n\
+fi\n\
 echo "Checking data directory:"\n\
 ls -la data/\n\
 echo "Checking domain directory:"\n\

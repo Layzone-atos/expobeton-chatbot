@@ -1,0 +1,29 @@
+flows:
+  greet:
+    description: Greet the user
+    steps:
+      - action: utter_greet
+  goodbye:
+    description: Say goodbye to the user
+    steps:
+      - action: utter_goodbye
+  help:
+    description: Provide help information
+    steps:
+      - action: utter_help
+  show_faqs:
+    description: Show frequently asked questions
+    steps:
+      - action: utter_show_faqs
+  feedback:
+    description: Collect user feedback
+    steps:
+      - action: utter_feedback
+  human_handoff:
+    description: Hand off to human agent
+    steps:
+      - action: action_human_handoff
+  end_conversation:
+    description: End the conversation
+    steps:
+      - action: utter_end_conversation
