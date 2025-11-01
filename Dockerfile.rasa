@@ -29,54 +29,8 @@ EXPOSE 5005
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:5005/ || exit 1
 
-# Create an entrypoint script that handles both training and running
-RUN echo '#!/bin/bash\n\
-echo "Starting entrypoint script..."\n\
-echo "Checking project structure..."\n\
-echo "Current directory: $(pwd)"\n\
-echo "Listing root files:"\n\
-ls -la\n\
-echo "Checking if required files exist..."\n\
-if [ ! -f "domain.yml" ]; then\n\
-    echo "ERROR: domain.yml not found!"\n\
-    exit 1\n\
-fi\n\
-if [ ! -f "config.yml" ]; then\n\
-    echo "ERROR: config.yml not found!"\n\
-    exit 1\n\
-fi\n\
-if [ ! -f "credentials.yml" ]; then\n\
-    echo "ERROR: credentials.yml not found!"\n\
-    exit 1\n\
-fi\n\
-echo "Checking data directory:"\n\
-ls -la data/\n\
-echo "Checking if model exists..."\n\
-if [ ! -f "models/expobeton-railway.tar.gz" ]; then\n\
-    echo "Model not found, training new model..."\n\
-    echo "Validating training data..."\n\
-    rasa data validate\n\
-    if [ $? -ne 0 ]; then\n\
-        echo "ERROR: Training data validation failed!"\n\
-        exit 1\n\
-    fi\n\
-    echo "Training model with verbose output..."\n\
-    rasa train --fixed-model-name expobeton-railway --out models/\n\
-    echo "Checking if model was created..."\n\
-    ls -la models/\n\
-    if [ ! -f "models/expobeton-railway.tar.gz" ]; then\n\
-        echo "ERROR: Model file was not created!"\n\
-        echo "Listing all files in models directory:"\n\
-        find models -type f\n\
-        exit 1\n\
-    fi\n\
-    echo "Model training completed successfully."\n\
-else\n\
-    echo "Model already exists, skipping training."\n\
-fi\n\
-echo "Starting Rasa server..."\n\
-exec rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz\n\
-' > entrypoint.sh && chmod +x entrypoint.sh
-
-# Use the entrypoint script
-ENTRYPOINT ["./entrypoint.sh"]
+# Train model and start Rasa server
+CMD echo "Training model..." && \
+    rasa train --fixed-model-name expobeton-railway --out models/ && \
+    echo "Starting Rasa server..." && \
+    rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz
