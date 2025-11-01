@@ -11,7 +11,7 @@
 # https://rasa.com/docs/rasa-pro/concepts/custom-actions
 
 action_endpoint:
-  url: "${ACTION_ENDPOINT_URL:-http://worker:5055/webhook}"
+  url: "http://worker:5055/webhook"
 
 # Tracker store which is used to store the conversations.
 # By default the conversations are stored in memory.
@@ -46,31 +46,31 @@ action_endpoint:
 # nlg:
 #   type: rephrase
 #   llm:
-#     model_group: cohere-command
+#   model_group: cohere-command
 #   prompt_template: prompts/rephraser_demo_personality_prompt.jinja2
 #   rephrase_all: False
 #   summarize_history: False
 
 model_groups:
-  - id: cohere-command
-    models:
-      - provider: cohere
-        model: command-r-plus
-        timeout: 30
-        max_completion_tokens: 256
-  - id: cohere-embed
-    models:
-      - provider: cohere
-        model: embed-english-v3.0
-        timeout: 30
-  # OpenAI configuration (disabled due to quota)
-  # - id: openai-gpt-4o
-  #   models:
-  #     - provider: openai
-  #       model: gpt-4o-2024-11-20
-  #       timeout: 7
-  #       max_completion_tokens: 256
-  # - id: openai-embeddings
-  #   models:
-  #     - provider: openai
-  #       model: text-embedding-3-large
+- id: cohere-command
+  models:
+  - provider: cohere
+    model: command-r-plus
+    timeout: 30
+    max_completion_tokens: 256
+- id: cohere-embed
+  models:
+  - provider: cohere
+    model: embed-english-v3.0
+    timeout: 30
+# OpenAI configuration (disabled due to quota)
+# - id: openai-gpt-4o
+#   models:
+#   - provider: openai
+#     model: gpt-4o-2024-11-20
+#     timeout: 7
+#     max_completion_tokens: 256
+# - id: openai-embeddings
+#   models:
+#   - provider: openai
+#     model: text-embedding-3-large
