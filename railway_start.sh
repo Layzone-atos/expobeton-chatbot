@@ -16,11 +16,6 @@ fi
 
 echo "✅ Modèle entraîné avec succès"
 
-# Démarrage du serveur web pour l'interface dans le background
-echo "Démarrage du serveur web pour l'interface..."
-python serve_web.py &
-sleep 2
-
 # Démarrage sur le port Railway
 echo "Démarrage du serveur Rasa sur le port $PORT..."
 rasa run --enable-api --cors "*" --port $PORT --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz

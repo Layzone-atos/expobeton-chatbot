@@ -13,8 +13,8 @@
     // CONFIGURATION
     // ========================================
     
-    // URL de votre backend Railway
-    const RASA_SERVER_URL = 'https://web-production-9f398e.up.railway.app';
+    // URL de votre backend Railway (same origin)
+    const RASA_SERVER_URL = window.location.origin;
     
     // Configuration du widget
     const CONFIG = {
