@@ -12,6 +12,7 @@ intents:
   - feedback
   - human_handoff
   - end_conversation
+  - ask_event_dates
   - pattern_cannot_handle
   - pattern_session_start
 
@@ -40,9 +41,7 @@ actions:
   - action_show_faqs
   - action_feedback
   - action_end_conversation
-  - action_greet
-  - action_goodbye
-  - action_help
+  - action_answer_and_suggest
   - utter_greet
   - utter_goodbye
   - utter_help

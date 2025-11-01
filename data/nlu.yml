@@ -1,0 +1,67 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - bonjour
+    - salut
+    - bonjour, comment allez-vous ?
+    - salut, ça va ?
+    - bonjour madame
+    - bonjour monsieur
+    - hello
+    - hi
+
+- intent: goodbye
+  examples: |
+    - au revoir
+    - à bientôt
+    - bonne journée
+    - à plus tard
+    - bye
+    - goodbye
+
+- intent: help
+  examples: |
+    - aidez-moi
+    - j'ai besoin d'aide
+    - pouvez-vous m'aider ?
+    - assistance
+    - help
+    - que pouvez-vous faire ?
+
+- intent: show_faqs
+  examples: |
+    - questions fréquentes
+    - faq
+    - montrez-moi les questions fréquentes
+    - quelles sont les questions fréquentes ?
+
+- intent: feedback
+  examples: |
+    - je veux donner mon avis
+    - feedback
+    - j'ai un commentaire
+    - avis
+
+- intent: human_handoff
+  examples: |
+    - je veux parler à un humain
+    - agent humain
+    - transfert vers un opérateur
+    - parler à un conseiller
+
+- intent: end_conversation
+  examples: |
+    - terminer la conversation
+    - arrêter
+    - fin de discussion
+    - c'est tout
+
+- intent: ask_event_dates
+  examples: |
+    - quelles sont les dates de l'événement ?
+    - quand a lieu l'événement ?
+    - programme de l'événement
+    - dates s'il vous plaît
+    - quand est l'événement ?

@@ -1,5 +1,42 @@
+version: "3.1"
+
 stories:
-- story: Réponse avec suggestion
+- story: greet story
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- story: help story
+  steps:
+  - intent: help
+  - action: utter_help
+
+- story: goodbye story
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: show faqs story
+  steps:
+  - intent: show_faqs
+  - action: utter_show_faqs
+
+- story: feedback story
+  steps:
+  - intent: feedback
+  - action: utter_feedback
+
+- story: human handoff story
+  steps:
+  - intent: human_handoff
+  - action: action_human_handoff
+
+- story: end conversation story
+  steps:
+  - intent: end_conversation
+  - action: action_end_conversation
+
+- story: ask event dates story
   steps:
   - intent: ask_event_dates
   - action: action_answer_and_suggest

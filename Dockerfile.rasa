@@ -51,8 +51,6 @@ if [ ! -f "credentials.yml" ]; then\n\
 fi\n\
 echo "Checking data directory:"\n\
 ls -la data/\n\
-echo "Checking domain directory:"\n\
-ls -la domain/\n\
 echo "Checking if model exists..."\n\
 if [ ! -f "models/expobeton-railway.tar.gz" ]; then\n\
     echo "Model not found, training new model..."\n\
@@ -63,7 +61,7 @@ if [ ! -f "models/expobeton-railway.tar.gz" ]; then\n\
         exit 1\n\
     fi\n\
     echo "Training model with verbose output..."\n\
-    rasa train --fixed-model-name expobeton-railway --out models/ --debug\n\
+    rasa train --fixed-model-name expobeton-railway --out models/\n\
     echo "Checking if model was created..."\n\
     ls -la models/\n\
     if [ ! -f "models/expobeton-railway.tar.gz" ]; then\n\
