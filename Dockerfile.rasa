@@ -22,11 +22,10 @@ COPY . /app
 # Remove any existing model files to force retraining
 RUN rm -rf models/*
 
-# Train a new model during build
-RUN rasa train --fixed-model-name expobeton-railway --out models/
-
 # Expose Rasa port
 EXPOSE 5005
 
-# Run Rasa server
-CMD ["rasa", "run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0", "--model", "models/expobeton-railway.tar.gz"]
+# Train a new model during container startup, not during build
+# This avoids license issues during build time
+CMD rasa train --fixed-model-name expobeton-railway --out models/ && \
+    rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz
