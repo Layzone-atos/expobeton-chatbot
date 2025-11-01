@@ -25,7 +25,11 @@ RUN rm -rf models/*
 # Expose Rasa port
 EXPOSE 5005
 
-# Train a new model during container startup, not during build
+# Train a new model during container startup with better error handling
 # This avoids license issues during build time
-CMD rasa train --fixed-model-name expobeton-railway --out models/ && \
-    rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz
+CMD echo "Starting Rasa server setup..." && \
+    echo "Training model..." && \
+    rasa train --fixed-model-name expobeton-railway --out models/ && \
+    echo "Model training completed. Starting Rasa server..." && \
+    rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz || \
+    (echo "Rasa server failed to start"; exit 1)
