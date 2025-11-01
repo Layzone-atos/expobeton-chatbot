@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY . /app
 
 # Make scripts executable
-RUN chmod +x railway_start.sh
+RUN chmod +x railway_start.sh combined_server.py
 
 # Train model during build
 RUN rasa train --config config_simple.yml --fixed-model-name expobeton-railway --out models/
