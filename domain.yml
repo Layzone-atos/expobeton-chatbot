@@ -13,8 +13,6 @@ intents:
   - human_handoff
   - end_conversation
   - ask_event_dates
-  - pattern_cannot_handle
-  - pattern_session_start
 
 entities: []
 
@@ -49,8 +47,6 @@ actions:
   - utter_feedback
   - utter_human_handoff
   - utter_end_conversation
-  - utter_pattern_cannot_handle
-  - utter_pattern_session_start
 
 forms: {}
 
