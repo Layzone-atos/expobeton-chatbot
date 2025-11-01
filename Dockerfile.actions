@@ -33,4 +33,7 @@ CMD echo "Starting Rasa action server..." && \
     echo "Current directory: $(pwd)" && \
     echo "Listing actions directory:" && \
     ls -la actions/ && \
+    echo "Checking Python dependencies:" && \
+    pip list | grep -E "(rasa|openai|cohere)" && \
+    echo "Starting action server..." && \
     rasa run actions --port 5055 --debug
