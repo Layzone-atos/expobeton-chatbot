@@ -24,7 +24,12 @@ COPY endpoints.yml /app/
 # Expose action server port
 EXPOSE 5055
 
-# Run action server with better error handling
-CMD echo "Starting Rasa action server..." && \
-    rasa run actions --port 5055 || \
-    (echo "Rasa action server failed to start"; exit 1)
+# Run action server with license validation
+CMD echo "Checking RASA_PRO_LICENSE environment variable..." && \
+    if [ -z "$RASA_PRO_LICENSE" ]; then \
+        echo "ERROR: RASA_PRO_LICENSE environment variable is not set!"; \
+        exit 1; \
+    else \
+        echo "RASA_PRO_LICENSE is set, starting action server..."; \
+    fi && \
+    rasa run actions --port 5055

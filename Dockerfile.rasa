@@ -25,11 +25,23 @@ RUN rm -rf models/*
 # Expose Rasa port
 EXPOSE 5005
 
-# Train a new model during container startup with better error handling
+# Train a new model during container startup with license validation
 # This avoids license issues during build time
-CMD echo "Starting Rasa server setup..." && \
+CMD echo "Checking RASA_LICENSE environment variable..." && \
+    if [ -z "$RASA_LICENSE" ]; then \
+        echo "ERROR: RASA_LICENSE environment variable is not set!"; \
+        exit 1; \
+    else \
+        echo "RASA_LICENSE is set, proceeding..."; \
+    fi && \
+    echo "Checking RASA_PRO_LICENSE environment variable..." && \
+    if [ -z "$RASA_PRO_LICENSE" ]; then \
+        echo "ERROR: RASA_PRO_LICENSE environment variable is not set!"; \
+        exit 1; \
+    else \
+        echo "RASA_PRO_LICENSE is set, proceeding..."; \
+    fi && \
     echo "Training model..." && \
     rasa train --fixed-model-name expobeton-railway --out models/ && \
     echo "Model training completed. Starting Rasa server..." && \
-    rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz || \
-    (echo "Rasa server failed to start"; exit 1)
+    rasa run --enable-api --port 5005 --cors "*" --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz
