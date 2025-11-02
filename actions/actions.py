@@ -311,7 +311,7 @@ MULTILINGUAL_CONTENT = {
         'en': "You're welcome! My pleasure! 😊\n\nIf you have any other questions about ExpoBeton RDC, don't hesitate to ask!",
         'zh': "不客气！很高兴为您服务！😊\n\n如果您对ExpoBeton RDC有任何其他问题，请随时提问！",
         'ru': "Пожалуйста! С удовольствием! 😊\n\nЕсли у вас есть другие вопросы о ExpoBeton RDC, не стесняйтесь спрашивать!",
-        'es': "¡De nada! ¡Un placer! 😊\n\nSi tiene otras preguntas sobre ExpoBeton RDC, ¡no dude en preguntar!",
+        'es': "¡De nada! ¡Un plaisir! 😊\n\nSi tiene otras preguntas sobre ExpoBeton RDC, ¡no dude en preguntar!",
         'ar': "على الرحب والسعة! بكل سرور! 😊\n\nإذا كان لديك أي أسئلة أخرى حول ExpoBeton RDC، لا تتردد في السؤال!"
     },
     'goodbye': {
@@ -440,15 +440,15 @@ class ActionAnswerExpoBeton(Action):
             user_name = None
             import re
             name_patterns = [
-                r"je m['\u2019]appelle\s+(\w+)",  # French
-                r"my name is\s+(\w+)",  # English
-                r"i['\u2019]m\s+(\w+)",  # English
-                r"me llamo\s+(\w+)",  # Spanish
+                r"je m['\u2019]appelle\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)*)",  # French - capture name with spaces
+                r"my name is\s+([A-Za-z]+(?:\s+[A-Za-z]+)*)",  # English - capture name with spaces
+                r"i['\u2019]m\s+([A-Za-z]+(?:\s+[A-Za-z]+)*)",  # English - capture name with spaces
+                r"me llamo\s+([A-Za-z]+(?:\s+[A-Za-z]+)*)",  # Spanish - capture name with spaces
             ]
             for pattern in name_patterns:
                 match = re.search(pattern, user_message_original, re.IGNORECASE)
                 if match:
-                    user_name = match.group(1).capitalize()
+                    user_name = match.group(1).strip().title()
                     break
             
             # Build personalized greeting with FRIENDLY tone and emoji

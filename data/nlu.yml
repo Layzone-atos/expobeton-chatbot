@@ -20,6 +20,11 @@ nlu:
     - hi, je suis [name](person)
     - bonjour, mon nom est [name](person)
     - salut, mon nom est [name](person)
+    - bonjour, je m'appelle [Louis Atos](person)
+    - salut, je suis [Jean Dupont](person)
+    - bonjour, moi c'est [Marie Curie](person)
+    - hello, je m'appelle [Pierre Martin](person)
+    - bonjour, je suis [Sophie Dubois](person)
 
 - intent: goodbye
   examples: |
