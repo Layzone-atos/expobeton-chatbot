@@ -20,7 +20,12 @@ intents:
 entities:
   - person
 
-slots: {}
+slots:
+  person:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: person
 
 responses:
   utter_greet:
