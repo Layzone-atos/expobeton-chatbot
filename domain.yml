@@ -17,7 +17,8 @@ intents:
   - ask_event_location
   - ask_event_theme
 
-entities: []
+entities:
+  - person
 
 slots: {}
 

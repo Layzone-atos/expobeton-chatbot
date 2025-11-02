@@ -11,6 +11,15 @@ nlu:
     - bonjour monsieur
     - hello
     - hi
+    - bonjour, je m'appelle [name](person)
+    - salut, je suis [name](person)
+    - bonjour, moi c'est [name](person)
+    - salut, moi c'est [name](person)
+    - bonjour, je suis [name](person)
+    - hello, je m'appelle [name](person)
+    - hi, je suis [name](person)
+    - bonjour, mon nom est [name](person)
+    - salut, mon nom est [name](person)
 
 - intent: goodbye
   examples: |
