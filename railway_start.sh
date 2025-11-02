@@ -1,21 +1,23 @@
 #!/bin/bash
 
-echo "🚀 Démarrage Rasa sur Railway..."
-echo "Port Railway: $PORT"
+echo "🚀 Starting Rasa on Railway..."
+echo "Port: $PORT"
 
-# Entraînement du modèle
-echo "Entraînement du modèle..."
-rasa train --config config_simple.yml --fixed-model-name expobeton-railway --out models/
-
-# Vérifier si le modèle a été créé
+# Train model if it doesn't exist
 if [ ! -f "models/expobeton-railway.tar.gz" ]; then
-    echo "❌ Erreur : Le modèle n'a pas été créé!"
-    ls -la models/
-    exit 1
+    echo "Training model..."
+    rasa train --config config_simple.yml --fixed-model-name expobeton-railway --out models/
+    
+    # Check if model was created
+    if [ ! -f "models/expobeton-railway.tar.gz" ]; then
+        echo "❌ Error: Model was not created!"
+        ls -la models/
+        exit 1
+    fi
 fi
 
-echo "✅ Modèle entraîné avec succès"
+echo "✅ Model is ready"
 
-# Démarrage du serveur combiné qui gère à la fois l'API Rasa et l'interface web
-echo "Démarrage du serveur combiné sur le port $PORT..."
-python combined_server.py
+# Start Rasa server
+echo "Starting Rasa server on port $PORT..."
+rasa run --enable-api --cors "*" --port $PORT --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz

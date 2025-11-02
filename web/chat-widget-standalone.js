@@ -13,7 +13,7 @@
     // CONFIGURATION
     // ========================================
     
-    // URL de votre backend Railway (same origin)
+    // URL de votre backend (same origin)
     const RASA_SERVER_URL = window.location.origin;
     
     // Configuration du widget

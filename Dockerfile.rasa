@@ -20,13 +20,13 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY . /app
 
 # Make scripts executable
-RUN chmod +x railway_start.sh combined_server.py
+RUN chmod +x railway_start.sh
 
 # Train model during build
 RUN rasa train --config config_simple.yml --fixed-model-name expobeton-railway --out models/
 
-# Expose port (this is for documentation only, Railway will use $PORT)
+# Expose port
 EXPOSE 5005
 
-# Use our startup script
-CMD ["./railway_start.sh"]
+# Start Rasa server directly
+CMD rasa run --enable-api --cors "*" --port $PORT --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz

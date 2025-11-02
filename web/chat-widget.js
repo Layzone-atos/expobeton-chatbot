@@ -1,5 +1,5 @@
 // Chat Widget Configuration
-// Rasa Server URL - Auto-detect environment
+// Rasa Server URL - Use the same origin since both are served from the same server
 const RASA_SERVER_URL = window.location.origin;
 
 const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
