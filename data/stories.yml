@@ -40,3 +40,18 @@ stories:
   steps:
   - intent: ask_event_dates
   - action: action_answer_and_suggest
+
+- story: ask about expobeton story
+  steps:
+  - intent: ask_about_expobeton
+  - action: action_answer_expobeton
+
+- story: ask event location story
+  steps:
+  - intent: ask_event_location
+  - action: action_answer_expobeton
+
+- story: ask event theme story
+  steps:
+  - intent: ask_event_theme
+  - action: action_answer_expobeton

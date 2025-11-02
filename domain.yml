@@ -13,6 +13,9 @@ intents:
   - human_handoff
   - end_conversation
   - ask_event_dates
+  - ask_about_expobeton
+  - ask_event_location
+  - ask_event_theme
 
 entities: []
 
@@ -40,6 +43,7 @@ actions:
   - action_feedback
   - action_end_conversation
   - action_answer_and_suggest
+  - action_answer_expobeton
   - utter_greet
   - utter_goodbye
   - utter_help

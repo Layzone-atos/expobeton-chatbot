@@ -11,10 +11,48 @@ import threading
 import time
 import urllib.request
 import urllib.error
+import urllib.parse
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 # Get port from environment variable
 PORT = int(os.environ.get('PORT', 5005))
+RASA_PORT = 5006  # Use a fixed port for Rasa server
+
+def start_rasa_server():
+    """Start the Rasa server as a subprocess"""
+    print("Starting Rasa server...")
+    
+    # Change to the project directory
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    
+    # Train the model if it doesn't exist
+    if not os.path.exists('models/expobeton-railway.tar.gz'):
+        print("Training model...")
+        train_cmd = [
+            'rasa', 'train',
+            '--config', 'config_simple.yml',
+            '--fixed-model-name', 'expobeton-railway',
+            '--out', 'models/'
+        ]
+        train_process = subprocess.run(train_cmd, capture_output=True, text=True)
+        if train_process.returncode != 0:
+            print(f"Training failed: {train_process.stderr}")
+            return None
+    
+    # Start Rasa server
+    rasa_cmd = [
+        'rasa', 'run',
+        '--enable-api',
+        '--cors', '*',
+        '--port', str(RASA_PORT),
+        '--debug',
+        '-i', '0.0.0.0',
+        '--model', 'models/expobeton-railway.tar.gz'
+    ]
+    
+    print(f"Starting Rasa server with command: {' '.join(rasa_cmd)}")
+    process = subprocess.Popen(rasa_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return process
 
 class CombinedHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -56,13 +94,10 @@ class CombinedHandler(SimpleHTTPRequestHandler):
                 content_length = int(self.headers['Content-Length'])
                 post_data = self.rfile.read(content_length)
                 
-                # Forward to Rasa server (assuming it's running on port 5005)
-                rasa_port = 5005
-                if PORT == 5005:
-                    rasa_port = 5006  # Use a different port if Railway assigned 5005
+                # Forward to Rasa server
+                rasa_url = f'http://localhost:{RASA_PORT}{self.path}'
                 
-                rasa_url = f'http://localhost:{rasa_port}{self.path}'
-                
+                # Create the request
                 req = urllib.request.Request(
                     rasa_url,
                     data=post_data,
@@ -73,6 +108,7 @@ class CombinedHandler(SimpleHTTPRequestHandler):
                     method='POST'
                 )
                 
+                # Forward the request to Rasa server
                 with urllib.request.urlopen(req) as response:
                     response_data = response.read()
                     self.send_response(response.getcode())
@@ -82,12 +118,39 @@ class CombinedHandler(SimpleHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(response_data)
                     
-            except Exception as e:
-                # Error response
-                self.send_response(500)
-                self.send_header('Content-type', 'application/json')
+            except urllib.error.HTTPError as e:
+                # Handle HTTP errors from Rasa server
+                print(f"HTTP Error from Rasa server: {e.code} - {e.reason}")
+                self.send_response(e.code)
+                # Forward headers if available
+                for header_name, header_value in e.headers.items():
+                    self.send_header(header_name, header_value)
                 self.end_headers()
-                error_response = {"error": str(e)}
+                if e.fp:
+                    self.wfile.write(e.fp.read())
+                    
+            except urllib.error.URLError as e:
+                # Handle URL errors (connection issues)
+                print(f"URL Error connecting to Rasa server: {e.reason}")
+                self.send_response(503)  # Service Unavailable
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                error_response = {
+                    "error": "Service Unavailable",
+                    "message": "Unable to connect to Rasa server. Please check that the server is running."
+                }
+                self.wfile.write(json.dumps(error_response).encode('utf-8'))
+                
+            except Exception as e:
+                # Handle other errors
+                print(f"Unexpected error: {e}")
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                error_response = {
+                    "error": "Internal Server Error",
+                    "message": str(e)
+                }
                 self.wfile.write(json.dumps(error_response).encode('utf-8'))
         else:
             # Handle other POST requests by sending a 404
@@ -111,8 +174,25 @@ def start_server():
     print(f"Access the chat interface at: http://localhost:{PORT}/")
     httpd.serve_forever()
 
-if __name__ == '__main__':
+def main():
+    # Start Rasa server in a separate thread
+    rasa_process = start_rasa_server()
+    if rasa_process is None:
+        print("Failed to start Rasa server")
+        sys.exit(1)
+    
+    # Give Rasa server some time to start
+    print("Waiting for Rasa server to start...")
+    time.sleep(10)
+    
+    # Start the combined server
     try:
         start_server()
     except KeyboardInterrupt:
-        print("\nShutting down server...")
+        print("\nShutting down servers...")
+        if rasa_process:
+            rasa_process.terminate()
+            rasa_process.wait()
+
+if __name__ == '__main__':
+    main()

@@ -65,3 +65,29 @@ nlu:
     - programme de l'événement
     - dates s'il vous plaît
     - quand est l'événement ?
+
+- intent: ask_about_expobeton
+  examples: |
+    - c'est quoi expobeton ?
+    - qu'est-ce qu'expobeton ?
+    - qu'est-ce que expobeton rdc ?
+    - c'est quoi expo beton ?
+    - qu'est-ce qu'expo beton rdc ?
+    - pouvez-vous m'expliquer expobeton ?
+    - qu'est-ce que c'est que expobeton ?
+
+- intent: ask_event_location
+  examples: |
+    - où se passe expobeton ?
+    - quel est le lieu du salon ?
+    - où se déroule l'événement ?
+    - où aura lieu expobeton ?
+    - quelle est l'adresse du salon ?
+
+- intent: ask_event_theme
+  examples: |
+    - quel est le thème de l'édition ?
+    - quel est le thème cette année ?
+    - c'est quoi le thème de l'événement ?
+    - quel thème pour expobeton ?
+    - de quoi parle l'événement ?
