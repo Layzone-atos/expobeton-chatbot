@@ -388,51 +388,6 @@ def get_multilingual_response(key: str, lang: str = 'fr') -> str:
         return MULTILINGUAL_CONTENT[key]['fr']
     return ""
 
-def get_contextual_suggestions(topic: str, lang: str = 'fr') -> str:
-    """Generate contextual follow-up questions based on the topic."""
-    
-    # Define related topics for intelligent suggestions
-    suggestions_map = {
-        'expobeton': {
-            'fr': "\n\n💡 Souhaiteriez-vous en savoir plus sur :\n• Les dates de l'événement ?\n• Comment vous inscrire ?\n• Devenir ambassadeur ?",
-            'en': "\n\n💡 Would you like to know more about:\n• Event dates?\n• How to register?\n• Becoming an ambassador?"
-        },
-        'dates': {
-            'fr': "\n\n💡 Vous pourriez aussi demander :\n• Où se déroule l'événement ?\n• Quel est le thème de l'édition 2025 ?\n• Comment participer ?",
-            'en': "\n\n💡 You might also ask:\n• Where is the event located?\n• What is the 2025 theme?\n• How to participate?"
-        },
-        'location': {
-            'fr': "\n\n💡 Autres questions utiles :\n• Quelles sont les dates ?\n• Comment s'inscrire ?\n• Qui sont les fondateurs ?",
-            'en': "\n\n💡 Other useful questions:\n• What are the dates?\n• How to register?\n• Who are the founders?"
-        },
-        'theme': {
-            'fr': "\n\n💡 Découvrez aussi :\n• C'est quoi ExpoBeton ?\n• Qui sont les fondateurs ?\n• Comment devenir ambassadeur ?",
-            'en': "\n\n💡 Also discover:\n• What is ExpoBeton?\n• Who are the founders?\n• How to become an ambassador?"
-        },
-        'ambassador': {
-            'fr': "\n\n💡 Vous pourriez aussi demander :\n• C'est quoi ExpoBeton ?\n• Quelles sont les dates ?\n• Quel est le thème ?",
-            'en': "\n\n💡 You might also ask:\n• What is ExpoBeton?\n• What are the dates?\n• What is the theme?"
-        },
-        'founders': {
-            'fr': "\n\n💡 Autres sujets intéressants :\n• Comment devenir ambassadeur ?\n• Quel est le thème 2025 ?\n• Comment participer ?",
-            'en': "\n\n💡 Other interesting topics:\n• How to become an ambassador?\n• What is the 2025 theme?\n• How to participate?"
-        },
-        'registration': {
-            'fr': "\n\n💡 Informations complémentaires :\n• Quelles sont les dates ?\n• Où se déroule l'événement ?\n• Quel est le thème ?",
-            'en': "\n\n💡 Additional information:\n• What are the dates?\n• Where is the event?\n• What is the theme?"
-        },
-        'default': {
-            'fr': "\n\n💡 Questions fréquentes :\n• C'est quoi ExpoBeton ?\n• Quelles sont les dates ?\n• Comment participer ?",
-            'en': "\n\n💡 Frequently asked questions:\n• What is ExpoBeton?\n• What are the dates?\n• How to participate?"
-        }
-    }
-    
-    # Get suggestion for the topic, fallback to default
-    if topic in suggestions_map:
-        return suggestions_map[topic].get(lang, suggestions_map[topic]['fr'])
-    else:
-        return suggestions_map['default'].get(lang, suggestions_map['default']['fr'])
-
 class ActionAnswerExpoBeton(Action):
     def name(self) -> Text:
         return "action_answer_expobeton"
@@ -589,20 +544,14 @@ class ActionAnswerExpoBeton(Action):
             if 'jean' in user_question or 'bamanisa' in user_question or 'fondateur' in user_question or 'créateur' in user_question:
                 answer = "Jean Bamanisa Saïdi est le président, promoteur, créateur et fondateur d'ExpoBeton RDC. C'est un homme d'affaires et personnalité politique congolaise, ancien gouverneur de la province de l'Ituri. Il porte la vision stratégique de l'événement et met en avant la reconstruction, l'urbanisation et le développement durable de la RDC."
                 dispatcher.utter_message(text=answer)
-                # Add contextual suggestions
-                suggestions = get_contextual_suggestions('founders', detected_lang)
-                dispatcher.utter_message(text=suggestions)
-                bot_response = answer + suggestions
-                log_conversation_message(session_id, 'bot', bot_response, metadata)
+                suggestion = "\n💡 Vous pourriez aussi demander :\n• Qui est le vice-président ?\n• Comment devenir ambassadeur ?\n• Quelles sont les dates de l'événement ?"
+                dispatcher.utter_message(text=suggestion)
                 return []
             if 'momo' in user_question or 'sungunza' in user_question or 'vice' in user_question:
                 answer = "Momo Sungunza est le vice-président d'ExpoBeton RDC. Il assure la coordination opérationnelle et organisationnelle du forum, et travaille en tandem avec Jean Bamanisa pour mobiliser les partenaires publics et privés."
                 dispatcher.utter_message(text=answer)
-                # Add contextual suggestions
-                suggestions = get_contextual_suggestions('founders', detected_lang)
-                dispatcher.utter_message(text=suggestions)
-                bot_response = answer + suggestions
-                log_conversation_message(session_id, 'bot', bot_response, metadata)
+                suggestion = "\n💡 Vous pourriez aussi demander :\n• Qui est le fondateur ?\n• C'est quoi le thème de l'édition 2025 ?\n• Comment participer ?"
+                dispatcher.utter_message(text=suggestion)
                 return []
         
         # What is ExpoBeton (handle typos like 'expbeton', 'expo beton')
@@ -611,10 +560,7 @@ class ActionAnswerExpoBeton(Action):
             if 'expobeton' in user_question or 'expbeton' in user_question or 'expo beton' in user_question or 'expo béton' in user_question:
                 answer = get_multilingual_response('what_is_expobeton', detected_lang)
                 dispatcher.utter_message(text=answer)
-                # Add contextual suggestions
-                suggestions = get_contextual_suggestions('expobeton', detected_lang)
-                dispatcher.utter_message(text=suggestions)
-                bot_response = answer + suggestions
+                bot_response = answer
                 log_conversation_message(session_id, 'bot', bot_response, metadata)
                 return []
         
@@ -622,40 +568,26 @@ class ActionAnswerExpoBeton(Action):
         if any(word in user_question for word in ['date', 'when', 'quand', 'cuándo', 'когда', '什么时候', 'متى']):
             answer = get_multilingual_response('dates', detected_lang)
             dispatcher.utter_message(text=answer)
-            # Add contextual suggestions
-            suggestions = get_contextual_suggestions('dates', detected_lang)
-            dispatcher.utter_message(text=suggestions)
-            bot_response = answer + suggestions
-            log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
         # Location
         if any(word in user_question for word in ['lieu', 'where', 'où', 'dónde', 'где', '哪里', 'أين']):
             answer = get_multilingual_response('location', detected_lang)
             dispatcher.utter_message(text=answer)
-            # Add contextual suggestions
-            suggestions = get_contextual_suggestions('location', detected_lang)
-            dispatcher.utter_message(text=suggestions)
-            bot_response = answer + suggestions
-            log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
         # Theme
         if any(word in user_question for word in ['thème', 'theme', 'sujet']):
             answer = "Le thème de l'édition 2025 est : '100 milliards USD pour rebâtir la RDC post-conflit : catalyser une transformation audacieuse pour le 21ème siècle'."
             dispatcher.utter_message(text=answer)
-            # Add contextual suggestions
-            suggestions = get_contextual_suggestions('theme', detected_lang)
-            dispatcher.utter_message(text=suggestions)
-            bot_response = answer + suggestions
-            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            suggestion = "\n💡 Vous pourriez aussi demander :\n• Qui sont les fondateurs ?\n• Comment devenir ambassadeur ?\n• Où se déroule l'événement ?"
+            dispatcher.utter_message(text=suggestion)
             return []
         
         # Registration / Participation
         if any(word in user_question for word in ['inscription', 'register', 'participer', 'participate', 'subscribe', 'join', 'enroll']):
             answer = get_multilingual_response('registration', detected_lang)
             dispatcher.utter_message(text=answer)
-            # The registration response already has suggestions built-in via get_multilingual_response
             bot_response = answer
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
