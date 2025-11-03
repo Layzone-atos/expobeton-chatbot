@@ -29,16 +29,6 @@ sleep 5
 
 echo "✅ Action server started (PID: $ACTION_SERVER_PID)"
 
-# Start Rasa server on port 5005 in the background
-echo "Starting Rasa server on port 5005..."
-rasa run --enable-api --cors "*" --port 5005 --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz &
-
-# Give Rasa server time to start and load model
-echo "Waiting for Rasa server to be ready..."
-sleep 20
-
-echo "✅ Rasa server should be ready now"
-
-# Start static file server on Railway's port
-echo "Starting static file server on port $PORT..."
-python static_server.py
+# Start Rasa server on Railway's port
+echo "Starting Rasa server on port $PORT..."
+rasa run --enable-api --cors "*" --port ${PORT:-5005} -i 0.0.0.0 --model models/expobeton-railway.tar.gz
