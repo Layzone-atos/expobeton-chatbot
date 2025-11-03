@@ -1,0 +1,9 @@
+services:
+  # Simple Rasa Service with static web interface
+  - type: web
+    name: expobeton-chatbot
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /
+    autoDeploy: true

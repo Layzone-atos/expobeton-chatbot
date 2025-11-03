@@ -20,10 +20,10 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY . /app
 
 # Make scripts executable
-RUN chmod +x railway_start.sh static_server.py
+RUN chmod +x railway_start.sh render_start.sh static_server.py
 
 # Expose port
 EXPOSE 5005
 
-# Start both Rasa server and static file server
-CMD ["./railway_start.sh"]
+# Start script - auto-detect platform
+CMD if [ -f "/etc/render" ] || [ "$RENDER" = "true" ]; then ./render_start.sh; else ./railway_start.sh; fi
