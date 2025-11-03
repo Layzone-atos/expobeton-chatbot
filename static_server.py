@@ -93,6 +93,19 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
             except urllib.error.URLError as e:
                 # Handle URL errors (connection issues)
                 print(f"URL Error connecting to Rasa server: {e.reason}")
+                print(f"Trying to connect to: {rasa_url}")
+                # Test if we can connect to the port
+                import socket
+                try:
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    result = sock.connect_ex(('localhost', 5005))
+                    if result == 0:
+                        print("Port 5005 is open")
+                    else:
+                        print("Port 5005 is closed")
+                    sock.close()
+                except Exception as socket_error:
+                    print(f"Socket error: {socket_error}")
                 self.send_response(503)  # Service Unavailable
                 self.send_header('Content-Type', 'application/json')
                 self.end_headers()

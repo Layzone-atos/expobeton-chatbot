@@ -20,7 +20,7 @@ echo "✅ Model is ready"
 
 # Start Rasa action server on port 5055 in the background
 echo "Starting Rasa action server on port 5055..."
-rasa run actions --port 5055 --debug &
+rasa run actions --actions actions --port 5055 --debug &
 ACTION_SERVER_PID=$!
 
 # Give action server time to start
