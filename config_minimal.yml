@@ -1,13 +1,14 @@
 language: fr
 
 pipeline:
-  - name: WhitespaceTokenizer
-  - name: RegexFeaturizer
-  - name: CountVectorsFeaturizer
-  - name: DIETClassifier
-    epochs: 10
-    entity_recognition: false
+- name: WhitespaceTokenizer
+- name: RegexFeaturizer
+- name: CountVectorsFeaturizer
+- name: DIETClassifier
+  epochs: 50
+  entity_recognition: false
 
 policies:
-  - name: MemoizationPolicy
-  - name: RulePolicy
+- name: MemoizationPolicy
+- name: RulePolicy
+assistant_id: 20251103-224533-formal-load
