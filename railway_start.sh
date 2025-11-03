@@ -3,17 +3,15 @@
 echo "🚀 Starting Rasa on Railway..."
 echo "Port: $PORT"
 
-# Train model if it doesn't exist
+# Always train a fresh model with current configuration
+echo "Training model with current configuration..."
+rasa train --config config_simple.yml --fixed-model-name expobeton-railway --out models/
+
+# Check if model was created
 if [ ! -f "models/expobeton-railway.tar.gz" ]; then
-    echo "Training model..."
-    rasa train --config config_simple.yml --fixed-model-name expobeton-railway --out models/
-    
-    # Check if model was created
-    if [ ! -f "models/expobeton-railway.tar.gz" ]; then
-        echo "❌ Error: Model was not created!"
-        ls -la models/
-        exit 1
-    fi
+    echo "❌ Error: Model was not created!"
+    ls -la models/
+    exit 1
 fi
 
 echo "✅ Model is ready"
