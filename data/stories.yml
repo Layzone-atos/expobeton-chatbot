@@ -4,7 +4,7 @@ stories:
 - story: greet story
   steps:
   - intent: greet
-  - action: action_answer_expobeton
+  - action: utter_greet
 
 - story: help story
   steps:

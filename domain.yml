@@ -17,16 +17,6 @@ intents:
   - ask_event_location
   - ask_event_theme
 
-entities:
-  - person
-
-slots:
-  person:
-    type: text
-    mappings:
-    - type: from_entity
-      entity: person
-
 responses:
   utter_greet:
     - text: "Bonjour ! Comment puis-je vous aider aujourd'hui ?"
