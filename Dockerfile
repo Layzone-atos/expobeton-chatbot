@@ -19,14 +19,11 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy project files
 COPY . /app
 
-# Remove any existing model files to force retraining
-RUN rm -rf models/*
+# Make scripts executable
+RUN chmod +x railway_start.sh static_server.py
 
-# Train a new model during build
-RUN rasa train --fixed-model-name expobeton-railway --out models/
+# Expose port
+EXPOSE 5005
 
-# Expose both ports
-EXPOSE 5005 5055
-
-# Default command (can be overridden)
-CMD ["rasa", "run", "--enable-api", "--port", "5005", "--cors", "*", "--debug", "-i", "0.0.0.0", "--model", "models/expobeton-railway.tar.gz"]
+# Start both Rasa server and static file server
+CMD ["./railway_start.sh"]
