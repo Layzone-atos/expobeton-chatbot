@@ -3,19 +3,14 @@
 echo "🚀 Starting Rasa on Railway (Simple Config)..."
 echo "Port: $PORT"
 
-# Always train to use latest NLU data
-echo "Training minimal model..."
-rasa train --config config_minimal.yml --fixed-model-name expobeton-railway --out models/
-
-if [ ! -f "models/expobeton-railway.tar.gz" ]; then
-    echo "❌ Model training failed!"
-    # Try using fallback as last resort
-    if [ -f "models/expobeton-fallback.tar.gz" ]; then
-        cp models/expobeton-fallback.tar.gz models/expobeton-railway.tar.gz
-        echo "⚠️ Using fallback model"
-    else
-        exit 1
-    fi
+# DON'T train - just use fallback model to save memory
+echo "Using pre-trained fallback model..."
+if [ -f "models/expobeton-fallback.tar.gz" ]; then
+    cp models/expobeton-fallback.tar.gz models/expobeton-railway.tar.gz
+    echo "✅ Model copied"
+else
+    echo "❌ No fallback model found!"
+    exit 1
 fi
 
 echo "✅ Model ready"
