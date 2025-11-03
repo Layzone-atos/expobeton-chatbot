@@ -19,6 +19,16 @@ fi
 echo "✅ Model is ready"
 ls -la models/
 
+# Start Rasa action server on port 5055 in the background
+echo "Starting Rasa action server on port 5055..."
+rasa run actions --port 5055 &
+ACTION_SERVER_PID=$!
+
+# Give action server time to start
+sleep 5
+
+echo "✅ Action server started (PID: $ACTION_SERVER_PID)"
+
 # Start Rasa server on port 5005 in the background
 echo "Starting Rasa server on port 5005..."
 rasa run --enable-api --cors "*" --port 5005 --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz &
