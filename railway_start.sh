@@ -3,19 +3,15 @@
 echo "🚀 Starting Rasa on Railway (Simple Config)..."
 echo "Port: $PORT"
 
-# Use pre-trained model from git (81.9% accuracy)
-echo "Using pre-trained model (50 epochs, 81.9% accuracy)..."
-if [ ! -f "models/expobeton-railway.tar.gz" ]; then
-    echo "❌ Model not found!"
-    if [ -f "models/expobeton-fallback.tar.gz" ]; then
-        cp models/expobeton-fallback.tar.gz models/expobeton-railway.tar.gz
-        echo "⚠️ Using fallback model"
-    else
-        exit 1
-    fi
+# Use fallback model for Railway free tier
+echo "Using fallback model for demo..."
+if [ -f "models/expobeton-fallback.tar.gz" ]; then
+    cp models/expobeton-fallback.tar.gz models/expobeton-railway.tar.gz
+    echo "✅ Fallback model ready"
+else
+    echo "❌ No model available!"
+    exit 1
 fi
-
-echo "✅ Model ready"
 
 # Start Rasa on port 5005 in background
 echo "Starting Rasa on port 5005..."
