@@ -3,21 +3,16 @@
 echo "🚀 Starting Rasa on Railway (Simple Config)..."
 echo "Port: $PORT"
 
-# Train with minimal config - Railway has enough RAM for this
-echo "Training minimal model for demo..."
-rasa train --config config_minimal.yml --fixed-model-name expobeton-railway --out models/ 2>&1 | tail -20
-
+# Use pre-trained model from git (81.9% accuracy)
+echo "Using pre-trained model (50 epochs, 81.9% accuracy)..."
 if [ ! -f "models/expobeton-railway.tar.gz" ]; then
-    echo "⚠️ Training failed, using fallback model..."
+    echo "❌ Model not found!"
     if [ -f "models/expobeton-fallback.tar.gz" ]; then
         cp models/expobeton-fallback.tar.gz models/expobeton-railway.tar.gz
-        echo "✅ Fallback model copied"
+        echo "⚠️ Using fallback model"
     else
-        echo "❌ No model available!"
         exit 1
     fi
-else
-    echo "✅ Training completed successfully!"
 fi
 
 echo "✅ Model ready"
