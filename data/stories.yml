@@ -39,19 +39,19 @@ stories:
 - story: ask event dates story
   steps:
   - intent: ask_event_dates
-  - action: action_answer_and_suggest
+  - action: utter_event_dates
 
 - story: ask about expobeton story
   steps:
   - intent: ask_about_expobeton
-  - action: action_answer_expobeton
+  - action: utter_about_expobeton
 
 - story: ask event location story
   steps:
   - intent: ask_event_location
-  - action: action_answer_expobeton
+  - action: utter_event_location
 
 - story: ask event theme story
   steps:
   - intent: ask_event_theme
-  - action: action_answer_expobeton
+  - action: utter_event_theme

@@ -32,6 +32,14 @@ responses:
     - text: "Je vais vous mettre en contact avec un agent humain."
   utter_end_conversation:
     - text: "Merci pour notre conversation. N'hésitez pas à revenir si vous avez d'autres questions."
+  utter_about_expobeton:
+    - text: "ExpoBeton RDC est le salon international de la construction, des infrastructures et du développement urbain en République Démocratique du Congo. C'est un forum annuel qui crée un espace de réflexion et de partenariat pour rebâtir les villes congolaises et soutenir la croissance économique."
+  utter_event_dates:
+    - text: "ExpoBeton RDC aura lieu du 8 au 11 octobre 2025 à Kinshasa, République Démocratique du Congo."
+  utter_event_location:
+    - text: "L'événement se déroulera à Kinshasa, RDC. Le lieu exact sera communiqué prochainement."
+  utter_event_theme:
+    - text: "Le thème de l'édition 2025 est : '100 milliards USD pour rebâtir la RDC post-conflit : catalyser une transformation audacieuse pour le 21ème siècle'."
 
 actions:
   - action_human_handoff

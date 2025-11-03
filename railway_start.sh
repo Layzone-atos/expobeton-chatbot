@@ -19,15 +19,13 @@ fi
 echo "✅ Model is ready"
 ls -la models/
 
-# Start Rasa action server on port 5055 in the background
-echo "Starting Rasa action server on port 5055..."
-rasa run actions --port 5055 &
-ACTION_SERVER_PID=$!
-
-# Give action server time to start
-sleep 5
-
-echo "✅ Action server started (PID: $ACTION_SERVER_PID)"
+# NOTE: Action server disabled to save memory on Railway
+# Re-enable only if using custom actions (action_answer_expobeton, etc.)
+# echo "Starting Rasa action server on port 5055..."
+# rasa run actions --port 5055 &
+# ACTION_SERVER_PID=$!
+# sleep 5
+# echo "✅ Action server started (PID: $ACTION_SERVER_PID)"
 
 # Start Rasa server on Railway's port
 echo "Starting Rasa server on port $PORT..."
