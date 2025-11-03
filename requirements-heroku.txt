@@ -2,3 +2,4 @@ rasa==3.6.21
 rasa-sdk==3.6.2
 openai==1.68.2
 cohere==5.20.0
+sqlalchemy<2.0

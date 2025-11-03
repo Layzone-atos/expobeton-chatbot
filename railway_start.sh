@@ -17,6 +17,7 @@ if [ ! -f "models/expobeton-railway.tar.gz" ]; then
 fi
 
 echo "✅ Model is ready"
+ls -la models/
 
 # Start Rasa action server on port 5055 in the background
 echo "Starting Rasa action server on port 5055..."
@@ -31,6 +32,9 @@ if kill -0 $ACTION_SERVER_PID 2>/dev/null; then
     echo "✅ Action server is running (PID: $ACTION_SERVER_PID)"
 else
     echo "❌ Action server failed to start"
+    # Let's try to start it again with more verbose output
+    echo "Trying to start action server with verbose output..."
+    rasa run actions --actions actions --port 5055 --debug
     exit 1
 fi
 
@@ -47,6 +51,9 @@ if kill -0 $RASA_SERVER_PID 2>/dev/null; then
     echo "✅ Rasa server is running (PID: $RASA_SERVER_PID)"
 else
     echo "❌ Rasa server failed to start"
+    # Let's try to start it again with more verbose output
+    echo "Trying to start Rasa server with verbose output..."
+    rasa run --enable-api --cors "*" --port 5005 --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz
     exit 1
 fi
 
