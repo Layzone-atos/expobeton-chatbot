@@ -1,0 +1,13 @@
+language: fr
+
+pipeline:
+  - name: WhitespaceTokenizer
+  - name: RegexFeaturizer
+  - name: CountVectorsFeaturizer
+  - name: DIETClassifier
+    epochs: 10
+    entity_recognition: false
+
+policies:
+  - name: MemoizationPolicy
+  - name: RulePolicy

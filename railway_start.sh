@@ -4,8 +4,8 @@ echo "🚀 Starting Rasa on Railway (Simple Config)..."
 echo "Port: $PORT"
 
 # Always train to use latest NLU data
-echo "Training model with current data..."
-rasa train --config config_simple.yml --fixed-model-name expobeton-railway --out models/
+echo "Training minimal model..."
+rasa train --config config_minimal.yml --fixed-model-name expobeton-railway --out models/
 
 if [ ! -f "models/expobeton-railway.tar.gz" ]; then
     echo "❌ Model training failed!"
