@@ -50,13 +50,13 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         # Forward webhook requests to Rasa server
         if self.path.startswith('/webhooks/'):
-            # Forward to Rasa server (assuming it's running on port 5005)
-            rasa_url = f'http://localhost:5005{self.path}'
-            
             try:
                 # Read the request data
                 content_length = int(self.headers['Content-Length'])
                 post_data = self.rfile.read(content_length)
+                
+                # Forward to Rasa server (assuming it's running on port 5005)
+                rasa_url = f'http://localhost:5005{self.path}'
                 
                 # Create the request
                 req = urllib.request.Request(
@@ -93,32 +93,6 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
             except urllib.error.URLError as e:
                 # Handle URL errors (connection issues)
                 print(f"URL Error connecting to Rasa server: {e.reason}")
-                print(f"Trying to connect to: {rasa_url}")
-                # Test if we can connect to the port
-                import socket
-                try:
-                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    result = sock.connect_ex(('localhost', 5005))
-                    if result == 0:
-                        print("Port 5005 is open")
-                    else:
-                        print("Port 5005 is closed")
-                    sock.close()
-                except Exception as socket_error:
-                    print(f"Socket error: {socket_error}")
-                
-                # Also try to connect to action server
-                try:
-                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    result = sock.connect_ex(('localhost', 5055))
-                    if result == 0:
-                        print("Port 5055 is open")
-                    else:
-                        print("Port 5055 is closed")
-                    sock.close()
-                except Exception as socket_error:
-                    print(f"Socket error for action server: {socket_error}")
-                
                 self.send_response(503)  # Service Unavailable
                 self.send_header('Content-Type', 'application/json')
                 self.end_headers()

@@ -19,13 +19,13 @@ fi
 echo "✅ Model is ready"
 ls -la models/
 
-# Start Rasa server in background
-echo "Starting Rasa server..."
-rasa run --enable-api --cors "*" --port 5005 -i 0.0.0.0 --model models/expobeton-railway.tar.gz &
+# Start Rasa server on port 5005 in the background
+echo "Starting Rasa server on port 5005..."
+rasa run --enable-api --cors "*" --port 5005 --debug -i 0.0.0.0 --model models/expobeton-railway.tar.gz &
 
-# Wait for Rasa to start
+# Give Rasa server time to start
 sleep 10
 
-# Start static file server
+# Start static file server on Railway's port
 echo "Starting static file server on port $PORT..."
 python static_server.py
