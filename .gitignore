@@ -14,6 +14,7 @@ ENV/
 # Only ignore tar.gz files that are not the specific model we want to deploy
 models/*.tar.gz
 !models/expobeton-heroku.tar.gz
+!models/expobeton-railway.tar.gz
 *.db
 *.db-shm
 *.db-wal
