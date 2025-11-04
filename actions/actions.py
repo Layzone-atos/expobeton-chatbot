@@ -12,6 +12,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 
 # Load environment variables from .env file
 try:
@@ -582,8 +583,16 @@ class ActionAnswerExpoBeton(Action):
             return []
         
         # Try to find relevant documents using Cohere for unmatched questions
+        # TIMEOUT: 30 seconds to avoid 5-minute delays
         try:
-            relevant_docs = find_relevant_docs(tracker.latest_message.get('text', ''), top_k=3)
+            # Create executor with timeout
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(find_relevant_docs, tracker.latest_message.get('text', ''), 3)
+                try:
+                    relevant_docs = future.result(timeout=30)  # 30 seconds max
+                except FuturesTimeoutError:
+                    print(f"⏰ Cohere search timed out after 30 seconds")
+                    relevant_docs = []
             
             if relevant_docs:
                 # Combine content from top relevant docs
@@ -602,7 +611,7 @@ class ActionAnswerExpoBeton(Action):
                     answer = response.text.strip()
                     
                     # Check if answer is meaningful (not just "Je ne sais pas")
-                    if len(answer) > 50 and answer.lower() not in ['je ne sais pas', 'je ne peux pas répondre', 'non']:
+                    if len(answer) > 50 and answer.lower() not in ['je ne sais pas', 'je ne peux pas répond re', 'non']:
                         dispatcher.utter_message(text=answer)
                         bot_response = answer
                         log_conversation_message(session_id, 'bot', bot_response, metadata)
