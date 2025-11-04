@@ -1,12 +1,11 @@
 #!/bin/bash
 
-echo "🚀 Starting Rasa on Railway (Paid Plan)..."
+echo "🚀 Starting Rasa on Railway (Working Model!)..."
 echo "Port: $PORT"
 
-# Use lightweight fallback model for stability
-echo "Using fallback model..."
-if [ -f "models/expobeton-fallback.tar.gz" ]; then
-    cp models/expobeton-fallback.tar.gz models/expobeton-railway.tar.gz
+# Use the WORKING model from commit 022803e
+echo "Using working model (27KB - the one that worked!)..."
+if [ -f "models/expobeton-railway.tar.gz" ]; then
     echo "✅ Model ready"
 else
     echo "❌ Model not found!"
