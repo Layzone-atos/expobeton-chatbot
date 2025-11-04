@@ -535,8 +535,20 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
-        # Goodbye responses
-        if any(word in user_question for word in ['au revoir', 'bye', 'goodbye', 'à bientôt', 'adieu', 'ciao', 'adiós', 'пока', '再见', 'مع السلامة']):
+        # Registration / Participation (CHECK BEFORE GOODBYE!)
+        if any(word in user_question for word in ['inscription', 'register', 'participer', 'participate', 'subscribe', 'join', 'enroll', 'comment participer']):
+            answer = get_multilingual_response('registration', detected_lang)
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Goodbye responses (CHECK LAST - be more specific!)
+        # Exclude messages with 'oui' or 'comment' that might be questions
+        is_goodbye = any(word in user_question for word in ['au revoir', 'bye', 'goodbye', 'à bientôt', 'adieu', 'ciao', 'adiós', 'пока', '再见', 'مع السلامة'])
+        is_question = any(word in user_question for word in ['oui', 'comment', 'qui', 'quoi', 'où', 'quand', 'pourquoi'])
+        
+        if is_goodbye and not is_question:
             answer = get_multilingual_response('goodbye', detected_lang)
             dispatcher.utter_message(text=answer)
             bot_response = answer
@@ -618,14 +630,6 @@ class ActionAnswerExpoBeton(Action):
             dispatcher.utter_message(text=answer)
             suggestion = "\n💡 Vous pourriez aussi demander :\n• Qui sont les fondateurs ?\n• Comment devenir ambassadeur ?\n• Où se déroule l'événement ?"
             dispatcher.utter_message(text=suggestion)
-            return []
-        
-        # Registration / Participation
-        if any(word in user_question for word in ['inscription', 'register', 'participer', 'participate', 'subscribe', 'join', 'enroll']):
-            answer = get_multilingual_response('registration', detected_lang)
-            dispatcher.utter_message(text=answer)
-            bot_response = answer
-            log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
         # Default: show help and log unanswered question
