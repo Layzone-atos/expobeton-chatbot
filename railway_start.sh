@@ -1,20 +1,16 @@
 #!/bin/bash
 
-echo "🚀 Starting Rasa on Railway (Paid Plan - Full Power!)..."
+echo "🚀 Starting Rasa on Railway (Paid Plan)..."
 echo "Port: $PORT"
 
-# Train with full config - Railway paid plan has plenty of RAM!
-echo "Training model with 50 epochs (81.9% accuracy)..."
-rasa train --config config_minimal.yml --fixed-model-name expobeton-railway --out models/
-
-if [ ! -f "models/expobeton-railway.tar.gz" ]; then
-    echo "⚠️ Training failed, using pre-trained model..."
-    # Model is already in git, so this shouldn't happen
+# Use pre-trained model from git (no training needed!)
+echo "Using pre-trained model (50 epochs, 81.9% accuracy)..."
+if [ -f "models/expobeton-railway.tar.gz" ]; then
+    echo "✅ Model found and ready"
 else
-    echo "✅ Training completed successfully!"
+    echo "❌ Model not found!"
+    exit 1
 fi
-
-echo "✅ Model ready"
 
 # Start Rasa on port 5005 in background
 echo "Starting Rasa on port 5005..."
