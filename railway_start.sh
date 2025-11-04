@@ -3,10 +3,11 @@
 echo "🚀 Starting Rasa on Railway (Paid Plan)..."
 echo "Port: $PORT"
 
-# Use pre-trained model from git (no training needed!)
-echo "Using pre-trained model (50 epochs, 81.9% accuracy)..."
-if [ -f "models/expobeton-railway.tar.gz" ]; then
-    echo "✅ Model found and ready"
+# Use lightweight fallback model for stability
+echo "Using fallback model..."
+if [ -f "models/expobeton-fallback.tar.gz" ]; then
+    cp models/expobeton-fallback.tar.gz models/expobeton-railway.tar.gz
+    echo "✅ Model ready"
 else
     echo "❌ Model not found!"
     exit 1
