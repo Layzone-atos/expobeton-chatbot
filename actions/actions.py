@@ -743,7 +743,7 @@ class ActionAnswerExpoBeton(Action):
         
         # Number of editions
         if any(word in user_question for word in ['combien', 'how many']) and any(word in user_question for word in ['édition', 'edition']):
-            answer = "📅 **Historique des éditions ExpoBeton RDC:**\n\n✅ **11 éditions organisées** depuis 2016\n\n1️⃣ 2016: 1ère édition - Kinshasa\n2️⃣ 2017: 2ème édition - Kinshasa\n3️⃣ 2018: 3ème édition - Kinshasa\n4️⃣ 2019: 4ème édition - Kinshasa\n5️⃣ 2021: 5ème édition - Kinshasa\n6️⃣ 2022: 6ème édition - Kinshasa\n7️⃣ 2023: 7ème édition - Kolwezi (Lualaba)\n8️⃣ 2024: 8ème édition - Kinshasa + Matadi (Kongo-Central)\n9️⃣ 2025: 9ème édition\n🔟 2025: 10ème édition\n1️⃣1️⃣ 2026: 11ème édition - Lubumbashi (Haut-Katanga)\n\n🎯 **Prochaine:** 30 avril - 1er mai 2026 à Lubumbashi"
+            answer = "📅 **Historique des éditions ExpoBeton RDC:**\n\n✅ **10 éditions organisées** depuis 2016\n\n1️⃣ 2016: 1ère édition - Kinshasa\n2️⃣ 2017: 2ème édition - Kinshasa\n3️⃣ 2018: 3ème édition - Kinshasa\n4️⃣ 2019: 4ème édition - Kinshasa\n5️⃣ 2021: 5ème édition - Kinshasa\n6️⃣ 2022: 6ème édition - Kinshasa\n7️⃣ 2023: 7ème édition - Kolwezi (Lualaba)\n8️⃣ 2024: 8ème édition - Kinshasa + Matadi\n9️⃣ 2025: 9ème édition\n🔟 2025: 10ème édition\n\n🎯 **Prochaine (11ème):** 30 avril - 1er mai 2026 à Lubumbashi"
             dispatcher.utter_message(text=answer)
             bot_response = answer
             log_conversation_message(session_id, 'bot', bot_response, metadata)
@@ -752,6 +752,78 @@ class ActionAnswerExpoBeton(Action):
         # History of ExpoBeton
         if any(word in user_question for word in ['histoire', 'history', 'historique']):
             answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• 2026: Lubumbashi (carrefour stratégique africain)\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Types of stands
+        if any(word in user_question for word in ['stand', 'stands', 'types']) and not any(word in user_question for word in ['meilleur', 'best']):
+            answer = "🎪 **Types de stands ExpoBeton RDC:**\n\n🥇 **Stand Premium (Grand format):**\n• Surface: 12m² minimum\n• Visibilité maximale\n• Emplacement stratégique\n\n🥈 **Stand Standard:**\n• Surface: 6m² - 9m²\n• Bonne visibilité\n• Équipements de base\n\n🥉 **Stand Startup/PME:**\n• Surface: 3m² - 6m²\n• Tarif préférentiel\n• Support jeunes entrepreneurs\n\n💼 **Services inclus:**\n• Mobilier (table, chaises)\n• Éclairage\n• Connexion internet\n• Badges participants\n\n📞 **Réservation:** Contactez info@expobetonrdc.com ou consultez https://expobetonrdc.com/"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # How to register / subscribe
+        if any(word in user_question for word in ['inscrire', 'inscription', 's\'inscrire', 'register', 'registration']):
+            answer = "✍️ **Comment s'inscrire à ExpoBeton RDC?**\n\n👉 **Étape 1:** Visitez https://expobetonrdc.com/#tg_register\n\n👉 **Étape 2:** Remplissez le formulaire d'inscription avec:\n• Nom et coordonnées\n• Type de participation (visiteur, exposant, partenaire)\n• Secteur d'activité\n\n👉 **Étape 3:** Choisissez votre formule (si exposant)\n\n👉 **Étape 4:** Validez votre inscription\n\n📧 **Contact:** info@expobetonrdc.com\n📞 **Tél:** +243 826 158 411\n\n✅ **Inscription gratuite pour visiteurs!**\n💰 **Tarifs préférentiels pour exposants avant le 1er mars 2026**"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # African corridors
+        if any(word in user_question for word in ['corridor', 'corridors']) and 'africain' in user_question:
+            answer = "🌍 **Les corridors africains du Grand Katanga:**\n\n👇 **Corridor Sud (SADC):**\n• Lubumbashi → Zambie → Afrique du Sud\n• Axes miniers et commerciaux\n• Ports: Durban, Maputo\n\n➡️ **Corridor Est:**\n• Kalemie (Lac Tanganyika) → Tanzanie\n• Port de Dar es Salaam\n• Connexion Océan Indien\n\n⬅️ **Corridor Ouest:**\n• Lubumbashi → Kolwezi → Kinshasa → Matadi\n• Océan Atlantique\n• Ports: Matadi, Boma, Banana\n\n🎯 **Importance stratégique:**\n• Exportation cobalt et cuivre\n• Importation équipements et biens\n• Intégration régionale africaine\n• Développement économique\n\n💡 Thème ExpoBeton 2026: 'Grand Katanga : Carrefour Stratégique au cœur des corridors africains'"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Special Economic Zones (ZES)
+        if any(word in user_question for word in ['zes', 'zone', 'zones', 'zés']) and any(word in user_question for word in ['économique', 'economic', 'spéciale', 'special']):
+            answer = "🏭 **Zones Économiques Spéciales (ZES) en RDC:**\n\n🎯 **Définition:** Zones avec régime fiscal et douanier avantageux pour attirer investissements\n\n📍 **ZES Grand Katanga:**\n1️⃣ **Lukala** (Kongo-Central) - Cimenterie\n2️⃣ **Kimpese** (Kongo-Central) - Industrie\n3️⃣ **Songololo** (Kongo-Central) - Cimenterie\n4️⃣ **Kolwezi** (Lualaba) - Transformation minière\n5️⃣ **Lubumbashi** (Haut-Katanga) - Industrielle\n\n✅ **Avantages:**\n• Exonérations fiscales (5-10 ans)\n• Facilités douanières\n• Infrastructures modernes\n• Procédures simplifiées\n\n🏛️ **Gestion:** AZES (Agence des Zones Économiques Spéciales)\n\n📞 **Info:** Intervenant ExpoBeton 2024"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # West corridor
+        if any(word in user_question for word in ['corridor ouest', 'ouest', 'west corridor']):
+            answer = "🌅 **Corridor Ouest de la RDC:**\n\n📍 **Trajet:** Lubumbashi → Kinshasa → Matadi → Océan Atlantique\n\n🏛️ **Provinces traversées:**\n• Haut-Katanga, Lualaba (Grand Katanga)\n• Kinshasa (capitale)\n• Kongo-Central (ports)\n\n🚢 **Ports majeurs:**\n1️⃣ **Matadi** - Principal port RDC\n2️⃣ **Boma** - Port secondaire\n3️⃣ **Banana** - Port en eau profonde (en construction)\n\n🛣️ **Infrastructures:**\n• Route Nationale N°1 (550 km)\n• Chemin de fer Matadi-Kinshasa (366 km)\n• Fleuve Congo (transport fluvial)\n\n🎯 **Thème ExpoBeton 2024:** 'Révolution urbaine : Des solutions durables du corridor ouest pour Kinshasa et Kongo-Central'\n\n💡 **Enjeux:** Développement urbain, infrastructures, mobilité, énergie"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Role of Kinshasa
+        if any(word in user_question for word in ['kinshasa', 'rôle', 'role']) and 'kinshasa' in user_question:
+            answer = "🏛️ **Rôle de Kinshasa dans le développement RDC:**\n\n📊 **Capitale politique et économique:**\n• 15+ millions d'habitants\n• 40% du PIB national\n• Siège du gouvernement\n\n🏭 **Centre économique:**\n• Hub commercial et financier\n• Port fluvial majeur\n• Industries et services\n\n🛣️ **Défis infrastructurels:**\n• Congestion urbaine\n• Déficit logements (2M unités)\n• Mobilité et transport\n• Assainissement et déchets\n\n💡 **Projets prioritaires:**\n• Rocade sud-est (décongestion)\n• Cités satellites (Maluku, SOSAK)\n• Métro Kinshasa (METROKIN)\n• Ministère Politique de la Ville\n\n🎯 **Projection 2050:** 30M habitants - Nécessite transformation urgente\n\n📜 **Source:** ExpoBeton 2024, discours Président Félix Tshisekedi"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Who spoke at ExpoBeton 2023
+        if ('2023' in user_question or 'kolwezi' in user_question) and any(word in user_question for word in ['parlé', 'spoke', 'intervenant', 'speaker']):
+            answer = "🎯 **Intervenants ExpoBeton 2023 (Kolwezi, Lualaba):**\n\n👥 **Autorités:**\n• SEM Julien Paluku - Ministre de l'Industrie\n• Jacques Kaumba - Sénateur\n\n🏭 **Entreprises minières:**\n• Prof Dr Edouard Swana (TFM) - RSE et environnement\n• Guy Muswil (KAMOA-KAKULA) - Projet cuivre\n\n🏛️ **Institutions publiques:**\n• Pierre Bundoki (FONER) - Entretien routier\n• Popol Mabolia Yenga (CAMI) - Cadastre minier\n• Christian Basunga - Expert BTP\n\n🎯 **Thématiques:**\n• Exploitation minière responsable\n• Protection environnementale\n• Développement communautaire\n• Corridors de développement\n• Zones économiques spéciales\n\n📜 **Rapport complet disponible sur expobetonrdc.com**"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Minister of Industry
+        if any(word in user_question for word in ['ministre', 'minister']) and any(word in user_question for word in ['industrie', 'industry']):
+            answer = "🏭 **Ministre de l'Industrie - ExpoBeton:**\n\n👨‍💼 **SEM Julien Paluku Kahongya**\n\n💼 **Fonction:** Ministre de l'Industrie de la RDC\n\n🎯 **Intervention ExpoBeton 2023 (Kolwezi):**\n• Promotion de l'industrialisation locale\n• Transformation des matières premières\n• Développement des PME/PMI\n• Zones économiques spéciales\n\n💡 **Messages clés:**\n• Nécessité de transformer cobalt et cuivre localement\n• Création d'emplois par l'industrie\n• Partenariats public-privé\n• Financement innovant\n\n📜 **Documents:** Présentations disponibles dans archives ExpoBeton 2023"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Governor of Kinshasa
+        if any(word in user_question for word in ['gouverneur', 'governor']) and 'kinshasa' in user_question:
+            answer = "🏛️ **Gouverneur de Kinshasa - ExpoBeton 2024:**\n\n👨‍💼 **SEM BUMBA LUBAKI Daniel**\n\n💼 **Fonction:** Gouverneur de la Ville-Province de Kinshasa\n\n🎯 **Intervention ExpoBeton 2024:**\n• Support à l'événement ExpoBeton\n• Défis urbains de Kinshasa\n• Prix d'encouragement universités\n\n💡 **Priorités gouvernorat:**\n• Amélioration voiries urbaines\n• Gestion des déchets\n• Mobilité et transport\n• Développement cités satellites\n• Assainissement et drainage\n\n🏆 **Action ExpoBeton:** Remise 1er prix concours étudiants INBTP\n\n📜 **Rapport ExpoBeton 2024** pour détails complets"
             dispatcher.utter_message(text=answer)
             bot_response = answer
             log_conversation_message(session_id, 'bot', bot_response, metadata)
