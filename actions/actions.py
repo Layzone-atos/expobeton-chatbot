@@ -725,6 +725,70 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
+        # Rapport final 2024
+        if any(word in user_question for word in ['rapport', 'report']) and '2024' in user_question:
+            answer = "📊 **Rapport Final ExpoBeton 2024 (8ème édition)** \n\n✅ **Deux phases:**\n• Phase 1: Kinshasa (10-12 sept 2024)\n• Phase 2: Matadi, Kongo-Central (18-19 sept 2024)\n\n🎯 **Thème:** 'Révolution urbaine : Des solutions durables du corridor ouest pour Kinshasa et Kongo-Central'\n\n📈 **Chiffres clés:**\n• 200+ participants (experts, décideurs, entreprises)\n• 5 sessions thématiques\n• Concours étudiants avec 5 universités\n• Expositions et stands d'entreprises\n\n💡 **Recommandations majeures:**\n• Modernisation des infrastructures routières et portuaires\n• Création de cités satellites le long de la rocade\n• PPP pour financement des projets\n• Gestion durable des déchets\n\nPour plus de détails, consultez le rapport complet sur https://expobetonrdc.com/"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # What happened in 2023
+        if ('2023' in user_question or 'sept' in user_question) and any(word in user_question for word in ['passé', 'happened', 'edition', 'édition']):
+            answer = "🏆 **ExpoBeton 2023 (7ème édition) - Kolwezi, Lualaba**\n\n📍 **Lieu:** Kolwezi\n🎯 **Thème:** 'Kolwezi-Lualaba, Eldorado du corridor sud de la RDC-SADC'\n\n👥 **Intervenants clés:**\n• TFM (Tenke Fungurume Mining) - Edouard Swana\n• FONER - Pierre Bundoki (DG)\n• CAMI - Popol Mabolia Yenga (DG)\n• KAMOA - Guy Muswil\n• Ministre de l'Industrie - Julien Paluku\n\n💎 **Focus minier:** Exploitation minière responsable, protection environnementale, développement communautaire, cobalt et cuivre\n\n📊 **Résultats:** Recommandations sur RSE, corridors de développement, zones économiques spéciales"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Number of editions
+        if any(word in user_question for word in ['combien', 'how many']) and any(word in user_question for word in ['édition', 'edition']):
+            answer = "📅 **Historique des éditions ExpoBeton RDC:**\n\n✅ **11 éditions organisées** depuis 2016\n\n1️⃣ 2016: 1ère édition - Kinshasa\n2️⃣ 2017: 2ème édition - Kinshasa\n3️⃣ 2018: 3ème édition - Kinshasa\n4️⃣ 2019: 4ème édition - Kinshasa\n5️⃣ 2021: 5ème édition - Kinshasa\n6️⃣ 2022: 6ème édition - Kinshasa\n7️⃣ 2023: 7ème édition - Kolwezi (Lualaba)\n8️⃣ 2024: 8ème édition - Kinshasa + Matadi (Kongo-Central)\n9️⃣ 2025: 9ème édition\n🔟 2025: 10ème édition\n1️⃣1️⃣ 2026: 11ème édition - Lubumbashi (Haut-Katanga)\n\n🎯 **Prochaine:** 30 avril - 1er mai 2026 à Lubumbashi"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # History of ExpoBeton
+        if any(word in user_question for word in ['histoire', 'history', 'historique']):
+            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• 2026: Lubumbashi (carrefour stratégique africain)\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # TFM (Tenke Fungurume Mining)
+        if 'tfm' in user_question or 'tenke' in user_question or 'fungurume' in user_question:
+            answer = "🏭 **TFM (Tenke Fungurume Mining)**\n\n📍 **Localisation:** Province du Lualaba, Kolwezi\n⚙️ **Activité:** Exploitation minière (cuivre et cobalt)\n\n🌍 **RSE & Environnement:**\n✅ Certifications ISO 9001, 14001, 18001, 45001\n✅ Réduction des émissions CO2 et NO2\n✅ Énergie propre (turbine à gaz, hydro-électricité)\n✅ Promotion voitures électriques (cobalt)\n\n🏘️ **Développement communautaire:**\n• 31 millions USD investis (2021-2025)\n• Santé: HGR 200 lits, centres de santé\n• Éducation: écoles, bibliothèques, ISTA\n• Économie: centre agricole, coopératives\n• Infrastructures: routes, ponts, marchés\n\n👨‍💼 **Intervenant ExpoBeton 2023:** Prof Dr Edouard Swana (Manager Relations Communautaires)"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # FONER (Fonds National d'Entretien Routier)
+        if 'foner' in user_question:
+            answer = "🛣️ **FONER (Fonds National d'Entretien Routier)**\n\n📋 **Création:** 2008\n🎯 **Mission:** Financer l'entretien et la protection du patrimoine routier RDC\n\n💰 **Ressources:**\n• Redevances sur lubrifiants et carburants\n• Droits de péage\n• Allocations budgétaires État\n\n📊 **Réalisations 2019-2022:** 435 millions USD investis\n📈 **Projection 2023:** 170 millions USD mobilisés\n\n🚧 **Travaux financés:**\n• 60% réseau routier national\n• 40% réseau provincial et local\n• Entretien routes, ponts, voiries urbaines\n\n⚠️ **Défis:** Besoins annuels de 380 millions USD vs 170 millions disponibles\n\n👨‍💼 **DG:** Pierre Bundoki (intervenant ExpoBeton 2023)"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # CAMI (Cadastre Minier)
+        if 'cami' in user_question or 'cadastre minier' in user_question:
+            answer = "⛏️ **CAMI (Cadastre Minier)**\n\n📋 **Nature:** Établissement public\n🎯 **Mission:** Gestion du domaine minier et des titres miniers/carrières\n\n📜 **Types d'autorisations:**\n1️⃣ Recherches de produits de carrières\n2️⃣ Exploitation de carrière temporaire\n3️⃣ Exploitation de carrière permanente\n\n📊 **Lualaba (chiffres clés):**\n• 201 droits de carrières actifs\n• 122 ARPC (61%)\n• 73 AECP (36%)\n• 6 CUP (3%)\n\n🏗️ **Programme PDL 145:**\n• 38.936 Km routes à réhabiliter\n• 418 mini centrales solaires\n• 238 marchés modernes\n• 788 centres de santé\n\n👨‍💼 **DG:** Popol Mabolia Yenga (intervenant ExpoBeton 2023)"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # BCC (Banque Centrale du Congo)
+        if 'bcc' in user_question or 'banque centrale' in user_question:
+            answer = "🏦 **BCC (Banque Centrale du Congo)**\n\n🎯 **Rôle:** Financement du secteur productif RDC\n\n📊 **Chiffres:**\n• Crédit à l'économie: 2.010,7 milliards CDF (2017)\n• Part bancaire: 93,9%\n• Ratio crédit/PIB: 8,3% (très faible vs Afrique du Sud 63,4%)\n\n⚠️ **Défis:**\n• Faible niveau d'épargne domestique\n• Absence de marché financier organisé\n• Dollarisation de l'économie\n• Déficit en infrastructures\n\n💡 **Solutions proposées:**\n• Amélioration climat des affaires\n• Création institutions financières spécialisées\n• Guichet de refinancement long\n• Émission valeurs du Trésor\n• Fonds de garantie de dépôts\n\n👨‍💼 **Vice-Gouverneur** (intervenant ExpoBeton 2018)"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
         # Theme
         if any(word in user_question for word in ['thème', 'theme', 'sujet']):
             answer = "Le thème de l'édition 2026 (11ème) est : 'Grand Katanga : Carrefour Stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est'. Cette édition se concentre sur Lubumbashi, Kalemie et Kolwezi comme piliers du développement régional."
