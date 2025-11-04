@@ -55,3 +55,8 @@ stories:
   steps:
   - intent: ask_event_theme
   - action: utter_event_theme
+
+- story: ask about people story
+  steps:
+  - intent: ask_about_people
+  - action: action_answer_expobeton

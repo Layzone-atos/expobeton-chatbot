@@ -105,3 +105,17 @@ nlu:
     - c'est quoi le thème de l'événement ?
     - quel thème pour expobeton ?
     - de quoi parle l'événement ?
+
+- intent: ask_about_people
+  examples: |
+    - c'est qui momo sunguza ?
+    - qui est momo sunguza ?
+    - qui est jean bamanisa ?
+    - c'est qui jean bamanisa ?
+    - qui est le président ?
+    - qui est le vice-président ?
+    - qui sont les responsables ?
+    - qui organise expobeton ?
+    - parlez-moi de momo sunguza
+    - parlez-moi de jean bamanisa
+    - qui est à la tête d'expobeton ?

@@ -16,6 +16,7 @@ intents:
   - ask_about_expobeton
   - ask_event_location
   - ask_event_theme
+  - ask_about_people
 
 responses:
   utter_greet:
