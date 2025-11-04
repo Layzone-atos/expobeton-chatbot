@@ -3,6 +3,10 @@
 echo "🚀 Starting Rasa on Railway (With Cohere!)..."
 echo "Port: $PORT"
 
+# Train model with latest data (NLU examples)
+echo "🏋️ Training model with updated NLU data..."
+rasa train --domain domain.yml --data data --out models --fixed-model-name expobeton-railway
+
 # Use the NEW trained model with 85.5% accuracy
 echo "Using trained model (85.5% accuracy - with Cohere support)..."
 if [ -f "models/expobeton-railway.tar.gz" ]; then
