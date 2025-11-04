@@ -47,11 +47,11 @@ responses:
   utter_about_expobeton:
     - text: "ExpoBeton RDC est le salon international de la construction, des infrastructures et du développement urbain en République Démocratique du Congo. C'est un forum annuel qui crée un espace de réflexion et de partenariat pour rebâtir les villes congolaises et soutenir la croissance économique."
   utter_event_dates:
-    - text: "ExpoBeton RDC aura lieu du 8 au 11 octobre 2025 à Kinshasa, République Démocratique du Congo."
+    - text: "La prochaine édition (11ème) d'ExpoBeton RDC aura lieu du 30 avril au 1er mai 2026 à Lubumbashi, au Nouveau Bâtiment de l'Assemblée Provinciale du Haut-Katanga."
   utter_event_location:
-    - text: "L'événement se déroulera à Kinshasa, RDC. Le lieu exact sera communiqué prochainement."
+    - text: "La prochaine édition d'ExpoBeton RDC se tiendra à Lubumbashi, Haut-Katanga, au Nouveau Bâtiment de l'Assemblée Provinciale."
   utter_event_theme:
-    - text: "Le thème de l'édition 2025 est : '100 milliards USD pour rebâtir la RDC post-conflit : catalyser une transformation audacieuse pour le 21ème siècle'."
+    - text: "Le thème de l'édition 2026 (11ème) est : 'Grand Katanga : Carrefour Stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est'. Cette édition se concentre sur Lubumbashi, Kalemie et Kolwezi comme piliers du développement régional."
 
 actions:
   - action_greet_personalized
