@@ -3,14 +3,18 @@
 echo "🚀 Starting Rasa on Render..."
 echo "Port: $PORT"
 
-# Use fallback model (no training on Render free tier)
-echo "Using pre-trained model..."
-if [ -f "models/expobeton-fallback.tar.gz" ]; then
-    cp models/expobeton-fallback.tar.gz models/expobeton-railway.tar.gz
-    echo "✅ Model ready"
+# Use the trained model from git (81.9% accuracy)
+echo "Using pre-trained model (50 epochs, 81.9% accuracy)..."
+if [ -f "models/expobeton-railway.tar.gz" ]; then
+    echo "✅ Model found and ready"
 else
-    echo "❌ No model available!"
-    exit 1
+    echo "⚠️ Model not found, using fallback..."
+    if [ -f "models/expobeton-fallback.tar.gz" ]; then
+        cp models/expobeton-fallback.tar.gz models/expobeton-railway.tar.gz
+    else
+        echo "❌ No model available!"
+        exit 1
+    fi
 fi
 
 # Start Rasa on port 5005 in background
