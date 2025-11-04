@@ -703,15 +703,23 @@ class ActionAnswerAndSuggest(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-        user_question = tracker.latest_message.get('text')
+        user_question = tracker.latest_message.get('text', '')
+        detected_lang = detect_language(user_question)
 
-        # Exemple simple : réponse + suggestion
-        if "dates" in user_question.lower():
-            answer = "Expo Béton RDC aura lieu du 8 au 11 octobre 2025 à Kinshasa."
-            suggestion = "Souhaitez-vous connaître les exposants présents ?"
+        # Use updated responses from MULTILINGUAL_CONTENT
+        if "date" in user_question.lower() or "quand" in user_question.lower():
+            answer = get_multilingual_response('dates', detected_lang)
+            if detected_lang == 'fr':
+                suggestion = "Souhaitez-vous connaître le thème de 2026 ?"
+            else:
+                suggestion = "Would you like to know the 2026 theme?"
         else:
-            answer = "Je suis là pour vous aider sur Expo Béton RDC."
-            suggestion = "Souhaitez-vous découvrir les opportunités d'investissement ?"
+            if detected_lang == 'fr':
+                answer = "Je suis là pour vous aider sur ExpoBeton RDC."
+                suggestion = "Souhaitez-vous découvrir les opportunités d'investissement ?"
+            else:
+                answer = "I'm here to help you with ExpoBeton RDC."
+                suggestion = "Would you like to discover investment opportunities?"
 
         dispatcher.utter_message(text=answer)
         dispatcher.utter_message(text=suggestion)
