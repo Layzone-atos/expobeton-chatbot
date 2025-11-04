@@ -79,6 +79,14 @@ nlu:
     - programme de l'événement
     - dates s'il vous plaît
     - quand est l'événement ?
+    - quand aura lieu expobeton ?
+    - quand aura lieu expobeton en 2026 ?
+    - c'est quand expobeton ?
+    - c'est quand la prochaine édition ?
+    - quand se tiendra expobeton ?
+    - quand est la prochaine édition ?
+    - dates de la prochaine édition
+    - quand aura lieu la prochaine édition ?
 
 - intent: ask_about_expobeton
   examples: |
