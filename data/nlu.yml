@@ -127,3 +127,25 @@ nlu:
     - parlez-moi de momo sunguza
     - parlez-moi de jean bamanisa
     - qui est à la tête d'expobeton ?
+
+- intent: ask_general_question
+  examples: |
+    - parle-moi de kolwezi
+    - c'est quoi kolwezi ?
+    - parle-moi de kalemie
+    - c'est quoi kalemie ?
+    - parle-moi de kamoa
+    - c'est quoi kamoa ?
+    - qu'a dit le président en 2024 ?
+    - discours du président
+    - qu'a dit le président lors de l'ouverture ?
+    - rapport final 2024
+    - qui a parlé à expobeton ?
+    - quelles villes sont concernées ?
+    - pourquoi lubumbashi ?
+    - combien de jours dure l'événement ?
+    - c'est quoi le grand katanga ?
+    - parle-moi du grand katanga
+    - qu'est-ce que tfm a présenté ?
+    - qui est foner ?
+    - c'est quoi cami ?

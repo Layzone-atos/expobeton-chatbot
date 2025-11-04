@@ -17,6 +17,7 @@ intents:
   - ask_event_location
   - ask_event_theme
   - ask_about_people
+  - ask_general_question
 
 entities:
   - person

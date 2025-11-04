@@ -708,6 +708,14 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
+        # Presidential speech 2024
+        if any(word in user_question for word in ['président', 'president', 'discours', 'speech']) and ('2024' in user_question or 'dit' in user_question or 'said' in user_question or 'ouverture' in user_question or 'opening' in user_question):
+            answer = "Lors de l'ouverture d'ExpoBeton 2024 (8ème édition), le Président Félix Tshisekedi a souligné plusieurs points clés :\n\n🏆 **Thème 2024:** 'Révolution urbaine et solutions durables du corridor ouest pour Kinshasa et Kongo-Central'\n\n🛣️ **3 Engagements majeurs:**\n1️⃣ Création d'un **ministère dédié à la politique de la ville**\n2️⃣ **Désenclavement des territoires** comme priorité absolue (initiative présidentielle)\n3️⃣ **Partenariats publics-privés** pour les infrastructures\n\n🏛️ **Vision:** Faire du secteur de la construction un **levier majeur de transformation économique**, garantir l'égalité d'accès aux services de base pour tous les Congolais.\n\nLe Président a déclaré : 'La question du désenclavement de nos territoires est une priorité absolue pour moi, car elle touche directement à l'égalité des chances pour tous.'"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
         # Theme
         if any(word in user_question for word in ['thème', 'theme', 'sujet']):
             answer = "Le thème de l'édition 2026 (11ème) est : 'Grand Katanga : Carrefour Stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est'. Cette édition se concentre sur Lubumbashi, Kalemie et Kolwezi comme piliers du développement régional."
