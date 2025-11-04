@@ -659,6 +659,55 @@ class ActionAnswerExpoBeton(Action):
             dispatcher.utter_message(text=answer)
             return []
         
+        # Duration / Number of days
+        if any(word in user_question for word in ['combien de jours', 'durée', 'how many days', 'duration']):
+            answer = "L'événement ExpoBeton RDC 2026 durera 2 jours : du 30 avril au 1er mai 2026."
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Why Lubumbashi in 2026?
+        if any(word in user_question for word in ['pourquoi lubumbashi', 'why lubumbashi']):
+            answer = "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Cities of Grand Katanga
+        if any(word in user_question for word in ['villes', 'quelles villes', 'cities', 'which cities']):
+            if 'grand katanga' in user_question or 'katanga' in user_question:
+                answer = "Les trois villes principales du Grand Katanga sont :\n\n1️⃣ **Lubumbashi** (capitale du Haut-Katanga) - centre économique et industriel\n2️⃣ **Kolwezi** (capitale du Lualaba) - capitale mondiale du cobalt\n3️⃣ **Kalemie** (capitale du Tanganyika) - port stratégique sur le lac Tanganyika\n\nCes trois villes sont les piliers du développement régional au cœur d'ExpoBeton 2026."
+                dispatcher.utter_message(text=answer)
+                bot_response = answer
+                log_conversation_message(session_id, 'bot', bot_response, metadata)
+                return []
+        
+        # Kolwezi
+        if 'kolwezi' in user_question:
+            answer = "Kolwezi est la capitale de la province du Lualaba et l'une des trois villes clés du Grand Katanga. Elle est connue comme la **capitale mondiale du cobalt** grâce à ses réserves immenses. Kolwezi joue un rôle stratégique dans l'industrie minière de la RDC et est un pilier majeur du développement économique de la région, au cœur du thème d'ExpoBeton 2026."
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Kalemie
+        if 'kalemie' in user_question:
+            answer = "Kalemie est la capitale de la province du Tanganyika et l'une des trois villes clés du Grand Katanga. C'est un **port stratégique** sur le lac Tanganyika, reliant la RDC aux corridors africains de l'Est. Kalemie est essentielle pour le transport et le commerce régional, faisant partie intégrante du thème d'ExpoBeton 2026 : 'Grand Katanga : Carrefour Stratégique'."
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # KAMOA (mining project)
+        if 'kamoa' in user_question:
+            answer = "KAMOA-KAKULA est l'un des plus grands projets de cuivre au monde, situé dans la province du Lualaba (Grand Katanga). Développé par Ivanhoe Mines, ce projet a été présenté lors d'ExpoBeton comme un exemple majeur du potentiel minier de la région. KAMOA contribue significativement aux 70% des exportations nationales que représente le Grand Katanga."
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
         # Theme
         if any(word in user_question for word in ['thème', 'theme', 'sujet']):
             answer = "Le thème de l'édition 2026 (11ème) est : 'Grand Katanga : Carrefour Stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est'. Cette édition se concentre sur Lubumbashi, Kalemie et Kolwezi comme piliers du développement régional."
