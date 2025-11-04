@@ -26,4 +26,4 @@ RUN chmod +x railway_start.sh render_start.sh static_server.py
 EXPOSE 5005
 
 # Start script - auto-detect platform
-CMD if [ -f "/etc/render" ] || [ "$RENDER" = "true" ]; then ./render_start.sh; else ./railway_start.sh; fi
+CMD ["/bin/bash", "-c", "if [ -f '/etc/render' ] || [ \"$RENDER\" = 'true' ]; then ./render_start.sh; else ./railway_start.sh; fi"]
