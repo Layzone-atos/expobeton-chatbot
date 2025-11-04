@@ -291,20 +291,20 @@ MULTILINGUAL_CONTENT = {
         'ar': "ExpoBeton RDC هو المعرض الدولي للبناء والبنية التحتية والتنمية الحضرية في جمهورية الكونغو الديمقراطية. إنه منتدى سنوي يخلق مساحة للتفكير والشراكة لإعادة بناء المدن الكونغولية ودعم النمو الاقتصادي."
     },
     'dates': {
-        'fr': "L'édition 2025 d'ExpoBeton RDC aura lieu du 8 au 11 octobre 2025 à Kinshasa, au Centre Culturel et Artistique pour les Pays de l'Afrique Centrale.",
-        'en': "The 2025 edition of ExpoBeton RDC will take place from October 8-11, 2025 in Kinshasa, at the Cultural and Artistic Center for Central African Countries.",
-        'zh': "ExpoBeton RDC 2025年版将于2025年10月8日至11日在金沙萨中非国家文化艺术中心举行。",
-        'ru': "Выпуск ExpoBeton RDC 2025 года состоится с 8 по 11 октября 2025 года в Киншасе, в Культурно-художественном центре для стран Центральной Африки.",
-        'es': "La edición 2025 de ExpoBeton RDC tendrá lugar del 8 al 11 de octubre de 2025 en Kinshasa, en el Centro Cultural y Artístico para los Países de África Central.",
-        'ar': "ستقام نسخة 2025 من ExpoBeton RDC من 8 إلى 11 أكتوبر 2025 في كينشاسا، في المركز الثقافي والفني لبلدان أفريقيا الوسطى."
+        'fr': "La prochaine édition (11ème) d'ExpoBeton RDC aura lieu du 30 avril au 1er mai 2026 à Lubumbashi, au Nouveau Bâtiment de l'Assemblée Provinciale du Haut-Katanga.",
+        'en': "The next edition (11th) of ExpoBeton RDC will take place from April 30 to May 1, 2026 in Lubumbashi, at the New Building of the Provincial Assembly of Haut-Katanga.",
+        'zh': "ExpoBeton RDC下一届（第11届）将于2026年4月30日至5月1日在卢本巴希上加丹加省议会新大楼举行。",
+        'ru': "Следующее издание (11-е) ExpoBeton RDC состоится с 30 апреля по 1 мая 2026 года в Лубумбаши, в новом здании Провинциальной ассамблеи Верхней Катанги.",
+        'es': "La próxima edición (11ª) de ExpoBeton RDC tendrá lugar del 30 de abril al 1 de mayo de 2026 en Lubumbashi, en el Nuevo Edificio de la Asamblea Provincial de Haut-Katanga.",
+        'ar': "ستقام النسخة القادمة (الحادية عشرة) من ExpoBeton RDC من 30 أبريل إلى 1 مايو 2026 في لوبومباشي، في المبنى الجديد للجمعية الإقليمية لهوت-كاتانغا."
     },
     'location': {
-        'fr': "ExpoBeton RDC se tiendra à Kinshasa, au Centre Culturel et Artistique pour les Pays de l'Afrique Centrale.",
-        'en': "ExpoBeton RDC will be held in Kinshasa, at the Cultural and Artistic Center for Central African Countries.",
-        'zh': "ExpoBeton RDC将在金沙萨中非国家文化艺术中心举行。",
-        'ru': "ExpoBeton RDC будет проходить в Киншасе, в Культурно-художественном центре для стран Центральной Африки.",
-        'es': "ExpoBeton RDC se celebrará en Kinshasa, en el Centro Cultural y Artístico para los Países de África Central.",
-        'ar': "سيقام ExpoBeton RDC في كينشاسا، في المركز الثقافي والفني لبلدان أفريقيا الوسطى."
+        'fr': "La prochaine édition d'ExpoBeton RDC se tiendra à Lubumbashi, Haut-Katanga, au Nouveau Bâtiment de l'Assemblée Provinciale.",
+        'en': "The next edition of ExpoBeton RDC will be held in Lubumbashi, Haut-Katanga, at the New Building of the Provincial Assembly.",
+        'zh': "ExpoBeton RDC下一届将在上加丹加卢本巴希省议会新大楼举行。",
+        'ru': "Следующее издание ExpoBeton RDC будет проходить в Лубумбаши, Верхняя Катанга, в новом здании Провинциальной ассамблеи.",
+        'es': "La próxima edición de ExpoBeton RDC se celebrará en Lubumbashi, Haut-Katanga, en el Nuevo Edificio de la Asamblea Provincial.",
+        'ar': "ستقام النسخة القادمة من ExpoBeton RDC في لوبومباشي، هوت-كاتانغا، في المبنى الجديد للجمعية الإقليمية."
     },
     'thank_you': {
         'fr': "De rien! C'est avec plaisir! 😊\n\nSi vous avez d'autres questions sur ExpoBeton RDC, n'hésitez pas à me demander!",
@@ -581,13 +581,38 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
-        # Try to find relevant documents
+        # Try to find relevant documents using Cohere for unmatched questions
         try:
-            relevant_docs = find_relevant_docs(tracker.latest_message.get('text', ''), top_k=2)
-        except:
-            relevant_docs = []
+            relevant_docs = find_relevant_docs(tracker.latest_message.get('text', ''), top_k=3)
+            
+            if relevant_docs:
+                # Combine content from top relevant docs
+                context = "\n\n".join([doc['content'][:2000] for doc in relevant_docs])  # Limit per doc
+                
+                # Use Cohere to generate answer from context
+                try:
+                    response = co.chat(
+                        message=user_message_original,
+                        documents=[{'text': doc['content'], 'title': doc['filename']} for doc in relevant_docs],
+                        model='command-r',
+                        temperature=0.3,
+                        preamble="Tu es un assistant intelligent pour ExpoBeton RDC. Réponds de manière précise et concise en français, en te basant UNIQUEMENT sur les documents fournis. Si l'information n'est pas dans les documents, dis-le clairement."
+                    )
+                    
+                    answer = response.text.strip()
+                    
+                    # Check if answer is meaningful (not just "Je ne sais pas")
+                    if len(answer) > 50 and answer.lower() not in ['je ne sais pas', 'je ne peux pas répondre', 'non']:
+                        dispatcher.utter_message(text=answer)
+                        bot_response = answer
+                        log_conversation_message(session_id, 'bot', bot_response, metadata)
+                        return []
+                except Exception as e:
+                    print(f"Error generating Cohere response: {e}")
+        except Exception as e:
+            print(f"Error finding relevant docs: {e}")
         
-        # Founder questions
+        # Default: show help and log unanswered question
         if any(word in user_question for word in ['fondateur', 'créateur', 'président', 'qui est', 'qui sont']):
             if 'jean' in user_question or 'bamanisa' in user_question or 'fondateur' in user_question or 'créateur' in user_question:
                 answer = "Jean Bamanisa Saïdi est le président, promoteur, créateur et fondateur d'ExpoBeton RDC. C'est un homme d'affaires et personnalité politique congolaise, ancien gouverneur de la province de l'Ituri. Il porte la vision stratégique de l'événement et met en avant la reconstruction, l'urbanisation et le développement durable de la RDC."
@@ -604,6 +629,16 @@ class ActionAnswerExpoBeton(Action):
         
         # What is ExpoBeton (handle typos like 'expbeton', 'expo beton')
         if any(word in user_question for word in ['quoi', 'what', 'est-ce', 'c\'est', 'qué', '什么', 'что', 'ما']):
+            # Check for 'grand katanga' FIRST
+            if 'grand katanga' in user_question or 'katanga' in user_question:
+                if detected_lang == 'fr':
+                    answer = "Le Grand Katanga est une région stratégique de la RDC comprenant trois provinces : Haut-Katanga (capitale Lubumbashi), Lualaba (capitale Kolwezi) et Tanganyika (capitale Kalemie). Cette région représente 70% des exportations nationales grâce à ses réserves massives de cobalt et cuivre. ExpoBeton 2026 se concentre sur cette région comme carrefour stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est."
+                else:
+                    answer = "Grand Katanga is a strategic region of the DRC comprising three provinces: Haut-Katanga (capital Lubumbashi), Lualaba (capital Kolwezi) and Tanganyika (capital Kalemie). This region represents 70% of national exports thanks to its massive reserves of cobalt and copper. ExpoBeton 2026 focuses on this region as a strategic hub at the heart of African corridors from the South, West and East."
+                dispatcher.utter_message(text=answer)
+                bot_response = answer
+                log_conversation_message(session_id, 'bot', bot_response, metadata)
+                return []
             # Check for 'expobeton' or common typos like 'expbeton'
             if 'expobeton' in user_question or 'expbeton' in user_question or 'expo beton' in user_question or 'expo béton' in user_question:
                 answer = get_multilingual_response('what_is_expobeton', detected_lang)
@@ -626,7 +661,7 @@ class ActionAnswerExpoBeton(Action):
         
         # Theme
         if any(word in user_question for word in ['thème', 'theme', 'sujet']):
-            answer = "Le thème de l'édition 2025 est : '100 milliards USD pour rebâtir la RDC post-conflit : catalyser une transformation audacieuse pour le 21ème siècle'."
+            answer = "Le thème de l'édition 2026 (11ème) est : 'Grand Katanga : Carrefour Stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est'. Cette édition se concentre sur Lubumbashi, Kalemie et Kolwezi comme piliers du développement régional."
             dispatcher.utter_message(text=answer)
             suggestion = "\n💡 Vous pourriez aussi demander :\n• Qui sont les fondateurs ?\n• Comment devenir ambassadeur ?\n• Où se déroule l'événement ?"
             dispatcher.utter_message(text=suggestion)
