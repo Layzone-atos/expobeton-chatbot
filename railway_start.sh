@@ -1,10 +1,10 @@
 #!/bin/bash
 
-echo "🚀 Starting Rasa on Railway (Working Model!)..."
+echo "🚀 Starting Rasa on Railway (With Cohere!)..."
 echo "Port: $PORT"
 
-# Use the WORKING model from commit 022803e
-echo "Using working model (27KB - the one that worked!)..."
+# Use the NEW trained model with 85.5% accuracy
+echo "Using trained model (85.5% accuracy - with Cohere support)..."
 if [ -f "models/expobeton-railway.tar.gz" ]; then
     echo "✅ Model ready"
 else

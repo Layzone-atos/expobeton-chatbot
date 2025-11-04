@@ -388,6 +388,42 @@ def get_multilingual_response(key: str, lang: str = 'fr') -> str:
         return MULTILINGUAL_CONTENT[key]['fr']
     return ""
 
+class ActionGreetPersonalized(Action):
+    """Custom action for personalized greeting with name extraction"""
+    
+    def name(self) -> Text:
+        return "action_greet_personalized"
+    
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        # Get person entity
+        person = next(tracker.get_latest_entity_values("person"), None)
+        
+        # Detect language
+        user_message = tracker.latest_message.get('text', '')
+        detected_lang = detect_language(user_message)
+        
+        if person:
+            # Personalized greeting with name
+            if detected_lang == 'fr':
+                message = f"Bonjour {person}! 😊 Ravi de faire votre connaissance! Comment puis-je vous aider aujourd'hui avec ExpoBeton RDC?"
+            elif detected_lang == 'en':
+                message = f"Hello {person}! 😊 Nice to meet you! How can I assist you today with ExpoBeton RDC?"
+            else:
+                message = f"Bonjour {person}! 😊 Ravi de faire votre connaissance! Comment puis-je vous aider aujourd'hui avec ExpoBeton RDC?"
+        else:
+            # Generic greeting
+            message = get_multilingual_response('greeting', detected_lang)
+            if detected_lang == 'fr':
+                message = message.replace("Bonjour!", "Bonjour! 😊")
+            elif detected_lang == 'en':
+                message = message.replace("Hello!", "Hello! 😊")
+        
+        dispatcher.utter_message(text=message)
+        return []
+
 class ActionAnswerExpoBeton(Action):
     def name(self) -> Text:
         return "action_answer_expobeton"

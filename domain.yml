@@ -18,6 +18,17 @@ intents:
   - ask_event_theme
   - ask_about_people
 
+entities:
+  - person
+
+slots:
+  person:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_entity
+      entity: person
+
 responses:
   utter_greet:
     - text: "Bonjour ! Comment puis-je vous aider aujourd'hui ?"
@@ -43,6 +54,7 @@ responses:
     - text: "Le thème de l'édition 2025 est : '100 milliards USD pour rebâtir la RDC post-conflit : catalyser une transformation audacieuse pour le 21ème siècle'."
 
 actions:
+  - action_greet_personalized
   - action_human_handoff
   - action_show_faqs
   - action_feedback
