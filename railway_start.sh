@@ -1,4 +1,5 @@
 #!/bin/bash
+# FORCE REDEPLOY: 2025-11-05 18:45
 
 echo "🚀 Starting Rasa on Railway (With Cohere!)..."
 echo "Port: $PORT"
