@@ -399,12 +399,35 @@ class ActionGreetPersonalized(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
+        # Get the user's message FIRST to check if it's actually a question
+        user_message = tracker.latest_message.get('text', '').lower()
+        
+        # =============================================================
+        # CRITICAL: Check if this is actually a QUESTION, not a greeting!
+        # =============================================================
+        
+        # History of ExpoBeton
+        if any(word in user_message for word in ['histoire', 'history', 'historique']):
+            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• 2026: Lubumbashi (carrefour stratégique africain)\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
+            dispatcher.utter_message(text=answer)
+            return []
+        
+        # Number of editions
+        if any(word in user_message for word in ['combien', 'how many']) and any(word in user_message for word in ['édition', 'edition']):
+            answer = "📅 **Historique des éditions ExpoBeton RDC:**\n\n✅ **10 éditions organisées** depuis 2016\n\n1️⃣ 2016: 1ère édition - Kinshasa\n2️⃣ 2017: 2ème édition - Kinshasa\n3️⃣ 2018: 3ème édition - Kinshasa\n4️⃣ 2019: 4ème édition - Kinshasa\n5️⃣ 2021: 5ème édition - Kinshasa\n6️⃣ 2022: 6ème édition - Kinshasa\n7️⃣ 2023: 7ème édition - Kolwezi (Lualaba)\n8️⃣ 2024: 8ème édition - Kinshasa + Matadi\n9️⃣ 2025: 9ème édition\n🔟 2025: 10ème édition\n\n🎯 **Prochaine (11ème):** 30 avril - 1er mai 2026 à Lubumbashi"
+            dispatcher.utter_message(text=answer)
+            return []
+        
+        # =============================================================
+        # ONLY proceed with greeting if it's NOT a question!
+        # =============================================================
+        
         # Get person entity
         person = next(tracker.get_latest_entity_values("person"), None)
         
         # Detect language
-        user_message = tracker.latest_message.get('text', '')
-        detected_lang = detect_language(user_message)
+        user_message_original = tracker.latest_message.get('text', '')
+        detected_lang = detect_language(user_message_original)
         
         if person:
             # Personalized greeting with name
