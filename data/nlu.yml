@@ -150,10 +150,15 @@ nlu:
     - qui est foner ?
     - c'est quoi cami ?
     - quelle est l'histoire d'expobeton ?
+    - quelle est l'histoire d'expobeton rdc ?
+    - quelle est l'histoire ?
     - l'histoire d'expobeton
     - parle-moi de l'histoire
     - raconte-moi l'histoire d'expobeton
+    - raconte l'histoire
     - historique d'expobeton
+    - historique du salon
+    - dis-moi l'histoire
     - combien d'éditions ont eu lieu ?
     - combien d'éditions ?
     - nombre d'éditions
