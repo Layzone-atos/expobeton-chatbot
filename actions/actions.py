@@ -589,6 +589,30 @@ class ActionAnswerExpoBeton(Action):
                     )
             return []
         
+        # ====================================================================
+        # CRITICAL: CHECK SPECIFIC QUESTIONS FIRST (BEFORE GENERIC "WHAT IS")
+        # ====================================================================
+        
+        # History of ExpoBeton - CHECK FIRST TO AVOID "WHAT IS" COLLISION
+        if any(word in user_question for word in ['histoire', 'history', 'historique']):
+            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• 2026: Lubumbashi (carrefour stratégique africain)\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Number of editions - CHECK BEFORE "COMBIEN DE JOURS" (DURATION)
+        if any(word in user_question for word in ['combien', 'how many']) and any(word in user_question for word in ['édition', 'edition']):
+            answer = "📅 **Historique des éditions ExpoBeton RDC:**\n\n✅ **10 éditions organisées** depuis 2016\n\n1️⃣ 2016: 1ère édition - Kinshasa\n2️⃣ 2017: 2ème édition - Kinshasa\n3️⃣ 2018: 3ème édition - Kinshasa\n4️⃣ 2019: 4ème édition - Kinshasa\n5️⃣ 2021: 5ème édition - Kinshasa\n6️⃣ 2022: 6ème édition - Kinshasa\n7️⃣ 2023: 7ème édition - Kolwezi (Lualaba)\n8️⃣ 2024: 8ème édition - Kinshasa + Matadi\n9️⃣ 2025: 9ème édition\n🔟 2025: 10ème édition\n\n🎯 **Prochaine (11ème):** 30 avril - 1er mai 2026 à Lubumbashi"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # ====================================================================
+        # END CRITICAL CHECKS - NOW PROCEED TO OTHER CHECKS
+        # ====================================================================
+        
         # Ambassador questions - MULTILINGUAL SUPPORT
         if any(word in user_question for word in ['ambassadeur', 'ambassador', 'devenir', 'rejoindre', 'become']):
             # Check if we have multilingual content for ambassador
@@ -780,22 +804,6 @@ class ActionAnswerExpoBeton(Action):
         # What happened in 2023
         if ('2023' in user_question or 'sept' in user_question) and any(word in user_question for word in ['passé', 'happened', 'edition', 'édition']):
             answer = "🏆 **ExpoBeton 2023 (7ème édition) - Kolwezi, Lualaba**\n\n📍 **Lieu:** Kolwezi\n🎯 **Thème:** 'Kolwezi-Lualaba, Eldorado du corridor sud de la RDC-SADC'\n\n👥 **Intervenants clés:**\n• TFM (Tenke Fungurume Mining) - Edouard Swana\n• FONER - Pierre Bundoki (DG)\n• CAMI - Popol Mabolia Yenga (DG)\n• KAMOA - Guy Muswil\n• Ministre de l'Industrie - Julien Paluku\n\n💎 **Focus minier:** Exploitation minière responsable, protection environnementale, développement communautaire, cobalt et cuivre\n\n📊 **Résultats:** Recommandations sur RSE, corridors de développement, zones économiques spéciales"
-            dispatcher.utter_message(text=answer)
-            bot_response = answer
-            log_conversation_message(session_id, 'bot', bot_response, metadata)
-            return []
-        
-        # Number of editions
-        if any(word in user_question for word in ['combien', 'how many']) and any(word in user_question for word in ['édition', 'edition']):
-            answer = "📅 **Historique des éditions ExpoBeton RDC:**\n\n✅ **10 éditions organisées** depuis 2016\n\n1️⃣ 2016: 1ère édition - Kinshasa\n2️⃣ 2017: 2ème édition - Kinshasa\n3️⃣ 2018: 3ème édition - Kinshasa\n4️⃣ 2019: 4ème édition - Kinshasa\n5️⃣ 2021: 5ème édition - Kinshasa\n6️⃣ 2022: 6ème édition - Kinshasa\n7️⃣ 2023: 7ème édition - Kolwezi (Lualaba)\n8️⃣ 2024: 8ème édition - Kinshasa + Matadi\n9️⃣ 2025: 9ème édition\n🔟 2025: 10ème édition\n\n🎯 **Prochaine (11ème):** 30 avril - 1er mai 2026 à Lubumbashi"
-            dispatcher.utter_message(text=answer)
-            bot_response = answer
-            log_conversation_message(session_id, 'bot', bot_response, metadata)
-            return []
-        
-        # History of ExpoBeton
-        if any(word in user_question for word in ['histoire', 'history', 'historique']):
-            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• 2026: Lubumbashi (carrefour stratégique africain)\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
             dispatcher.utter_message(text=answer)
             bot_response = answer
             log_conversation_message(session_id, 'bot', bot_response, metadata)
