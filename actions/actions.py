@@ -391,6 +391,7 @@ def get_multilingual_response(key: str, lang: str = 'fr') -> str:
 
 class ActionGreetPersonalized(Action):
     """Custom action for personalized greeting with name extraction"""
+    # FORCE RELOAD: 2025-11-05 15:40 - Fix histoire routing
     
     def name(self) -> Text:
         return "action_greet_personalized"
