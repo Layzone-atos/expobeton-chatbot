@@ -498,6 +498,7 @@ class ActionAnswerExpoBeton(Action):
         
         # Greetings and politeness responses (FRIENDLY with emojis)
         if any(word in user_question for word in ['bonjour', 'salut', 'hello', 'hi', 'bonsoir', 'hola', 'привет', '你好', 'مرحبا']):
+            print(f"🔥🔥🔥 [ANSWER_EXPOBETON DEBUG] GREETING CHECK MATCHED! user_question={user_question}")
             # Extract user's name if provided
             user_name = None
             import re
