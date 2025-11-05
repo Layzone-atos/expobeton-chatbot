@@ -5,3 +5,8 @@ rules:
     steps:
       - intent: end_conversation
       - action: action_end_conversation
+  
+  - rule: Handle general questions (histoire, dates, etc.)
+    steps:
+      - intent: ask_general_question
+      - action: action_answer_expobeton
