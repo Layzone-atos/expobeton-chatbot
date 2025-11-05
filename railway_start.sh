@@ -1,5 +1,10 @@
 #!/bin/bash
-# FORCE REDEPLOY: 2025-11-05 18:45
+# FORCE REDEPLOY: 2025-11-05 23:05 - CLEAN PYTHON CACHE
+
+echo "🧹 Cleaning Python cache..."
+find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+find . -type f -name "*.pyc" -delete 2>/dev/null || true
+echo "✅ Python cache cleaned"
 
 echo "🚀 Starting Rasa on Railway (With Cohere!)..."
 echo "Port: $PORT"
