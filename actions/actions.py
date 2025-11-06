@@ -403,6 +403,9 @@ class ActionGreetPersonalized(Action):
         # Get the user's message FIRST to check if it's actually a question
         user_message = tracker.latest_message.get('text', '').lower()
         
+        # CRITICAL DEBUG: Log that this action was called
+        print(f"👋👋👋 [ACTION_GREET_PERSONALIZED] CALLED! user_message={tracker.latest_message.get('text', '')}, intent={tracker.latest_message.get('intent', {}).get('name', 'UNKNOWN')}")
+        
         # =============================================================
         # CRITICAL: Check if this is actually a QUESTION, not a greeting!
         # =============================================================
@@ -462,6 +465,9 @@ class ActionAnswerExpoBeton(Action):
         user_message_original = tracker.latest_message.get('text', '')
         session_id = tracker.sender_id
         metadata = tracker.latest_message.get('metadata', {})
+        
+        # CRITICAL DEBUG: Log that this action was called
+        print(f"🚨🚨🚨 [ACTION_ANSWER_EXPOBETON] CALLED! user_message={user_message_original}, intent={tracker.latest_message.get('intent', {}).get('name', 'UNKNOWN')}")
         
         # Detect user's language for EACH message (not session-based)
         detected_lang = detect_language(user_message_original)
