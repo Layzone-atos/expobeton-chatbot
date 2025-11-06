@@ -744,16 +744,11 @@ class ActionAnswerExpoBeton(Action):
         if any(word in user_question for word in ['lieu', 'where', 'où', 'dónde', 'где', '哪里', 'أين']):
             answer = get_multilingual_response('location', detected_lang)
             dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
-        # Ambassador questions - MULTILINGUAL SUPPORT
-        if any(word in user_question for word in ['ambassadeur', 'ambassador', 'devenir', 'rejoindre', 'become']):
-            answer = (
-                "Pour devenir ambassadeur de l'ExpoBeton RDC 2026, veuillez contacter notre équipe de communication. "
-                "Vous pouvez nous joindre par email à contact@expobetonrdc.com ou par téléphone au +243 971 000 000."
-            )
-            dispatcher.utter_message(text=answer)
-            return []
+        # Ambassador questions - MULTILINGUAL SUPPORT (moved earlier - see line 646)
         
         # Duration / Number of days
         if any(word in user_question for word in ['combien de jours', 'durée', 'how many days', 'duration']):
@@ -764,7 +759,7 @@ class ActionAnswerExpoBeton(Action):
             return []
         
         # Why Lubumbashi in 2026?
-        if any(word in user_question for word in ['pourquoi lubumbashi', 'why lubumbashi']):
+        if ('pourquoi' in user_question and 'lubumbashi' in user_question) or ('why' in user_question and 'lubumbashi' in user_question):
             answer = "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
             dispatcher.utter_message(text=answer)
             bot_response = answer
