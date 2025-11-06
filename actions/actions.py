@@ -639,6 +639,14 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
+        # Why Lubumbashi in 2026? - CHECK BEFORE GENERAL "WHAT IS"
+        if ('pourquoi' in user_question and 'lubumbashi' in user_question) or ('why' in user_question and 'lubumbashi' in user_question):
+            answer = "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
         # ====================================================================
         # END CRITICAL CHECKS - NOW PROCEED TO OTHER CHECKS
         # ====================================================================
@@ -738,6 +746,8 @@ class ActionAnswerExpoBeton(Action):
         if any(word in user_question for word in ['date', 'when', 'quand', 'cuándo', 'когда', '什么时候', 'متى']):
             answer = get_multilingual_response('dates', detected_lang)
             dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
         # Location
@@ -758,13 +768,7 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
-        # Why Lubumbashi in 2026?
-        if ('pourquoi' in user_question and 'lubumbashi' in user_question) or ('why' in user_question and 'lubumbashi' in user_question):
-            answer = "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
-            dispatcher.utter_message(text=answer)
-            bot_response = answer
-            log_conversation_message(session_id, 'bot', bot_response, metadata)
-            return []
+        # Why Lubumbashi in 2026? - DUPLICATE CHECK REMOVED (moved to line 644)
         
         # Cities of Grand Katanga
         if any(word in user_question for word in ['villes', 'quelles villes', 'cities', 'which cities']):
