@@ -1,5 +1,5 @@
 #!/bin/bash
-# FORCE REDEPLOY: 2025-11-05 23:05 - CLEAN PYTHON CACHE
+# FORCE REDEPLOY: 2025-11-06 12:58 - WITH CRITICAL ENTRY DEBUG LOGS
 
 echo "🧹 Cleaning Python cache..."
 find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
