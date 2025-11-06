@@ -502,6 +502,27 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
+        # ====================================================================
+        # CRITICAL: CHECK SPECIFIC QUESTIONS FIRST (BEFORE GENERIC GREETINGS)
+        # ====================================================================
+        
+        # History of ExpoBeton - CHECK BEFORE "HI" TO AVOID "HISTOIRE" COLLISION!
+        if any(word in user_question for word in ['histoire', 'history', 'historique']):
+            print(f"✅✅✅ [DEBUG] HISTOIRE CHECK MATCHED! user_question={user_question}")
+            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• 2026: Lubumbashi (carrefour stratégique africain)\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # Number of editions - CHECK BEFORE GREETINGS (TO AVOID "COMBIEN" FALSE POSITIVE)
+        if any(word in user_question for word in ['combien', 'how many']) and any(word in user_question for word in ['édition', 'edition']):
+            answer = "📅 **Historique des éditions ExpoBeton RDC:**\n\n✅ **10 éditions organisées** depuis 2016\n\n1️⃣ 2016: 1ère édition - Kinshasa\n2️⃣ 2017: 2ème édition - Kinshasa\n3️⃣ 2018: 3ème édition - Kinshasa\n4️⃣ 2019: 4ème édition - Kinshasa\n5️⃣ 2021: 5ème édition - Kinshasa\n6️⃣ 2022: 6ème édition - Kinshasa\n7️⃣ 2023: 7ème édition - Kolwezi (Lualaba)\n8️⃣ 2024: 8ème édition - Kinshasa + Matadi\n9️⃣ 2025: 9ème édition\n🔟 2025: 10ème édition\n\n🎯 **Prochaine (11ème):** 30 avril - 1er mai 2026 à Lubumbashi"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
         # Greetings and politeness responses (FRIENDLY with emojis)
         if any(word in user_question for word in ['bonjour', 'salut', 'hello', 'hi', 'bonsoir', 'hola', 'привет', '你好', 'مرحبا']):
             print(f"🔥🔥🔥 [ANSWER_EXPOBETON DEBUG] GREETING CHECK MATCHED! user_question={user_question}")
@@ -722,6 +743,15 @@ class ActionAnswerExpoBeton(Action):
         # Location
         if any(word in user_question for word in ['lieu', 'where', 'où', 'dónde', 'где', '哪里', 'أين']):
             answer = get_multilingual_response('location', detected_lang)
+            dispatcher.utter_message(text=answer)
+            return []
+        
+        # Ambassador questions - MULTILINGUAL SUPPORT
+        if any(word in user_question for word in ['ambassadeur', 'ambassador', 'devenir', 'rejoindre', 'become']):
+            answer = (
+                "Pour devenir ambassadeur de l'ExpoBeton RDC 2026, veuillez contacter notre équipe de communication. "
+                "Vous pouvez nous joindre par email à contact@expobetonrdc.com ou par téléphone au +243 971 000 000."
+            )
             dispatcher.utter_message(text=answer)
             return []
         
