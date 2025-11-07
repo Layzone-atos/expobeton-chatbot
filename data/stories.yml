@@ -65,3 +65,10 @@ stories:
   steps:
   - intent: ask_general_question
   - action: action_answer_expobeton
+
+- story: default fallback - answer all questions
+  steps:
+  - or:
+    - intent: nlu_fallback
+    - intent: ask_general_question
+  - action: action_answer_expobeton
