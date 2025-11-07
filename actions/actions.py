@@ -410,6 +410,13 @@ class ActionGreetPersonalized(Action):
         # CRITICAL: Check if this is actually a QUESTION, not a greeting!
         # =============================================================
         
+        # Why Lubumbashi in 2026? - CHECK FIRST!
+        if ('pourquoi' in user_message and 'lubumbashi' in user_message) or ('why' in user_message and 'lubumbashi' in user_message):
+            print(f"🔥🔥🔥 [GREET DEBUG] POURQUOI LUBUMBASHI CHECK MATCHED! user_message={user_message}")
+            answer = "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
+            dispatcher.utter_message(text=answer)
+            return []
+        
         # History of ExpoBeton
         if any(word in user_message for word in ['histoire', 'history', 'historique']):
             print(f"🎯🎯🎯 [GREET DEBUG] HISTOIRE CHECK MATCHED IN GREET! user_message={user_message}")
