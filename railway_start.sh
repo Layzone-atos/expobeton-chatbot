@@ -1,17 +1,22 @@
 #!/bin/bash
-# FORCE REDEPLOY: 2025-11-06 12:58 - WITH CRITICAL ENTRY DEBUG LOGS
+# FORCE REDEPLOY: 2025-11-07 14:00 - DELETE RASA CACHE TO FORCE FULL RETRAIN
 
 echo "🧹 Cleaning Python cache..."
 find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 find . -type f -name "*.pyc" -delete 2>/dev/null || true
 echo "✅ Python cache cleaned"
 
+echo "💥 Deleting Rasa cache to force full retrain..."
+rm -rf .rasa 2>/dev/null || true
+rm -rf models/*.tar.gz 2>/dev/null || true
+echo "✅ Rasa cache deleted"
+
 echo "🚀 Starting Rasa on Railway (With Cohere!)..."
 echo "Port: $PORT"
 
-# Train model with latest data (NLU examples)
-echo "🏋️ Training model with updated NLU data..."
-rasa train --domain domain.yml --data data --out models --fixed-model-name expobeton-railway
+# Train model with latest data (NLU examples) - FULL RETRAIN WITHOUT CACHE
+echo "🏋️ Training model with updated NLU data (FULL RETRAIN)..."
+rasa train --domain domain.yml --data data --out models --fixed-model-name expobeton-railway --force
 
 # Use the NEW trained model with 85.5% accuracy
 echo "Using trained model (85.5% accuracy - with Cohere support)..."
