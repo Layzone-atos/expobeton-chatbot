@@ -10,3 +10,8 @@ rules:
     steps:
       - intent: ask_general_question
       - action: action_answer_expobeton
+  
+  - rule: Handle nlu_fallback with action_answer_expobeton
+    steps:
+      - intent: nlu_fallback
+      - action: action_answer_expobeton
