@@ -18,6 +18,7 @@ intents:
   - ask_event_theme
   - ask_about_people
   - ask_general_question
+  - ask_why_lubumbashi
 
 entities:
   - person
@@ -53,6 +54,8 @@ responses:
     - text: "La prochaine édition d'ExpoBeton RDC se tiendra à Lubumbashi, Haut-Katanga, au Nouveau Bâtiment de l'Assemblée Provinciale."
   utter_event_theme:
     - text: "Le thème de l'édition 2026 (11ème) est : 'Grand Katanga : Carrefour Stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est'. Cette édition se concentre sur Lubumbashi, Kalemie et Kolwezi comme piliers du développement régional."
+  utter_why_lubumbashi:
+    - text: "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
 
 actions:
   - action_greet_personalized
@@ -69,6 +72,7 @@ actions:
   - utter_feedback
   - utter_human_handoff
   - utter_end_conversation
+  - utter_why_lubumbashi
 
 forms: {}
 

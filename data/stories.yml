@@ -56,6 +56,11 @@ stories:
   - intent: ask_event_theme
   - action: utter_event_theme
 
+- story: ask why lubumbashi story
+  steps:
+  - intent: ask_why_lubumbashi
+  - action: utter_why_lubumbashi
+
 - story: ask about people story
   steps:
   - intent: ask_about_people

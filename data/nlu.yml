@@ -142,23 +142,6 @@ nlu:
     - rapport final 2024
     - qui a parlé à expobeton ?
     - quelles villes sont concernées ?
-    - pourquoi lubumbashi ?
-    - pourquoi lubumbashi en 2026 ?
-    - pourquoi expobeton à lubumbashi ?
-    - pourquoi lubumbashi pour 2026 ?
-    - pourquoi choisir lubumbashi ?
-    - pourquoi lubumbashi a été choisi ?
-    - pourquoi lubumbashi 2026 ?
-    - pourquoi à lubumbashi ?
-    - pourquoi cette ville ?
-    - raison de lubumbashi
-    - raison du choix de lubumbashi
-    - pourquoi cette localisation ?
-    - pourquoi cette ville a été choisie ?
-    - pourquoi pas kinshasa ?
-    - pourquoi organiser à lubumbashi ?
-    - lubumbashi pourquoi ?
-    - pourquoi expobeton lubumbashi
     - combien de jours dure l'événement ?
     - c'est quoi le grand katanga ?
     - parle-moi du grand katanga
@@ -198,6 +181,30 @@ nlu:
     - corridors africains
     - zones économiques spéciales
     - zes
+
+- intent: ask_why_lubumbashi
+  examples: |
+    - pourquoi lubumbashi ?
+    - pourquoi lubumbashi en 2026 ?
+    - pourquoi expobeton à lubumbashi ?
+    - pourquoi lubumbashi pour 2026 ?
+    - pourquoi choisir lubumbashi ?
+    - pourquoi lubumbashi a été choisi ?
+    - pourquoi lubumbashi 2026 ?
+    - pourquoi à lubumbashi ?
+    - pourquoi cette ville ?
+    - raison de lubumbashi
+    - raison du choix de lubumbashi
+    - pourquoi cette localisation ?
+    - pourquoi cette ville a été choisie ?
+    - pourquoi pas kinshasa ?
+    - pourquoi organiser à lubumbashi ?
+    - lubumbashi pourquoi ?
+    - pourquoi expobeton lubumbashi
+    - pourquoi lubumbashi
+    - lubumbashi
+    - pourquoi lubumabshi
+    - lubumabshi
     - corridor ouest
     - rôle de kinshasa
     - qui a parlé en 2023 ?
