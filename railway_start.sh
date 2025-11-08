@@ -1,5 +1,6 @@
 #!/bin/bash
-# FORCE REDEPLOY: 2025-11-07 14:00 - DELETE RASA CACHE TO FORCE FULL RETRAIN
+# FORCE REDEPLOY: 2025-11-08 17:30 - LUBUMBASHI FIX V4 - CRITICAL RELOAD REQUIRED
+# Timestamp changed to force full redeploy and Python cache invalidation
 
 echo "🧹 Cleaning Python cache..."
 find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
@@ -29,6 +30,9 @@ fi
 
 # Start action server on port 5055 in background
 echo "Starting action server on port 5055..."
+echo "🔥 CRITICAL: actions.py should print TIMESTAMP 2025-11-08 17:30:00 UTC"
+pkill -f "rasa run actions" 2>/dev/null || true  # Kill any old action servers
+sleep 2
 rasa run actions --port 5055 &
 
 # Wait for action server to start

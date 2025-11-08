@@ -1,4 +1,6 @@
 # actions/actions.py
+# CRITICAL RELOAD TIMESTAMP: 2025-11-08 17:30:00 UTC - LUBUMBASHI FIX V4
+# THIS FILE MUST BE RELOADED - CHECK THIS TIMESTAMP IN LOGS!
 
 from typing import Any, Text, Dict, List
 from rasa_sdk import Action, Tracker
@@ -13,6 +15,12 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+
+# CRITICAL: Log file load timestamp
+print("="*80)
+print("🔥 ACTIONS.PY LOADED - TIMESTAMP: 2025-11-08 17:30:00 UTC")
+print("🔥 LUBUMBASHI FIX V4 - ULTRA BROAD MATCH ENABLED")
+print("="*80)
 
 # Load environment variables from .env file
 try:
