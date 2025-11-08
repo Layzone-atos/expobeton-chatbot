@@ -411,9 +411,10 @@ class ActionGreetPersonalized(Action):
         # CRITICAL: Check if this is actually a QUESTION, not a greeting!
         # =============================================================
         
-        # Why Lubumbashi in 2026? - CHECK FIRST!
-        if ('pourquoi' in user_message and 'lubumbashi' in user_message) or ('why' in user_message and 'lubumbashi' in user_message):
-            print(f"🔥🔥🔥 [GREET DEBUG] POURQUOI LUBUMBASHI CHECK MATCHED! user_message={user_message}")
+        # ANY question about Lubumbashi - CHECK FIRST! (broad match)
+        # Match: "Pourquoi Lubumbashi", "Et Lubumbashi", "Lubumbashi ?", etc.
+        if 'lubumbashi' in user_message and any(indicator in user_message for indicator in ['?', 'pourquoi', 'why', 'et lubumbashi', 'à lubumbashi']):
+            print(f"🔥🔥🔥 [GREET DEBUG] LUBUMBASHI QUESTION MATCHED! user_message={user_message}")
             answer = "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
             dispatcher.utter_message(text=answer)
             return []
@@ -647,8 +648,9 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
-        # Why Lubumbashi in 2026? - CHECK BEFORE GENERAL "WHAT IS"
-        if ('pourquoi' in user_question and 'lubumbashi' in user_question) or ('why' in user_question and 'lubumbashi' in user_question):
+        # ANY question about Lubumbashi - CHECK BEFORE GENERAL "WHAT IS" (broad match)
+        # Match: "Pourquoi Lubumbashi", "Et Lubumbashi", "Lubumbashi ?", etc.
+        if 'lubumbashi' in user_question and any(indicator in user_question for indicator in ['?', 'pourquoi', 'why', 'et lubumbashi', 'à lubumbashi']):
             print(f"🔥🔥🔥 [DEBUG LUBUMBASHI] MATCHED! user_question={user_question}")
             answer = "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
             dispatcher.utter_message(text=answer)
