@@ -391,7 +391,8 @@ def get_multilingual_response(key: str, lang: str = 'fr') -> str:
 
 class ActionGreetPersonalized(Action):
     """Custom action for personalized greeting with name extraction"""
-    # FORCE RELOAD: 2025-11-05 15:40 - Fix histoire routing
+    # FORCE RELOAD: 2025-11-08 14:25 - Fix Lubumbashi question detection - CRITICAL
+    # VERSION: 2.1.8 - Enhanced NLU patterns for location questions
     
     def name(self) -> Text:
         return "action_greet_personalized"
