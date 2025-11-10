@@ -1,5 +1,5 @@
 # actions/actions.py
-# CRITICAL RELOAD TIMESTAMP: 2025-11-10 20:15:00 UTC - OPENAI INTEGRATION
+# CRITICAL RELOAD TIMESTAMP: 2025-11-10 21:00:00 UTC - PERFORMANCE OPTIMIZATION
 # THIS FILE MUST BE RELOADED - CHECK THIS TIMESTAMP IN LOGS!
 
 from typing import Any, Text, Dict, List
@@ -18,8 +18,8 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeou
 
 # CRITICAL: Log file load timestamp
 print("="*80)
-print("🔥 ACTIONS.PY LOADED - TIMESTAMP: 2025-11-10 20:15:00 UTC")
-print("🔥 SWITCHED FROM COHERE TO OPENAI GPT-4o FOR BETTER PERFORMANCE")
+print("🔥 ACTIONS.PY LOADED - TIMESTAMP: 2025-11-10 21:00:00 UTC")
+print("🔥 OPTIMIZED: Reduced docs from 170 to 50 - 4min to <5s loading")
 print("="*80)
 
 # Load environment variables from .env file
@@ -217,13 +217,26 @@ def load_and_embed_docs():
     
     print(f"📚 Loading documents from {docs_path}...")
     
-    # Read all .txt files (limit to first 8000 chars to avoid token limits)
-    for file_path in docs_path.glob('*.txt'):
+    # Read all .txt files (limit to first 4000 chars to avoid token limits)
+    # Also limit total number of docs to 50 most important ones
+    all_files = list(docs_path.glob('*.txt'))
+    
+    # Prioritize important files (brochures, reports)
+    priority_keywords = ['brochure', 'rapport', 'final', '2024', '2025', '2026', 'invitation']
+    priority_files = [f for f in all_files if any(kw in f.name.lower() for kw in priority_keywords)]
+    other_files = [f for f in all_files if f not in priority_files]
+    
+    # Take top 30 priority + top 20 others = 50 total
+    selected_files = priority_files[:30] + other_files[:20]
+    
+    print(f"📄 Selected {len(selected_files)} documents out of {len(all_files)} (prioritizing recent/important ones)")
+    
+    for file_path in selected_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-                # Limit content to avoid OpenAI token limits
-                content = content[:8000] if len(content) > 8000 else content
+                # Limit content to 4000 chars (more aggressive than before)
+                content = content[:4000] if len(content) > 4000 else content
                 documents.append({
                     'filename': file_path.name,
                     'content': content

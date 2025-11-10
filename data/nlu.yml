@@ -198,25 +198,14 @@ nlu:
     - pourquoi lubumbashi a été choisi ?
     - pourquoi lubumbashi 2026 ?
     - pourquoi à lubumbashi ?
-    - pourquoi cette ville ?
     - raison de lubumbashi
     - raison du choix de lubumbashi
     - pourquoi cette localisation ?
-    - pourquoi cette ville a été choisie ?
     - pourquoi pas kinshasa ?
     - pourquoi organiser à lubumbashi ?
-    - lubumbashi pourquoi ?
     - pourquoi expobeton lubumbashi
-    - pourquoi lubumbashi
-    - lubumbashi
     - pourquoi lubumabshi
-    - lubumabshi
-    - corridor ouest
-    - rôle de kinshasa
-    - qui a parlé en 2023 ?
-    - intervenants 2023
-    - ministre de l'industrie
-    - gouverneur de kinshasa
+    - pourquoi choisir cette ville
 
 - intent: ask_urban_development
   examples: |
