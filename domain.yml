@@ -20,6 +20,7 @@ intents:
   - ask_general_question
   - ask_why_lubumbashi
   - ask_urban_development
+  - ask_city_population
 
 entities:
   - person
@@ -59,6 +60,8 @@ responses:
     - text: "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
   utter_urban_development:
     - text: "🏙️ **Développement urbain et ExpoBeton RDC:**\n\n🏛️ **Mission d'ExpoBeton:**\nPromouvoir les infrastructures, la construction et le développement urbain en RDC pour rebâtir les villes congolaises et soutenir la croissance économique.\n\n🛣️ **Défis urbains majeurs:**\n• Congestion urbaine (Kinshasa: 15M+ habitants)\n• Déficit de logements (2M unités manquantes)\n• Infrastructures vieillissantes\n• Assainissement et gestion des déchets\n\n💡 **Solutions promues par ExpoBeton:**\n• Partenariats publics-privés (PPP)\n• Cités satellites et décongestio\n• Modernisation des infrastructures\n• Zones économiques spéciales (ZES)\n\n🏛️ **Impact:**\nCréation du Ministère de la Politique de la Ville (2024) suite aux recommandations d'ExpoBeton."
+  utter_city_population:
+    - text: "📊 **Populations des villes du Grand Katanga (estimations 2024):**\n\n🏙️ **Kinshasa:** ~17 millions d'habitants\n🏭 **Lubumbashi:** ~2,5 millions d'habitants\n⛏️ **Kolwezi:** ~500 000 habitants\n⛵ **Kalemie:** ~200 000 habitants\n\nℹ️ *Ces chiffres sont des estimations basées sur les données de l'ONU et des rapports gouvernementaux. Les chiffres officiels peuvent varier.*"
 
 actions:
   - action_greet_personalized
@@ -77,6 +80,7 @@ actions:
   - utter_end_conversation
   - utter_why_lubumbashi
   - utter_urban_development
+  - utter_city_population
 
 forms: {}
 

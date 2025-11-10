@@ -206,6 +206,8 @@ nlu:
     - pourquoi expobeton lubumbashi
     - pourquoi lubumabshi
     - pourquoi choisir cette ville
+    - expliquez le choix de lubumbashi
+    - justification du choix de lubumbashi
 
 - intent: ask_urban_development
   examples: |
@@ -222,3 +224,16 @@ nlu:
     - villes congolaises
     - reconstruction urbaine
     - aménagement urbain
+
+- intent: ask_city_population
+  examples: |
+    - quelle est la population de kinshasa
+    - combien d'habitants a kinshasa
+    - population de lubumbashi
+    - combien de personnes vivent à kolwezi
+    - quelle est la population de kalemie
+    - combien d'habitants y a-t-il à lubumbashi
+    - population kinshasa
+    - population kolwezi
+    - habitants lubumbashi
+    - nombre d'habitants kinshasa
