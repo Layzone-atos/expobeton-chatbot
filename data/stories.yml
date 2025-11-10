@@ -69,7 +69,7 @@ stories:
 - story: ask city population story
   steps:
   - intent: ask_city_population
-  - action: action_answer_expobeton
+  - action: utter_city_population
 
 - story: ask about people story
   steps:
