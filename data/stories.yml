@@ -61,6 +61,11 @@ stories:
   - intent: ask_why_lubumbashi
   - action: utter_why_lubumbashi
 
+- story: ask urban development story
+  steps:
+  - intent: ask_urban_development
+  - action: utter_urban_development
+
 - story: ask about people story
   steps:
   - intent: ask_about_people

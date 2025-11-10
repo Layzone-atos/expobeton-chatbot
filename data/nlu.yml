@@ -187,14 +187,6 @@ nlu:
     - corridors africains
     - zones économiques spéciales
     - zes
-    - parle-moi du développement urbain
-    - développement urbain
-    - développement urbain en rdc
-    - urbanisation
-    - parle-moi de l'urbanisation
-    - défis urbains
-    - quels sont les défis de kinshasa
-    - infrastructures urbaines
 
 - intent: ask_why_lubumbashi
   examples: |
@@ -225,3 +217,19 @@ nlu:
     - intervenants 2023
     - ministre de l'industrie
     - gouverneur de kinshasa
+
+- intent: ask_urban_development
+  examples: |
+    - parle-moi du développement urbain
+    - développement urbain
+    - développement urbain en rdc
+    - urbanisation
+    - parle-moi de l'urbanisation
+    - défis urbains
+    - quels sont les défis de kinshasa
+    - infrastructures urbaines
+    - développement des villes
+    - croissance urbaine
+    - villes congolaises
+    - reconstruction urbaine
+    - aménagement urbain
