@@ -1,5 +1,5 @@
 # actions/actions.py
-# CRITICAL RELOAD TIMESTAMP: 2025-11-10 19:45:00 UTC - COHERE TIMEOUT FIX
+# CRITICAL RELOAD TIMESTAMP: 2025-11-10 20:15:00 UTC - OPENAI INTEGRATION
 # THIS FILE MUST BE RELOADED - CHECK THIS TIMESTAMP IN LOGS!
 
 from typing import Any, Text, Dict, List
@@ -7,7 +7,7 @@ from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 import os
 import glob
-import cohere
+import openai
 import numpy as np
 from pathlib import Path
 import smtplib
@@ -18,8 +18,8 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeou
 
 # CRITICAL: Log file load timestamp
 print("="*80)
-print("🔥 ACTIONS.PY LOADED - TIMESTAMP: 2025-11-10 19:45:00 UTC")
-print("🔥 COHERE TIMEOUT REDUCED TO 5 SECONDS FOR BETTER UX")
+print("🔥 ACTIONS.PY LOADED - TIMESTAMP: 2025-11-10 20:15:00 UTC")
+print("🔥 SWITCHED FROM COHERE TO OPENAI GPT-4o FOR BETTER PERFORMANCE")
 print("="*80)
 
 # Load environment variables from .env file
@@ -30,9 +30,12 @@ except ImportError:
     # dotenv not available, environment variables must be set manually
     pass
 
-# Initialize Cohere client
-COHERE_API_KEY = os.getenv('COHERE_API_KEY', 'qvXFOdNWBqKm3BTibge6Ssic9OTWmlsLxh0MaMng')
-co = cohere.Client(COHERE_API_KEY)
+# Initialize OpenAI client
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+if OPENAI_API_KEY:
+    openai.api_key = OPENAI_API_KEY
+else:
+    print("⚠️ WARNING: OPENAI_API_KEY not set! Using default from environment.")
 
 # Email configuration
 SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.gmail.com')  # Default to Gmail
@@ -203,7 +206,7 @@ def send_unanswered_question_email(user_question: str):
             pass
 
 def load_and_embed_docs():
-    """Load all docs and create Cohere embeddings"""
+    """Load all docs and create OpenAI embeddings"""
     global DOCS_CACHE, EMBEDDINGS_CACHE
     
     if DOCS_CACHE is not None:
@@ -212,51 +215,64 @@ def load_and_embed_docs():
     docs_path = Path(__file__).parent.parent / 'docs'
     documents = []
     
-    # Read all .txt files
+    print(f"📚 Loading documents from {docs_path}...")
+    
+    # Read all .txt files (limit to first 8000 chars to avoid token limits)
     for file_path in docs_path.glob('*.txt'):
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            documents.append({
-                'filename': file_path.name,
-                'content': content
-            })
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                # Limit content to avoid OpenAI token limits
+                content = content[:8000] if len(content) > 8000 else content
+                documents.append({
+                    'filename': file_path.name,
+                    'content': content
+                })
+        except Exception as e:
+            print(f"⚠️ Error reading {file_path.name}: {e}")
+            continue
     
     if not documents:
+        print("⚠️ No documents found!")
         return [], []
     
-    # Create embeddings with Cohere
+    print(f"✅ Loaded {len(documents)} documents, creating OpenAI embeddings...")
+    
+    # Create embeddings with OpenAI (batch processing)
     texts = [doc['content'] for doc in documents]
     try:
-        response = co.embed(
-            texts=texts,
-            model='embed-multilingual-v3.0',
-            input_type='search_document'
+        response = openai.embeddings.create(
+            input=texts,
+            model="text-embedding-3-small"  # Fast, multilingual, cost-effective
         )
-        embeddings = response.embeddings
+        embeddings = [item.embedding for item in response.data]
         
         DOCS_CACHE = documents
         EMBEDDINGS_CACHE = np.array(embeddings)
         
+        print(f"✅ Successfully created {len(embeddings)} OpenAI embeddings")
         return documents, embeddings
     except Exception as e:
-        print(f"Error creating embeddings: {e}")
+        print(f"❌ Error creating OpenAI embeddings: {e}")
+        import traceback
+        traceback.print_exc()
         return documents, []
 
-def find_relevant_docs(query: str, top_k: int = 2):
-    """Find most relevant documents using Cohere embeddings"""
+def find_relevant_docs(query: str, top_k: int = 3):
+    """Find most relevant documents using OpenAI embeddings"""
     documents, doc_embeddings = load_and_embed_docs()
     
     if not documents or len(doc_embeddings) == 0:
+        print("⚠️ No documents or embeddings available")
         return []
     
     try:
-        # Create embedding for query
-        query_response = co.embed(
-            texts=[query],
-            model='embed-multilingual-v3.0',
-            input_type='search_query'
+        # Create embedding for query with OpenAI
+        query_response = openai.embeddings.create(
+            input=[query],
+            model="text-embedding-3-small"
         )
-        query_embedding = np.array(query_response.embeddings[0])
+        query_embedding = np.array(query_response.data[0].embedding)
         
         # Calculate cosine similarity
         doc_embeddings_array = np.array(doc_embeddings)
@@ -268,9 +284,15 @@ def find_relevant_docs(query: str, top_k: int = 2):
         top_indices = np.argsort(similarities)[-top_k:][::-1]
         relevant_docs = [documents[i] for i in top_indices]
         
+        print(f"🔍 Found {len(relevant_docs)} relevant documents for query: {query[:50]}...")
+        for i, doc in enumerate(relevant_docs):
+            print(f"  {i+1}. {doc['filename']} (similarity: {similarities[top_indices[i]]:.3f})")
+        
         return relevant_docs
     except Exception as e:
-        print(f"Error finding relevant docs: {e}")
+        print(f"❌ Error finding relevant docs with OpenAI: {e}")
+        import traceback
+        traceback.print_exc()
         return []
 
 # Multilingual content dictionary
@@ -697,7 +719,7 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
-        # Try to find relevant documents using Cohere for unmatched questions
+        # Try to find relevant documents using OpenAI for unmatched questions
         # TIMEOUT: 5 seconds to ensure fast response time
         try:
             # Create executor with timeout
@@ -706,35 +728,57 @@ class ActionAnswerExpoBeton(Action):
                 try:
                     relevant_docs = future.result(timeout=5)  # 5 seconds max for user experience
                 except FuturesTimeoutError:
-                    print(f"⏰ Cohere search timed out after 5 seconds - returning fallback response immediately")
+                    print(f"⏰ OpenAI search timed out after 5 seconds - returning fallback response immediately")
                     relevant_docs = []
             
             if relevant_docs:
-                # Combine content from top relevant docs
-                context = "\n\n".join([doc['content'][:2000] for doc in relevant_docs])  # Limit per doc
-                
-                # Use Cohere to generate answer from context
+                # Use OpenAI GPT-4o to generate answer from relevant documents
                 try:
-                    response = co.chat(
-                        message=user_message_original,
-                        documents=[{'text': doc['content'], 'title': doc['filename']} for doc in relevant_docs],
-                        model='command-r',
+                    # Prepare context from documents
+                    context_parts = []
+                    for i, doc in enumerate(relevant_docs):
+                        # Limit each doc to 3000 chars to stay within token limits
+                        content = doc['content'][:3000] if len(doc['content']) > 3000 else doc['content']
+                        context_parts.append(f"Document {i+1} ({doc['filename']}):\n{content}")
+                    
+                    context = "\n\n".join(context_parts)
+                    
+                    # Call OpenAI GPT-4o
+                    response = openai.chat.completions.create(
+                        model="gpt-4o",
+                        messages=[
+                            {
+                                "role": "system",
+                                "content": "Tu es un assistant intelligent pour ExpoBeton RDC. Réponds de manière précise et concise en français, en te basant UNIQUEMENT sur les documents fournis. Si l'information n'est pas dans les documents, dis-le clairement. Utilise des emojis et une mise en forme claire (bullet points, numéros) pour rendre la réponse facile à lire."
+                            },
+                            {
+                                "role": "user",
+                                "content": f"Question: {user_message_original}\n\nDocuments de référence:\n{context}"
+                            }
+                        ],
                         temperature=0.3,
-                        preamble="Tu es un assistant intelligent pour ExpoBeton RDC. Réponds de manière précise et concise en français, en te basant UNIQUEMENT sur les documents fournis. Si l'information n'est pas dans les documents, dis-le clairement."
+                        max_tokens=500
                     )
                     
-                    answer = response.text.strip()
+                    answer = response.choices[0].message.content.strip()
                     
                     # Check if answer is meaningful (not just "Je ne sais pas")
-                    if len(answer) > 50 and answer.lower() not in ['je ne sais pas', 'je ne peux pas répond re', 'non']:
+                    if len(answer) > 50 and 'ne sais pas' not in answer.lower() and 'ne peux pas' not in answer.lower():
+                        print(f"✅ OpenAI GPT-4o generated answer: {answer[:100]}...")
                         dispatcher.utter_message(text=answer)
                         bot_response = answer
                         log_conversation_message(session_id, 'bot', bot_response, metadata)
                         return []
+                    else:
+                        print(f"⚠️ OpenAI answer not meaningful: {answer}")
                 except Exception as e:
-                    print(f"Error generating Cohere response: {e}")
+                    print(f"❌ Error generating OpenAI response: {e}")
+                    import traceback
+                    traceback.print_exc()
         except Exception as e:
-            print(f"Error finding relevant docs: {e}")
+            print(f"❌ Error finding relevant docs: {e}")
+            import traceback
+            traceback.print_exc()
         
         # Default: show help and log unanswered question
         if any(word in user_question for word in ['fondateur', 'créateur', 'président', 'qui est', 'qui sont']):
