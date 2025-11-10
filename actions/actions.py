@@ -1,5 +1,5 @@
 # actions/actions.py
-# CRITICAL RELOAD TIMESTAMP: 2025-11-08 17:30:00 UTC - LUBUMBASHI FIX V4
+# CRITICAL RELOAD TIMESTAMP: 2025-11-10 19:45:00 UTC - COHERE TIMEOUT FIX
 # THIS FILE MUST BE RELOADED - CHECK THIS TIMESTAMP IN LOGS!
 
 from typing import Any, Text, Dict, List
@@ -18,8 +18,8 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeou
 
 # CRITICAL: Log file load timestamp
 print("="*80)
-print("🔥 ACTIONS.PY LOADED - TIMESTAMP: 2025-11-08 17:30:00 UTC")
-print("🔥 LUBUMBASHI FIX V4 - ULTRA BROAD MATCH ENABLED")
+print("🔥 ACTIONS.PY LOADED - TIMESTAMP: 2025-11-10 19:45:00 UTC")
+print("🔥 COHERE TIMEOUT REDUCED TO 5 SECONDS FOR BETTER UX")
 print("="*80)
 
 # Load environment variables from .env file
@@ -698,15 +698,15 @@ class ActionAnswerExpoBeton(Action):
             return []
         
         # Try to find relevant documents using Cohere for unmatched questions
-        # TIMEOUT: 30 seconds to avoid 5-minute delays
+        # TIMEOUT: 5 seconds to ensure fast response time
         try:
             # Create executor with timeout
             with ThreadPoolExecutor(max_workers=1) as executor:
                 future = executor.submit(find_relevant_docs, tracker.latest_message.get('text', ''), 3)
                 try:
-                    relevant_docs = future.result(timeout=30)  # 30 seconds max
+                    relevant_docs = future.result(timeout=5)  # 5 seconds max for user experience
                 except FuturesTimeoutError:
-                    print(f"⏰ Cohere search timed out after 30 seconds")
+                    print(f"⏰ Cohere search timed out after 5 seconds - returning fallback response immediately")
                     relevant_docs = []
             
             if relevant_docs:
