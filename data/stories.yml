@@ -56,10 +56,10 @@ stories:
   - intent: ask_event_theme
   - action: utter_event_theme
 
-- story: ask why lubumbashi story
+- story: ask why kalemie story
   steps:
-  - intent: ask_why_lubumbashi
-  - action: utter_why_lubumbashi
+  - intent: ask_why_kalemie
+  - action: utter_why_kalemie
 
 - story: ask urban development story
   steps:

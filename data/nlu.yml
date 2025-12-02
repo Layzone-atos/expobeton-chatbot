@@ -187,27 +187,36 @@ nlu:
     - corridors africains
     - zones économiques spéciales
     - zes
+    - c'est quoi le lithium ?
+    - parle-moi du lithium
+    - gisements de manono
+    - réserves de lithium
+    - capitale du lithium
+    - lac tanganyika
+    - port de kalemie
+    - tanganyika province
 
-- intent: ask_why_lubumbashi
+- intent: ask_why_kalemie
   examples: |
-    - pourquoi lubumbashi ?
-    - pourquoi lubumbashi en 2026 ?
-    - pourquoi expobeton à lubumbashi ?
-    - pourquoi lubumbashi pour 2026 ?
-    - pourquoi choisir lubumbashi ?
-    - pourquoi lubumbashi a été choisi ?
-    - pourquoi lubumbashi 2026 ?
-    - pourquoi à lubumbashi ?
-    - raison de lubumbashi
-    - raison du choix de lubumbashi
+    - pourquoi kalemie ?
+    - pourquoi kalemie en 2026 ?
+    - pourquoi expobeton à kalemie ?
+    - pourquoi kalemie pour 2026 ?
+    - pourquoi choisir kalemie ?
+    - pourquoi kalemie a été choisi ?
+    - pourquoi kalemie 2026 ?
+    - pourquoi à kalemie ?
+    - raison de kalemie
+    - raison du choix de kalemie
     - pourquoi cette localisation ?
-    - pourquoi pas kinshasa ?
-    - pourquoi organiser à lubumbashi ?
-    - pourquoi expobeton lubumbashi
-    - pourquoi lubumabshi
+    - pourquoi pas lubumbashi ?
+    - pourquoi organiser à kalemie ?
+    - pourquoi expobeton kalemie
     - pourquoi choisir cette ville
-    - expliquez le choix de lubumbashi
-    - justification du choix de lubumbashi
+    - expliquez le choix de kalemie
+    - justification du choix de kalemie
+    - c'est quoi la capitale du lithium ?
+    - pourquoi capitale du lithium ?
 
 - intent: ask_urban_development
   examples: |

@@ -335,20 +335,20 @@ MULTILINGUAL_CONTENT = {
         'ar': "ExpoBeton RDC هو المعرض الدولي للبناء والبنية التحتية والتنمية الحضرية في جمهورية الكونغو الديمقراطية. إنه منتدى سنوي يخلق مساحة للتفكير والشراكة لإعادة بناء المدن الكونغولية ودعم النمو الاقتصادي."
     },
     'dates': {
-        'fr': "La prochaine édition (11ème) d'ExpoBeton RDC aura lieu du 30 avril au 1er mai 2026 à Lubumbashi, au Nouveau Bâtiment de l'Assemblée Provinciale du Haut-Katanga.",
-        'en': "The next edition (11th) of ExpoBeton RDC will take place from April 30 to May 1, 2026 in Lubumbashi, at the New Building of the Provincial Assembly of Haut-Katanga.",
-        'zh': "ExpoBeton RDC下一届（第11届）将于2026年4月30日至5月1日在卢本巴希上加丹加省议会新大楼举行。",
-        'ru': "Следующее издание (11-е) ExpoBeton RDC состоится с 30 апреля по 1 мая 2026 года в Лубумбаши, в новом здании Провинциальной ассамблеи Верхней Катанги.",
-        'es': "La próxima edición (11ª) de ExpoBeton RDC tendrá lugar del 30 de abril al 1 de mayo de 2026 en Lubumbashi, en el Nuevo Edificio de la Asamblea Provincial de Haut-Katanga.",
-        'ar': "ستقام النسخة القادمة (الحادية عشرة) من ExpoBeton RDC من 30 أبريل إلى 1 مايو 2026 في لوبومباشي، في المبنى الجديد للجمعية الإقليمية لهوت-كاتانغا."
+        'fr': "La prochaine édition (11ème) d'ExpoBeton RDC aura lieu du 15 au 18 avril 2026 à Kalemie, Province du Tanganyika. Cette édition est entièrement dédiée à Kalemie en tant que capitale du lithium et carrefour stratégique des corridors africains.",
+        'en': "The next edition (11th) of ExpoBeton RDC will take place from April 15 to 18, 2026 in Kalemie, Tanganyika Province. This edition is entirely dedicated to Kalemie as the lithium capital and strategic hub of African corridors.",
+        'zh': "ExpoBeton RDC下一届（第11届）将于2026年4月15日至18日在坦噶尼喀省卡莱米举行。本届将完全致力于卡莱米，它是锋都和非洲走廊的战略枢纽。",
+        'ru': "Следующее издание (11-е) ExpoBeton RDC состоится с 15 по 18 апреля 2026 года в Калеми, провинция Танганьика. Это издание полностью посвящено Калеми как литиевой столице и стратегическому узлу африканских корридоров.",
+        'es': "La próxima edición (11ª) de ExpoBeton RDC tendrá lugar del 15 al 18 de abril de 2026 en Kalemie, Provincia de Tanganyika. Esta edición está completamente dedicada a Kalemie como capital del litio y centro estratégico de los corredores africanos.",
+        'ar': "ستقام النسخة القادمة (الحادية عشرة) من ExpoBeton RDC من 15 إلى 18 أبريل 2026 في كاليمي، مقاطعة تنجانيقا. هذه النسخة مخصصة بالكامل لكاليمي باعتبارها عاصمة الليثيوم ومركز استراتيجي للممرات الأفريقية."
     },
     'location': {
-        'fr': "La prochaine édition d'ExpoBeton RDC se tiendra à Lubumbashi, Haut-Katanga, au Nouveau Bâtiment de l'Assemblée Provinciale.",
-        'en': "The next edition of ExpoBeton RDC will be held in Lubumbashi, Haut-Katanga, at the New Building of the Provincial Assembly.",
-        'zh': "ExpoBeton RDC下一届将在上加丹加卢本巴希省议会新大楼举行。",
-        'ru': "Следующее издание ExpoBeton RDC будет проходить в Лубумбаши, Верхняя Катанга, в новом здании Провинциальной ассамблеи.",
-        'es': "La próxima edición de ExpoBeton RDC se celebrará en Lubumbashi, Haut-Katanga, en el Nuevo Edificio de la Asamblea Provincial.",
-        'ar': "ستقام النسخة القادمة من ExpoBeton RDC في لوبومباشي، هوت-كاتانغا، في المبنى الجديد للجمعية الإقليمية."
+        'fr': "La prochaine édition d'ExpoBeton RDC se tiendra à Kalemie, Province du Tanganyika. Kalemie est la capitale du lithium pour la RDC et une porte d'entrée stratégique vers les corridors africains.",
+        'en': "The next edition of ExpoBeton RDC will be held in Kalemie, Tanganyika Province. Kalemie is the lithium capital for the DRC and a strategic gateway to African corridors.",
+        'zh': "ExpoBeton RDC下一届将在坦噶尼喀省卡莱米举行。卡莱米是刚果民主共和国的锋都，也是通往非洲走廊的战略门户。",
+        'ru': "Следующее издание ExpoBeton RDC будет проходить в Калеми, провинция Танганьика. Калеми является литиевой столицей ДРК и стратегическим шлюзом к африканским корридорам.",
+        'es': "La próxima edición de ExpoBeton RDC se celebrará en Kalemie, Provincia de Tanganyika. Kalemie es la capital del litio para la RDC y una puerta de entrada estratégica a los corredores africanos.",
+        'ar': "ستقام النسخة القادمة من ExpoBeton RDC في كاليمي، مقاطعة تنجانيقا. كاليمي هي عاصمة الليثيوم في جمهورية الكونغو الديمقراطية وبوابة استراتيجية للممرات الأفريقية."
     },
     'thank_you': {
         'fr': "De rien! C'est avec plaisir! 😊\n\nSi vous avez d'autres questions sur ExpoBeton RDC, n'hésitez pas à me demander!",

@@ -18,7 +18,7 @@ intents:
   - ask_event_theme
   - ask_about_people
   - ask_general_question
-  - ask_why_lubumbashi
+  - ask_why_kalemie
   - ask_urban_development
   - ask_city_population
 
@@ -51,13 +51,13 @@ responses:
   utter_about_expobeton:
     - text: "ExpoBeton RDC est le salon international de la construction, des infrastructures et du développement urbain en République Démocratique du Congo. C'est un forum annuel qui crée un espace de réflexion et de partenariat pour rebâtir les villes congolaises et soutenir la croissance économique."
   utter_event_dates:
-    - text: "La prochaine édition (11ème) d'ExpoBeton RDC aura lieu du 30 avril au 1er mai 2026 à Lubumbashi, au Nouveau Bâtiment de l'Assemblée Provinciale du Haut-Katanga."
+    - text: "La prochaine édition (11ème) d'ExpoBeton RDC aura lieu du 15 au 18 avril 2026 à Kalemie, Province du Tanganyika. Cette édition est entièrement dédiée à Kalemie en tant que capitale du lithium et carrefour stratégique des corridors africains."
   utter_event_location:
-    - text: "La prochaine édition d'ExpoBeton RDC se tiendra à Lubumbashi, Haut-Katanga, au Nouveau Bâtiment de l'Assemblée Provinciale."
+    - text: "La prochaine édition d'ExpoBeton RDC se tiendra à Kalemie, Province du Tanganyika. Kalemie est la capitale du lithium pour la RDC et une porte d'entrée stratégique vers les corridors africains."
   utter_event_theme:
-    - text: "Le thème de l'édition 2026 (11ème) est : 'Grand Katanga : Carrefour Stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est'. Cette édition se concentre sur Lubumbashi, Kalemie et Kolwezi comme piliers du développement régional."
-  utter_why_lubumbashi:
-    - text: "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
+    - text: "Le thème de l'édition 2026 (11ème) est : 'KALEMIE, CAPITALE DU LITHIUM ET CARREFOUR STRATÉGIQUE AU COEUR DES CORRIDORS AFRICAINS DU SUD, DE L'EST, DE L'OUEST'. Cette édition est entièrement dédiée à la ville de Kalemie dans la province du Tanganyika."
+  utter_why_kalemie:
+    - text: "ExpoBeton 2026 se tiendra à Kalemie car cette ville émerge comme pilier incontournable de la transformation du Grand Katanga. Kalemie est la capitale du lithium pour la RDC grâce aux gisements de Manono (environ 400 millions de tonnes de réserves). Elle possède un port sur le lac Tanganyika qui est une porte d'entrée stratégique pour les corridors Est, Sud et Ouest, reliant la Tanzanie, la Zambie et l'Angola."
   utter_urban_development:
     - text: "🏙️ **Développement urbain et ExpoBeton RDC:**\n\n🏛️ **Mission d'ExpoBeton:**\nPromouvoir les infrastructures, la construction et le développement urbain en RDC pour rebâtir les villes congolaises et soutenir la croissance économique.\n\n🛣️ **Défis urbains majeurs:**\n• Congestion urbaine (Kinshasa: 15M+ habitants)\n• Déficit de logements (2M unités manquantes)\n• Infrastructures vieillissantes\n• Assainissement et gestion des déchets\n\n💡 **Solutions promues par ExpoBeton:**\n• Partenariats publics-privés (PPP)\n• Cités satellites et décongestio\n• Modernisation des infrastructures\n• Zones économiques spéciales (ZES)\n\n🏛️ **Impact:**\nCréation du Ministère de la Politique de la Ville (2024) suite aux recommandations d'ExpoBeton."
   utter_city_population:
@@ -78,7 +78,7 @@ actions:
   - utter_feedback
   - utter_human_handoff
   - utter_end_conversation
-  - utter_why_lubumbashi
+  - utter_why_kalemie
   - utter_urban_development
   - utter_city_population
 
