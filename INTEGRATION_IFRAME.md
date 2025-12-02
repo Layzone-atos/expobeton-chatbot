@@ -7,11 +7,11 @@ https://web-production-9f398e.up.railway.app
 
 ## 🚀 Code d'intégration (Copier-Coller)
 
-### Option 1: Intégration simple (Recommandé)
+### Option 1: Chatbot à DROITE (Par défaut)
 Ajoutez ce code **avant la balise `</body>`** de votre site web:
 
 ```html
-<!-- ExpoBeton Chatbot -->
+<!-- ExpoBeton Chatbot - Position DROITE -->
 <iframe 
     src="https://web-production-9f398e.up.railway.app/web/chatbot-embed.html"
     style="position:fixed;bottom:0;right:0;width:100%;height:100%;border:none;pointer-events:auto;z-index:999999"
@@ -19,7 +19,19 @@ Ajoutez ce code **avant la balise `</body>`** de votre site web:
 ></iframe>
 ```
 
-### Option 2: Intégration avec ID (Pour contrôle JavaScript)
+### Option 2: Chatbot à GAUCHE
+Ajoutez ce code **avant la balise `</body>`** de votre site web:
+
+```html
+<!-- ExpoBeton Chatbot - Position GAUCHE -->
+<iframe 
+    src="https://web-production-9f398e.up.railway.app/web/chatbot-embed-left.html"
+    style="position:fixed;bottom:0;left:0;width:100%;height:100%;border:none;pointer-events:auto;z-index:999999"
+    title="ExpoBeton Assistant"
+></iframe>
+```
+
+### Option 3: Intégration avec ID (Pour contrôle JavaScript)
 ```html
 <!-- ExpoBeton Chatbot -->
 <iframe 
@@ -30,12 +42,12 @@ Ajoutez ce code **avant la balise `</body>`** de votre site web:
 ></iframe>
 ```
 
-### Option 3: Intégration WordPress (Widget HTML personnalisé)
+### Option 4: Intégration WordPress (Widget HTML personnalisé)
 1. Allez dans **Apparence > Widgets**
 2. Ajoutez un widget **HTML personnalisé** dans le pied de page
 3. Collez le code de l'Option 1
 
-### Option 4: Intégration via Google Tag Manager
+### Option 5: Intégration via Google Tag Manager
 1. Créez une nouvelle balise **HTML personnalisé**
 2. Collez le code de l'Option 1
 3. Déclencheur: **Toutes les pages**
@@ -44,7 +56,8 @@ Ajoutez ce code **avant la balise `</body>`** de votre site web:
 
 | Page | URL | Description |
 |------|-----|-------------|
-| **Chatbot intégré** | https://web-production-9f398e.up.railway.app/web/chatbot-embed.html | Version iframe pure |
+| **Chatbot à DROITE** | https://web-production-9f398e.up.railway.app/web/chatbot-embed.html | Version iframe - position droite |
+| **Chatbot à GAUCHE** | https://web-production-9f398e.up.railway.app/web/chatbot-embed-left.html | Version iframe - position gauche |
 | **Page de démo** | https://web-production-9f398e.up.railway.app/web/index.html | Démo complète avec contenu |
 | **Documentation** | https://web-production-9f398e.up.railway.app/web/embed-example.html | Instructions d'intégration |
 
