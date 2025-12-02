@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple d'intégration - ExpoBeton Chatbot</title>
+    <style>
+        /* Styles pour votre site web */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .site-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        .site-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .site-content {
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        /* Styles pour l'iframe du chatbot */
+        #expobeton-chatbot-iframe {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: none;
+            z-index: 999999;
+        }
+        
+        /* Permet les interactions uniquement avec le chatbot */
+        #expobeton-chatbot-iframe.active {
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="site-container">
+        <div class="site-header">
+            <h1>🏗️ Exemple d'intégration du Chatbot ExpoBeton</h1>
+            <p>Voici comment intégrer le chatbot flottant dans votre site web</p>
+        </div>
+        
+        <div class="site-content">
+            <h2>📋 Instructions d'intégration</h2>
+            
+            <div class="info-box">
+                <strong>✅ Le chatbot flottant apparaît en bas à droite de cette page!</strong><br>
+                C'est un exemple fonctionnel que vous pouvez tester immédiatement.
+            </div>
+            
+            <h3>Méthode 1: Intégration via iframe (Recommandé)</h3>
+            <p>Copiez simplement ce code HTML avant la balise <code>&lt;/body&gt;</code> de votre site:</p>
+            
+            <div class="code-block">
+                <pre>&lt;!-- ExpoBeton Chatbot --&gt;
+&lt;iframe 
+    id="expobeton-chatbot-iframe"
+    src="<span class="highlight">https://VOTRE-URL-RAILWAY.railway.app/web/chatbot-embed.html</span>"
+    style="position: fixed; bottom: 0; right: 0; width: 100%; height: 100%; border: none; pointer-events: none; z-index: 999999;"
+    title="ExpoBeton Assistant"
+&gt;&lt;/iframe&gt;
+
+&lt;script&gt;
+    // Permet les interactions avec le chatbot
+    document.getElementById('expobeton-chatbot-iframe').style.pointerEvents = 'auto';
+&lt;/script&gt;</pre>
+            </div>
+            
+            <div class="warning-box">
+                <strong>⚠️ Important:</strong> Remplacez <code class="highlight">VOTRE-URL-RAILWAY.railway.app</code> par l'URL de votre déploiement Railway.
+            </div>
+            
+            <h3>Méthode 2: Intégration simplifiée (Une seule ligne)</h3>
+            <p>Version la plus simple - ajoutez juste avant <code>&lt;/body&gt;</code>:</p>
+            
+            <div class="code-block">
+                <pre>&lt;iframe src="<span class="highlight">https://VOTRE-URL-RAILWAY.railway.app/web/chatbot-embed.html</span>" 
+        style="position:fixed;bottom:0;right:0;width:100%;height:100%;border:none;z-index:999999" 
+        title="ExpoBeton Assistant"&gt;&lt;/iframe&gt;</pre>
+            </div>
+            
+            <h3>Méthode 3: Intégration avec contrôle JavaScript</h3>
+            <p>Pour un contrôle plus avancé:</p>
+            
+            <div class="code-block">
+                <pre>&lt;!-- Ajoutez ceci avant &lt;/body&gt; --&gt;
+&lt;div id="chatbot-container"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+    // Configuration
+    const CHATBOT_URL = '<span class="highlight">https://VOTRE-URL-RAILWAY.railway.app/web/chatbot-embed.html</span>';
+    
+    // Créer et injecter l'iframe
+    const iframe = document.createElement('iframe');
+    iframe.src = CHATBOT_URL;
+    iframe.style.cssText = 'position:fixed;bottom:0;right:0;width:100%;height:100%;border:none;z-index:999999';
+    iframe.title = 'ExpoBeton Assistant';
+    
+    // Ajouter au DOM
+    document.getElementById('chatbot-container').appendChild(iframe);
+&lt;/script&gt;</pre>
+            </div>
+            
+            <h3>📱 Caractéristiques</h3>
+            <ul>
+                <li>✅ Bouton flottant en bas à droite</li>
+                <li>✅ Responsive (fonctionne sur mobile et desktop)</li>
+                <li>✅ Collecte des informations utilisateur (nom, téléphone, email)</li>
+                <li>✅ Support multilingue (Français, English, Swahili)</li>
+                <li>✅ Intégration facile - aucune modification du CSS de votre site</li>
+                <li>✅ Ne perturbe pas le contenu de votre site</li>
+            </ul>
+            
+            <h3>🎨 Personnalisation</h3>
+            <p>Si vous souhaitez personnaliser la position ou le style:</p>
+            
+            <div class="code-block">
+                <pre>&lt;!-- Positionner à gauche --&gt;
+&lt;iframe src="..." style="position:fixed;bottom:0;<span class="highlight">left:0</span>;width:100%;height:100%;..."&gt;&lt;/iframe&gt;
+
+&lt;!-- Réduire la taille sur mobile --&gt;
+&lt;style&gt;
+    @media (max-width: 768px) {
+        #expobeton-chatbot-iframe {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    }
+&lt;/style&gt;</pre>
+            </div>
+            
+            <h3>🔗 URL du chatbot après déploiement</h3>
+            <div class="info-box">
+                Une fois déployé sur Railway, votre URL sera du format:<br>
+                <code>https://prod-rasa-d3f2c138.up.railway.app/web/chatbot-embed.html</code>
+            </div>
+            
+            <h3>✅ Test</h3>
+            <p>Pour vérifier que tout fonctionne:</p>
+            <ol>
+                <li>Ouvrez votre site web dans un navigateur</li>
+                <li>Vérifiez que le bouton de chat apparaît en bas à droite</li>
+                <li>Cliquez dessus pour ouvrir le chatbot</li>
+                <li>Remplissez le formulaire et testez une question</li>
+            </ol>
+            
+            <div class="warning-box">
+                <strong>📌 Note:</strong> Le chatbot fonctionne indépendamment de votre site. Il communique directement avec le serveur RASA sur Railway.
+            </div>
+            
+            <h3>🛠️ Dépannage</h3>
+            <ul>
+                <li><strong>Le chatbot ne s'affiche pas:</strong> Vérifiez l'URL dans l'iframe</li>
+                <li><strong>Erreur CORS:</strong> Assurez-vous que Railway autorise les iframes</li>
+                <li><strong>Le chatbot ne répond pas:</strong> Vérifiez que le service RASA est bien démarré sur Railway</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- ========================================= -->
+    <!-- INTÉGRATION DU CHATBOT (EXEMPLE LIVE)     -->
+    <!-- ========================================= -->
+    <iframe 
+        id="expobeton-chatbot-iframe"
+        src="https://web-production-9f398e.up.railway.app/web/chatbot-embed.html"
+        title="ExpoBeton Assistant"
+    ></iframe>
+    
+    <script>
+        // Active les interactions avec le chatbot
+        const iframe = document.getElementById('expobeton-chatbot-iframe');
+        if (iframe) {
+            iframe.style.pointerEvents = 'auto';
+        }
+    </script>
+</body>
+</html>
