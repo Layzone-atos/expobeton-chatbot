@@ -1,7 +1,9 @@
 responses:
   utter_suggest_followup:
     - text: |
-        Voici quelques questions que vous pouvez poser :
-        - Quelles entreprises ont participé à l'événement ?
-        - Y aura-t-il une prochaine édition ?
-        - Comment s'inscrire pour la prochaine édition ?
+        Voici quelques questions que vous pouvez poser :
+        - Quel est le programme de la 11ème édition ?
+        - Qui sont les intervenants ?
+        - Comment s'inscrire à ExpoBeton 2026 ?
+        - Pourquoi Kalemie pour 2026 ?
+        - Parlez-moi du lithium et des gisements de Manono

@@ -4,9 +4,12 @@ slots:
   example_questions:
     type: text
     initial_value: |
-      - Qu'est-ce que l'Expo Béton ?
-      - Quel est le programme de l'événement ?
-      - Comment puis-je participer ?
+      - C'est quoi ExpoBeton RDC 2026 ?
+      - Quel est le programme de la 11ème édition ?
+      - Quand et où aura lieu ExpoBeton 2026 ?
+      - Qui sont les intervenants ?
+      - Comment s'inscrire ?
+      - Parlez-moi du lithium à Kalemie
     mappings:
       - type: custom
 
@@ -14,9 +17,14 @@ slots:
 responses: 
   utter_what_can_you_do:
     - text: |
-        I can help you with a few basics like:
-        - Connecting you to a human
-        - Help you try out the FAQs
-        - Collect your feedback
+        Je peux vous aider avec :
+        - Les dates, lieu et thème d'ExpoBeton 2026
+        - Le programme détaillé de la 11ème édition
+        - Les intervenants et personnalités
+        - L'inscription et la participation
+        - Le lithium et les gisements de Manono
+        - Les corridors africains
+        - La 10ème édition (bilan)
+        - Vous mettre en contact avec un agent humain
       metadata:
         rephrase: True

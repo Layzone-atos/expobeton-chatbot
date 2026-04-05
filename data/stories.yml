@@ -71,6 +71,51 @@ stories:
   - intent: ask_city_population
   - action: utter_city_population
 
+- story: ask program story
+  steps:
+  - intent: ask_program
+  - action: utter_program
+
+- story: ask speakers story
+  steps:
+  - intent: ask_speakers
+  - action: utter_speakers
+
+- story: ask registration story
+  steps:
+  - intent: ask_registration
+  - action: utter_registration
+
+- story: ask corridors story
+  steps:
+  - intent: ask_corridors
+  - action: utter_corridors
+
+- story: ask lithium story
+  steps:
+  - intent: ask_lithium
+  - action: utter_lithium
+
+- story: ask edition 10 story
+  steps:
+  - intent: ask_edition_10
+  - action: utter_edition_10
+
+- story: ask objectives story
+  steps:
+  - intent: ask_objectives
+  - action: utter_objectives
+
+- story: ask partners story
+  steps:
+  - intent: ask_partners
+  - action: utter_partners
+
+- story: ask tourism culture story
+  steps:
+  - intent: ask_tourism_culture
+  - action: utter_tourism_culture
+
 - story: ask about people story
   steps:
   - intent: ask_about_people

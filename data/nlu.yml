@@ -87,6 +87,17 @@ nlu:
     - quand est la prochaine édition ?
     - dates de la prochaine édition
     - quand aura lieu la prochaine édition ?
+    - c'est quand la 11ème édition ?
+    - quand commence expobeton 2026 ?
+    - quand se termine expobeton ?
+    - combien de jours dure l'événement ?
+    - combien de jours dure expobeton ?
+    - durée de l'événement
+    - quelles sont les dates exactes ?
+    - date de début et fin
+    - expobeton c'est du combien au combien ?
+    - le salon dure combien de temps ?
+    - dates du salon 2026
 
 - intent: ask_about_expobeton
   examples: |
@@ -97,6 +108,12 @@ nlu:
     - qu'est-ce qu'expo beton rdc ?
     - pouvez-vous m'expliquer expobeton ?
     - qu'est-ce que c'est que expobeton ?
+    - parlez-moi d'expobeton
+    - expobeton rdc c'est quoi ?
+    - c'est quoi le salon expobeton ?
+    - présentez-moi expobeton
+    - décrivez expobeton
+    - qu'est-ce que le salon de la construction ?
 
 - intent: ask_event_location
   examples: |
@@ -105,6 +122,14 @@ nlu:
     - où se déroule l'événement ?
     - où aura lieu expobeton ?
     - quelle est l'adresse du salon ?
+    - où se tient expobeton 2026 ?
+    - c'est où la prochaine édition ?
+    - le lieu de l'événement
+    - dans quelle ville ?
+    - dans quelle province ?
+    - où est-ce que ça se passe ?
+    - expobeton se passe où ?
+    - quel est le lieu de la 11ème édition ?
 
 - intent: ask_event_theme
   examples: |
@@ -113,6 +138,12 @@ nlu:
     - c'est quoi le thème de l'événement ?
     - quel thème pour expobeton ?
     - de quoi parle l'événement ?
+    - quel est le thème 2026 ?
+    - c'est quoi le thème de la 11ème édition ?
+    - quel est le sujet principal ?
+    - de quoi traite expobeton cette année ?
+    - quel est le thème du salon ?
+    - thème de l'édition 2026
 
 - intent: ask_about_people
   examples: |
@@ -132,8 +163,6 @@ nlu:
   examples: |
     - parle-moi de kolwezi
     - c'est quoi kolwezi ?
-    - parle-moi de kalemie
-    - c'est quoi kalemie ?
     - parle-moi de kamoa
     - c'est quoi kamoa ?
     - qu'a dit le président en 2024 ?
@@ -142,7 +171,6 @@ nlu:
     - rapport final 2024
     - qui a parlé à expobeton ?
     - quelles villes sont concernées ?
-    - combien de jours dure l'événement ?
     - c'est quoi le grand katanga ?
     - parle-moi du grand katanga
     - qu'est-ce que tfm a présenté ?
@@ -180,21 +208,19 @@ nlu:
     - parle-moi de la bcc
     - quels sont les types de stands ?
     - types de stands
-    - comment s'inscrire ?
-    - inscription
-    - comment participer ?
-    - quels sont les corridors africains ?
-    - corridors africains
-    - zones économiques spéciales
-    - zes
-    - c'est quoi le lithium ?
-    - parle-moi du lithium
-    - gisements de manono
-    - réserves de lithium
-    - capitale du lithium
-    - lac tanganyika
     - port de kalemie
     - tanganyika province
+    - qui est Jean Bamanisa ?
+    - qui est Momo Sunguza ?
+    - c'est quoi le DPSI ?
+    - c'est quoi le PDI ?
+    - parle-moi de Manono
+    - c'est quoi la ville de Manono ?
+    - c'est quoi le Club BTP ?
+    - c'est quoi la CMA ?
+    - c'est quoi Zijin Mining ?
+    - société ZHIJIN
+    - visite de ZHIJIN à Manono
 
 - intent: ask_why_kalemie
   examples: |
@@ -250,3 +276,199 @@ nlu:
     - combien d'habitants à kalemie
     - population exacte de kolwezi
     - quel est le nombre d'habitants de lubumbashi
+
+- intent: ask_program
+  examples: |
+    - quel est le programme ?
+    - programme de l'événement
+    - programme détaillé
+    - quel est le programme de la 11ème édition ?
+    - programme jour par jour
+    - quelles sont les activités prévues ?
+    - que se passe-t-il le premier jour ?
+    - que se passe-t-il le deuxième jour ?
+    - que se passe-t-il le troisième jour ?
+    - que se passe-t-il le quatrième jour ?
+    - programme du jour 1
+    - programme du jour 2
+    - programme du jour 3
+    - programme du jour 4
+    - quels sont les panels ?
+    - quelles sont les conférences ?
+    - qu'est-ce qu'il y a comme activités ?
+    - agenda de l'événement
+    - planning de l'événement
+    - emploi du temps expobeton
+    - y a-t-il des panels ?
+    - quels sujets seront discutés ?
+    - quels sont les thèmes des panels ?
+    - programme expobeton 2026
+    - programme kalemie
+    - qu'est-ce qui est prévu ?
+    - quelles activités le jour 1 ?
+
+- intent: ask_speakers
+  examples: |
+    - qui sont les intervenants ?
+    - quels sont les speakers ?
+    - qui va parler ?
+    - qui sont les panélistes ?
+    - qui ouvre l'événement ?
+    - qui clôture l'événement ?
+    - qui préside la cérémonie d'ouverture ?
+    - qui préside la clôture ?
+    - est-ce que le président sera là ?
+    - est-ce que la première ministre sera là ?
+    - qui est Judith Suminwa ?
+    - qui est Danny Kambo ?
+    - quels ministres participent ?
+    - liste des intervenants
+    - qui sont les conférenciers ?
+    - qui sont les modérateurs ?
+    - les personnalités présentes
+    - quels sont les orateurs ?
+    - qui va intervenir ?
+    - qui sont les invités ?
+    - intervenants expobeton 2026
+
+- intent: ask_registration
+  examples: |
+    - comment s'inscrire ?
+    - inscription
+    - comment participer ?
+    - comment faire pour participer ?
+    - je veux m'inscrire
+    - je veux participer
+    - comment s'inscrire à expobeton ?
+    - comment devenir exposant ?
+    - quel est le processus d'inscription ?
+    - où s'inscrire ?
+    - lien d'inscription
+    - formulaire d'inscription
+    - est-ce que les étudiants peuvent participer ?
+    - qui peut participer ?
+    - comment contacter l'organisation ?
+    - quel est l'email de contact ?
+    - est-ce que vous aidez pour le visa ?
+    - invitation pour visa
+    - horaires de contact
+    - comment exposer ?
+    - comment devenir sponsor ?
+    - quels sont les avantages pour les exposants ?
+    - tarifs de participation
+    - prix des stands
+    - comment réserver un stand ?
+
+- intent: ask_corridors
+  examples: |
+    - c'est quoi les corridors africains ?
+    - corridors africains
+    - quels sont les corridors ?
+    - parle-moi des corridors
+    - corridor central
+    - corridor est
+    - corridor sud
+    - corridor ouest
+    - c'est quoi le corridor de lobito ?
+    - corridor lobito
+    - corridor dar es salaam
+    - qu'est-ce que le corridor central ?
+    - quels corridors passent par kalemie ?
+    - les routes commerciales africaines
+    - intégration régionale
+    - c'est quoi la CIRGL ?
+    - c'est quoi la SADC ?
+    - c'est quoi le COMESA ?
+
+- intent: ask_lithium
+  examples: |
+    - c'est quoi le lithium ?
+    - parle-moi du lithium
+    - gisements de manono
+    - réserves de lithium
+    - capitale du lithium
+    - pourquoi kalemie est la capitale du lithium ?
+    - c'est quoi les gisements de manono ?
+    - combien de réserves de lithium ?
+    - c'est quoi KoBold Metals ?
+    - qui est KoBold ?
+    - projets miniers à manono
+    - qui exploite le lithium à manono ?
+    - Zijin Mining
+    - AVZ Minerals
+    - Bill Gates lithium
+    - Jeff Bezos lithium
+    - potentiel minier kalemie
+    - ressources minières tanganyika
+    - batteries lithium-ion
+    - énergie kalemie
+    - station Mpiana-Mwanga
+    - hydroélectricité kalemie
+
+- intent: ask_edition_10
+  examples: |
+    - comment s'est passée la 10ème édition ?
+    - résultats de l'édition 10
+    - bilan de la 10ème édition
+    - qu'est-ce qui s'est passé en 2025 ?
+    - expobeton 2025
+    - édition 2025
+    - quel était le thème de la 10ème édition ?
+    - où s'est tenue la 10ème édition ?
+    - résultats édition 10
+    - combien de participants en 2025 ?
+    - parle-moi de l'édition précédente
+    - édition précédente
+    - la dernière édition
+    - quels étaient les résultats de 2025 ?
+    - bilan expobeton 2025
+
+- intent: ask_objectives
+  examples: |
+    - quels sont les objectifs ?
+    - objectifs de l'événement
+    - objectifs de la 11ème édition
+    - pourquoi organiser cet événement ?
+    - quel est le but d'expobeton ?
+    - quels sont les résultats attendus ?
+    - qu'est-ce qu'on attend de cette édition ?
+    - quels sont les impacts attendus ?
+    - à quoi sert expobeton ?
+    - quels objectifs pour 2026 ?
+    - quels sont les enjeux ?
+    - c'est quoi les zones économiques spéciales ?
+    - zes
+    - zone économique spéciale
+
+- intent: ask_partners
+  examples: |
+    - qui sont les partenaires ?
+    - quels sont les partenaires ?
+    - partenaires de l'événement
+    - sponsors
+    - qui finance l'événement ?
+    - qui sont les sponsors ?
+    - partenaires institutionnels
+    - partenaires opérationnels
+    - quelles entreprises participent ?
+    - quelles institutions participent ?
+    - quelles universités participent ?
+
+- intent: ask_tourism_culture
+  examples: |
+    - y a-t-il des activités touristiques ?
+    - activités culturelles
+    - tourisme à kalemie
+    - c'est quoi le lac tanganyika ?
+    - parle-moi du lac tanganyika
+    - animations culturelles
+    - danses traditionnelles
+    - y a-t-il un concours pour les jeunes ?
+    - concours étudiants
+    - journée portes ouvertes
+    - activités du jour 1
+    - spectacles culturels
+    - pêche lacustre
+    - plages de kalemie
+    - hauts plateaux de marungu
+    - biodiversité lac tanganyika

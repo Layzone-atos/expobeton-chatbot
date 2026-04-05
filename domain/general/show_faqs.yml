@@ -3,12 +3,14 @@ version: "3.1"
 responses:
   utter_top_faqs:
     - text: |
-        Try out some of these questions you can use to get me to search your knowledge base:
+        Voici les questions les plus fréquentes sur ExpoBeton RDC 2026 :
         
-        - 🤖 What is Rasa?
-        - 💬 What is CALM?
-        - 🔄 What is a flow?
-        - ⚙️ How do I customize my agent?
-        - 🧠 How does Rasa use LLMs?
+        - 📅 Quand et où aura lieu la 11ème édition ?
+        - 🎯 Quel est le thème de 2026 ?
+        - 📋 Quel est le programme ?
+        - 🎤 Qui sont les intervenants ?
+        - ✍️ Comment s'inscrire ?
+        - ⛏️ Pourquoi Kalemie est la capitale du lithium ?
+        - 🌍 C'est quoi les corridors africains ?
       metadata:
         rephrase: True

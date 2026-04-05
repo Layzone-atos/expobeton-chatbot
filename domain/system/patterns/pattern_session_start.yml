@@ -2,17 +2,17 @@ version: "3.1"
 responses:
   utter_welcome:
     - text: |
-        Bienvenue ! Je suis {agent_name} 👋, votre assistant virtuel pour l'Expo Béton RDC 2025. Je suis ici pour vous accompagner dans votre découverte du Salon International de la Construction et des Infrastructures.
+        Bienvenue ! Je suis {agent_name} 👋, votre assistant virtuel pour l'Expo Béton RDC 2026. Je suis ici pour vous accompagner dans votre découverte du Salon International de la Construction, des Infrastructures et des Zones Économiques Spéciales.
 
-        **La 10ème Édition s'est passée du 8 au 11 Octobre 2025**
-        *"Le thème était 100 milliards USD pour rebâtir la RDC post-conflit"*
+        **La 11ème Édition se tiendra du 27 au 30 Mai 2026 à Kalemie**
+        *Thème : « Kalemie – Capital du Lithium et carrefour stratégique au cœur des corridors africains »*
 
         Voici quelques exemples de questions que vous pouvez me poser :
         {example_questions}
 
         Ensemble, construisons l'avenir infrastructuel de la RDC ! 🏗️
   utter_help:
-    - text: "Comment puis-je vous accompagner aujourd'hui concernant Expo Béton RDC 2025 ?"
+    - text: "Comment puis-je vous accompagner aujourd'hui concernant Expo Béton RDC 2026 ?"
       metadata:
         rephrase: True
 
