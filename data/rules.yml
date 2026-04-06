@@ -15,3 +15,58 @@ rules:
     steps:
       - intent: nlu_fallback
       - action: action_answer_expobeton
+
+  # ═══ Registration & Ambassador Rules ═══
+
+  - rule: Activate registration form
+    steps:
+      - intent: register
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Submit registration when form complete
+    condition:
+      - active_loop: registration_form
+    steps:
+      - action: registration_form
+      - active_loop: null
+      - slot_was_set:
+          - requested_slot: null
+      - action: action_submit_registration
+
+  - rule: Activate ambassador form
+    steps:
+      - intent: apply_ambassador
+      - action: ambassador_form
+      - active_loop: ambassador_form
+
+  - rule: Submit ambassador when form complete
+    condition:
+      - active_loop: ambassador_form
+    steps:
+      - action: ambassador_form
+      - active_loop: null
+      - slot_was_set:
+          - requested_slot: null
+      - action: action_submit_ambassador
+
+  - rule: Show registration categories
+    steps:
+      - intent: show_categories
+      - action: action_show_categories
+
+  - rule: User stops registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: stop
+      - action: action_deactivate_loop
+      - active_loop: null
+
+  - rule: User stops ambassador form
+    condition:
+      - active_loop: ambassador_form
+    steps:
+      - intent: stop
+      - action: action_deactivate_loop
+      - active_loop: null

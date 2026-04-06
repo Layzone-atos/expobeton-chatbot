@@ -132,3 +132,111 @@ stories:
     - intent: nlu_fallback
     - intent: ask_general_question
   - action: action_answer_expobeton
+
+# ═══ Registration & Ambassador Stories ═══
+
+- story: happy path - registration as sponsor
+  steps:
+    - intent: register
+    - action: registration_form
+    - active_loop: registration_form
+    - slot_was_set:
+        - requested_slot: reg_company
+    - slot_was_set:
+        - reg_company: "Acme Construction"
+    - slot_was_set:
+        - requested_slot: reg_contact_name
+    - slot_was_set:
+        - reg_contact_name: "Jean Dupont"
+    - slot_was_set:
+        - requested_slot: reg_email
+    - slot_was_set:
+        - reg_email: "jean@acme.com"
+    - slot_was_set:
+        - requested_slot: reg_phone
+    - slot_was_set:
+        - reg_phone: "812345678"
+    - slot_was_set:
+        - requested_slot: reg_country
+    - slot_was_set:
+        - reg_country: "CD"
+    - slot_was_set:
+        - requested_slot: reg_city
+    - slot_was_set:
+        - reg_city: "Kinshasa"
+    - slot_was_set:
+        - requested_slot: reg_category
+    - slot_was_set:
+        - reg_category: "Gold"
+    - slot_was_set:
+        - requested_slot: reg_payment
+    - slot_was_set:
+        - reg_payment: "Mobile Money"
+    - active_loop: null
+    - slot_was_set:
+        - requested_slot: null
+    - action: action_submit_registration
+
+- story: happy path - registration as participant
+  steps:
+    - intent: register
+    - action: registration_form
+    - active_loop: registration_form
+    - slot_was_set:
+        - reg_company: "Freelance"
+    - slot_was_set:
+        - reg_contact_name: "Marie Kabila"
+    - slot_was_set:
+        - reg_email: "marie@email.com"
+    - slot_was_set:
+        - reg_phone: "998877665"
+    - slot_was_set:
+        - reg_country: "CD"
+    - slot_was_set:
+        - reg_city: "Kalemie"
+    - slot_was_set:
+        - reg_category: "Participant Simple"
+    - slot_was_set:
+        - reg_payment: "N/A"
+    - active_loop: null
+    - slot_was_set:
+        - requested_slot: null
+    - action: action_submit_registration
+
+- story: user asks categories then registers
+  steps:
+    - intent: show_categories
+    - action: action_show_categories
+    - intent: register
+    - action: registration_form
+    - active_loop: registration_form
+
+- story: ambassador application
+  steps:
+    - intent: apply_ambassador
+    - action: ambassador_form
+    - active_loop: ambassador_form
+    - slot_was_set:
+        - amb_identity: "Paul Mukendi"
+    - slot_was_set:
+        - amb_gender: "homme"
+    - slot_was_set:
+        - amb_phone: "+243812345678"
+    - slot_was_set:
+        - amb_email: "paul@example.com"
+    - slot_was_set:
+        - amb_company: "Congo Build"
+    - slot_was_set:
+        - amb_country: "CD"
+    - slot_was_set:
+        - amb_city: "Lubumbashi"
+    - slot_was_set:
+        - amb_think_tank: "developpement_villes"
+    - slot_was_set:
+        - amb_contribution: "Expert in urban planning"
+    - slot_was_set:
+        - amb_experience: "oui"
+    - active_loop: null
+    - slot_was_set:
+        - requested_slot: null
+    - action: action_submit_ambassador

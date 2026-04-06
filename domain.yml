@@ -30,9 +30,36 @@ intents:
   - ask_objectives
   - ask_partners
   - ask_tourism_culture
+  - register
+  - apply_ambassador
+  - show_categories
+  - affirm
+  - deny
+  - inform
+  - provide_company
+  - provide_name
+  - provide_email
+  - provide_phone
+  - provide_country
+  - provide_city
+  - provide_category
+  - provide_payment
+  - stop
 
 entities:
   - person
+  - company_name
+  - person_name
+  - email
+  - phone_number
+  - country
+  - city
+  - category
+  - payment_method
+  - sponsor_level
+  - stand_type
+  - gender
+  - think_tank_choice
 
 slots:
   person:
@@ -41,6 +68,232 @@ slots:
     mappings:
     - type: from_entity
       entity: person
+  # Registration slots
+  reg_company:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: company_name
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_company
+  reg_contact_name:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: person_name
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_contact_name
+  reg_email:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: email
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_email
+  reg_phone:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: phone_number
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_phone
+  reg_phone_prefix:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: phone_number
+        conditions:
+          - active_loop: registration_form
+  reg_country:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: country
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_country
+  reg_city:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: city
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_city
+  reg_address:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_address
+  reg_postal:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_postal
+  reg_category:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: category
+        conditions:
+          - active_loop: registration_form
+      - type: from_entity
+        entity: sponsor_level
+        conditions:
+          - active_loop: registration_form
+      - type: from_entity
+        entity: stand_type
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_category
+  reg_payment:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: payment_method
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_payment
+  reg_visa:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_visa
+  reg_history:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_history
+  # Ambassador slots
+  amb_identity:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_identity
+  amb_gender:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_gender
+  amb_phone:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_phone
+  amb_email:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_email
+  amb_company:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_company
+  amb_country:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_country
+  amb_city:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_city
+  amb_think_tank:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_think_tank
+  amb_contribution:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_contribution
+  amb_experience:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_experience
 
 responses:
   utter_greet:
@@ -89,6 +342,62 @@ responses:
     - text: "🤝 **Partenaires ExpoBeton RDC 2026 :**\n\n🏛️ **Institutionnels :** Présidence, Gouvernement, Ministères (Intégration Régionale, Économie, Mines, Transports, Commerce, Urbanisme, ITPR, Industrie), Sénat, Assemblée Nationale\n\n⚙️ **Opérationnels :** CP&DC, RUBIS, Gouvernements provinciaux (Tanganyika, Haut-Katanga, Lualaba)\n\n🏭 **Secteur privé :** Sociétés minières, cimenteries, BTP, bureaux d'études, immobilier, logistique\n\n🏦 **Institutions :** DGDCI, DGDA, DGI, OCC, SNEL, ANAPI, SNCC, GECAMINES, FPI, FEC\n\n🎓 **Universités :** IBTP, Université de Kalemie, ISAU, ISTA, ISIPA, ISC"
   utter_tourism_culture:
     - text: "🎭 **Tourisme et Culture – ExpoBeton 2026 :**\n\nLe **Jour 1 (Mercredi 27 mai)** est une Journée Portes Ouvertes gratuite :\n• Danses traditionnelles du Tanganyika\n• Concerts locaux\n• Expositions d'artisans\n• Démonstrations de pêche lacustre\n• Spectacles de rue\n• Stands gourmands au bord du lac Tanganyika\n\n🌊 **Lac Tanganyika** : Le plus long lac d'eau douce au monde (673 km), +1 000 espèces de poissons, plages de sable fin, hauts plateaux de Marungu\n\n🎉 Un spectacle culturel de la jeunesse clôturera l'événement le Jour 4."
+  # Registration form responses
+  utter_ask_reg_company:
+    - text: "🏢 Quel est le nom de votre entreprise ou organisation ?"
+  utter_ask_reg_contact_name:
+    - text: "👤 Quel est le nom complet de la personne de contact ?"
+  utter_ask_reg_email:
+    - text: "📧 Quelle est votre adresse email ?"
+  utter_ask_reg_phone:
+    - text: "📞 Quel est votre numéro de téléphone ? (ex: +243 812345678)"
+  utter_ask_reg_country:
+    - text: "🌍 De quel pays venez-vous ?"
+  utter_ask_reg_city:
+    - text: "🏙️ Dans quelle ville êtes-vous ?"
+  utter_ask_reg_category:
+    - text: |
+        📋 Pour quelle catégorie souhaitez-vous vous inscrire ?
+
+        **🏆 Sponsor :** Platinum ($40K), Gold ($20K), Silver ($15K), Bronze ($12K)
+        **🏗️ Exposant :** Stand 3×3m ($5K), 2×4m ($3K), 2×3m ($2K)
+        **👤 Participant Simple** (Gratuit)
+  utter_ask_reg_payment:
+    - text: |
+        💳 Choisissez un mode de paiement :
+        • Virement bancaire
+        • Mobile Money
+        • Western Union
+        • Carte bancaire
+        • Cash
+  utter_ask_reg_visa:
+    - text: "🛂 Avez-vous besoin d'une assistance visa ? (oui/non)"
+  utter_ask_reg_history:
+    - text: "📊 Avez-vous déjà participé à ExpoBeton ? (oui/non)"
+  # Ambassador form responses
+  utter_ask_amb_identity:
+    - text: "👤 Quel est votre nom complet ?"
+  utter_ask_amb_gender:
+    - text: "Quel est votre genre ? (homme/femme)"
+  utter_ask_amb_phone:
+    - text: "📞 Quel est votre numéro de téléphone ?"
+  utter_ask_amb_email:
+    - text: "📧 Quelle est votre adresse email ?"
+  utter_ask_amb_company:
+    - text: "🏢 Quelle est votre entreprise ou organisation ?"
+  utter_ask_amb_country:
+    - text: "🌍 Quel pays ?"
+  utter_ask_amb_city:
+    - text: "🏙️ Quelle ville ?"
+  utter_ask_amb_think_tank:
+    - text: |
+        🧠 Quel Think Tank souhaitez-vous rejoindre ?
+        • **Développement des Villes**
+        • **Finance et Investissement**
+  utter_ask_amb_contribution:
+    - text: "💡 Comment comptez-vous contribuer au Think Tank ?"
+  utter_ask_amb_experience:
+    - text: "Avez-vous de l'expérience dans ce domaine ? (oui/non)"
 
 actions:
   - action_greet_personalized
@@ -117,8 +426,35 @@ actions:
   - utter_objectives
   - utter_partners
   - utter_tourism_culture
+  - action_show_categories
+  - action_submit_registration
+  - action_submit_ambassador
+  - action_check_api_health
+  - validate_registration_form
 
-forms: {}
+forms:
+  registration_form:
+    required_slots:
+      - reg_company
+      - reg_contact_name
+      - reg_email
+      - reg_phone
+      - reg_country
+      - reg_city
+      - reg_category
+      - reg_payment
+  ambassador_form:
+    required_slots:
+      - amb_identity
+      - amb_gender
+      - amb_phone
+      - amb_email
+      - amb_company
+      - amb_country
+      - amb_city
+      - amb_think_tank
+      - amb_contribution
+      - amb_experience
 
 session_config:
   session_expiration_time: 60
