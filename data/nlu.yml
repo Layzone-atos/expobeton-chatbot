@@ -333,18 +333,6 @@ nlu:
 
 - intent: ask_registration
   examples: |
-    - comment s'inscrire ?
-    - inscription
-    - comment participer ?
-    - comment faire pour participer ?
-    - je veux m'inscrire
-    - je veux participer
-    - comment s'inscrire à expobeton ?
-    - comment devenir exposant ?
-    - quel est le processus d'inscription ?
-    - où s'inscrire ?
-    - lien d'inscription
-    - formulaire d'inscription
     - est-ce que les étudiants peuvent participer ?
     - qui peut participer ?
     - comment contacter l'organisation ?
@@ -352,11 +340,15 @@ nlu:
     - est-ce que vous aidez pour le visa ?
     - invitation pour visa
     - horaires de contact
-    - comment exposer ?
-    - comment devenir sponsor ?
     - quels sont les avantages pour les exposants ?
-    - tarifs de participation
-    - prix des stands
+    - quelles sont les conditions de participation ?
+    - est-ce qu'il faut un visa ?
+    - quels documents faut-il pour participer ?
+    - est-ce que la participation est gratuite ?
+    - quels sont les frais de participation ?
+    - comment obtenir une invitation ?
+    - les médias peuvent-ils participer ?
+    - les universitaires peuvent participer ?
     - comment réserver un stand ?
 
 - intent: ask_corridors
@@ -509,6 +501,50 @@ nlu:
     - je souhaite enregistrer ma société
     - inscription comme participant
     - je veux m'inscrire comme exposant
+    - comment s'enregistrer
+    - je veux m'enregistrer à expobeton
+    - comment s'enregistrer à expobeton ?
+    - s'enregistrer
+    - je souhaite m'enregistrer
+    - enregistrer mon entreprise
+    - enregistrer ma société
+    - comment m'enregistrer ?
+    - je voudrais m'enregistrer
+    - enregistrement en ligne
+    - enregistrement expobeton
+    - comment faire pour s'enregistrer ?
+    - je veux m'enregistrer comme sponsor
+    - je veux m'enregistrer comme exposant
+    - je veux m'enregistrer comme participant
+    - comment participer ?
+    - comment faire pour participer ?
+    - je veux participer
+    - comment s'inscrire à expobeton ?
+    - comment devenir exposant ?
+    - quel est le processus d'inscription ?
+    - où s'inscrire ?
+    - lien d'inscription
+    - formulaire d'inscription
+    - comment exposer ?
+    - comment devenir sponsor ?
+    - tarifs de participation
+    - prix des stands
+    - register me
+    - I'd like to participate
+    - can I register now
+    - start registration
+    - begin registration
+    - commence l'inscription
+    - commencer l'inscription
+    - lancer l'inscription
+    - démarrer l'inscription
+    - je veux commencer mon inscription
+    - I want to sign up for expobeton 2026
+    - how can I participate
+    - how to register for the event
+    - registration please
+    - inscrivez-moi
+    - enregistrez-moi
 
 - intent: apply_ambassador
   examples: |

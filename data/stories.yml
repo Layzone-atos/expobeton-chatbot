@@ -81,10 +81,13 @@ stories:
   - intent: ask_speakers
   - action: utter_speakers
 
-- story: ask registration story
+- story: ask registration info then register
   steps:
   - intent: ask_registration
   - action: utter_registration
+  - intent: register
+  - action: registration_form
+  - active_loop: registration_form
 
 - story: ask corridors story
   steps:
