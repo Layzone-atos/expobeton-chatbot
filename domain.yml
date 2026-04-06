@@ -123,8 +123,6 @@ slots:
     mappings:
       - type: from_entity
         entity: phone_number
-        conditions:
-          - active_loop: registration_form
   reg_country:
     type: text
     influence_conversation: false
@@ -153,18 +151,12 @@ slots:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_text
-        conditions:
-          - active_loop: registration_form
-            requested_slot: reg_address
+      - type: custom
   reg_postal:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_text
-        conditions:
-          - active_loop: registration_form
-            requested_slot: reg_postal
+      - type: custom
   reg_category:
     type: text
     influence_conversation: true
@@ -443,6 +435,8 @@ forms:
       - reg_city
       - reg_category
       - reg_payment
+      - reg_visa
+      - reg_history
   ambassador_form:
     required_slots:
       - amb_identity

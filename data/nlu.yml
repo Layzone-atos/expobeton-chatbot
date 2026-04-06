@@ -68,7 +68,7 @@ nlu:
 - intent: end_conversation
   examples: |
     - terminer la conversation
-    - arrêter
+    - mettre fin à la discussion
     - fin de discussion
     - c'est tout
 
@@ -76,7 +76,7 @@ nlu:
   examples: |
     - quelles sont les dates de l'événement ?
     - quand a lieu l'événement ?
-    - programme de l'événement
+    - calendrier de l'événement
     - dates s'il vous plaît
     - quand est l'événement ?
     - quand aura lieu expobeton ?
@@ -528,7 +528,6 @@ nlu:
     - comment exposer ?
     - comment devenir sponsor ?
     - tarifs de participation
-    - prix des stands
     - register me
     - I'd like to participate
     - can I register now
@@ -673,29 +672,29 @@ nlu:
   examples: |
     - [RDC](country)
     - [République Démocratique du Congo](country)
-    - [France](country)
-    - [Belgique](country)
+    - je viens de [France](country)
+    - je suis de [Belgique](country)
 
 - intent: provide_city
   examples: |
-    - [Kinshasa](city)
-    - [Kalemie](city)
-    - [Lubumbashi](city)
-    - [Paris](city)
+    - je suis à [Goma](city)
+    - [Mbuji-Mayi](city)
+    - je vis à [Bukavu](city)
+    - [Matadi](city)
 
 - intent: provide_category
   examples: |
-    - [Platinum](sponsor_level)
-    - [Gold](sponsor_level) level
-    - I want [Silver](sponsor_level)
+    - je veux [Platinum](sponsor_level)
+    - catégorie [Gold](sponsor_level)
+    - [Silver](sponsor_level) s'il vous plaît
     - [Bronze](sponsor_level) sponsor
-    - [Exposant Stand 3x3m](category)
-    - [Participant Simple](category)
+    - je suis [Exposant Stand 3x3m](category)
+    - catégorie [Participant Simple](category)
 
 - intent: provide_payment
   examples: |
-    - [Mobile Money](payment_method)
-    - pay with [Cash](payment_method)
-    - [Virement bancaire](payment_method)
-    - [Western Union](payment_method)
-    - by [Carte bancaire](payment_method)
+    - par [Mobile Money](payment_method)
+    - payer par [Cash](payment_method)
+    - par [Virement bancaire](payment_method)
+    - via [Western Union](payment_method)
+    - par [Carte bancaire](payment_method)

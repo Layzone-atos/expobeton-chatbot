@@ -70,3 +70,117 @@ rules:
       - intent: stop
       - action: action_deactivate_loop
       - active_loop: null
+
+  # ═══ Form slot-filling rules ═══
+
+  - rule: Affirm during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: affirm
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Deny during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: deny
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Inform during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: inform
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Provide company during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: provide_company
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Provide name during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: provide_name
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Provide email during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: provide_email
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Provide phone during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: provide_phone
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Provide country during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: provide_country
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Provide city during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: provide_city
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Provide category during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: provide_category
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Provide payment during registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: provide_payment
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: Affirm during ambassador form
+    condition:
+      - active_loop: ambassador_form
+    steps:
+      - intent: affirm
+      - action: ambassador_form
+      - active_loop: ambassador_form
+
+  - rule: Deny during ambassador form
+    condition:
+      - active_loop: ambassador_form
+    steps:
+      - intent: deny
+      - action: ambassador_form
+      - active_loop: ambassador_form
+
+  - rule: Inform during ambassador form
+    condition:
+      - active_loop: ambassador_form
+    steps:
+      - intent: inform
+      - action: ambassador_form
+      - active_loop: ambassador_form
