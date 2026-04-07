@@ -217,21 +217,21 @@ async function sendToRasa(message) {
         
         // Add bot responses
         if (data && data.length > 0) {
-            let lastWasUploadCard = false;
+            let hasUploadSequence = false;
             for (const msg of data) {
-                // Handle custom upload_request messages
-                if (msg.custom && msg.custom.upload_request) {
-                    await renderUploadCard(msg.custom.upload_request);
-                    lastWasUploadCard = true;
-                    await sleep(300);
+                // Handle sequential upload sequence
+                if (msg.custom && msg.custom.upload_sequence) {
+                    hasUploadSequence = true;
+                    await startUploadSequence(msg.custom.upload_sequence);
                 } else if (msg.text) {
-                    // Skip fallback text that follows an upload card
-                    // (fallback contains upload URL for non-widget channels)
-                    if (lastWasUploadCard && msg.text.includes('upload_documents.php')) {
-                        lastWasUploadCard = false;
+                    // Skip fallback text when widget handled upload_sequence
+                    if (hasUploadSequence && (
+                        msg.text.includes('upload_documents.php') ||
+                        msg.text.includes('Félicitation') ||
+                        msg.text.includes('Notre équipe vous contactera')
+                    )) {
                         continue;
                     }
-                    lastWasUploadCard = false;
                     await addMessage(msg.text, 'bot');
                     await sleep(300);
                 }
@@ -290,8 +290,60 @@ function addMessage(text, sender) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// File Upload System
+// File Upload System — Sequential Queue
 // ═══════════════════════════════════════════════════════════════
+
+let uploadQueue = [];        // remaining uploads
+let uploadSeqMeta = null;    // { ref, upload_url_base, auth_header, final_message, closing }
+
+async function startUploadSequence(seq) {
+    uploadSeqMeta = {
+        ref: seq.ref,
+        upload_url_base: seq.upload_url_base,
+        auth_header: seq.auth_header,
+        final_message: seq.final_message,
+        closing: seq.closing,
+    };
+    // Build full upload request objects
+    const allUploads = seq.uploads.map(u => ({
+        ...u,
+        ref: seq.ref,
+        upload_url: `${seq.upload_url_base}?ref=${seq.ref}&type=${u.type}`,
+        auth_header: seq.auth_header,
+    }));
+    // Queue all except the first one
+    uploadQueue = allUploads.slice(1);
+    // Show the first upload card
+    if (allUploads.length > 0) {
+        await renderUploadCard(allUploads[0]);
+    } else {
+        await finishUploadSequence();
+    }
+}
+
+async function advanceUploadQueue() {
+    if (uploadQueue.length > 0) {
+        const next = uploadQueue.shift();
+        await sleep(600);
+        await renderUploadCard(next);
+    } else {
+        await finishUploadSequence();
+    }
+}
+
+async function finishUploadSequence() {
+    if (uploadSeqMeta) {
+        await sleep(400);
+        if (uploadSeqMeta.final_message) {
+            await addMessage(uploadSeqMeta.final_message, 'bot');
+            await sleep(400);
+        }
+        if (uploadSeqMeta.closing) {
+            await addMessage(uploadSeqMeta.closing, 'bot');
+        }
+        uploadSeqMeta = null;
+    }
+}
 
 function renderUploadCard(uploadReq) {
     return new Promise((resolve) => {
@@ -326,7 +378,11 @@ function renderUploadCard(uploadReq) {
                 <span class="upload-status" id="upload-status-${uploadReq.type}">En cours...</span>
             </div>
             <div class="upload-result" id="upload-result-${uploadReq.type}" style="display:none"></div>
-            <p class="upload-skip-link">Ou <a href="${uploadReq.upload_url}" target="_blank">uploadez via le site web</a></p>
+            <div class="upload-card-footer">
+                <a href="${uploadReq.upload_url}" target="_blank" class="upload-skip-link">Uploadez via le site web</a>
+                <span class="upload-skip-sep">|</span>
+                <a href="#" class="upload-skip-link" id="skip-btn-${uploadReq.type}">Passer cette étape</a>
+            </div>
         `;
 
         messageDiv.appendChild(avatarDiv);
@@ -335,37 +391,34 @@ function renderUploadCard(uploadReq) {
         chatMessages.scrollTop = chatMessages.scrollHeight;
         playSound('botMessage');
 
-        // Store in messages
         chatState.messages.push({
             text: `[Upload demandé: ${uploadReq.label}]`,
             sender: 'bot',
             timestamp: new Date().toISOString()
         });
 
-        // Set up file input handler
+        // File input handler
         const fileInput = document.getElementById(`file-input-${uploadReq.type}`);
         const dropZone = document.getElementById(`drop-zone-${uploadReq.type}`);
 
         fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFileSelected(e.target.files[0], uploadReq);
-            }
+            if (e.target.files.length > 0) handleFileSelected(e.target.files[0], uploadReq);
         });
 
         // Drag and drop
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('drag-over');
-        });
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('drag-over');
-        });
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('drag-over'); });
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.classList.remove('drag-over');
-            if (e.dataTransfer.files.length > 0) {
-                handleFileSelected(e.dataTransfer.files[0], uploadReq);
-            }
+            if (e.dataTransfer.files.length > 0) handleFileSelected(e.dataTransfer.files[0], uploadReq);
+        });
+
+        // Skip button
+        document.getElementById(`skip-btn-${uploadReq.type}`).addEventListener('click', (e) => {
+            e.preventDefault();
+            showUploadResult(uploadReq.type, true, `⏭️ Étape passée — vous pourrez envoyer le document plus tard.`);
+            advanceUploadQueue();
         });
 
         setTimeout(resolve, 100);
@@ -377,31 +430,25 @@ function handleFileSelected(file, uploadReq) {
     const allowedExts = uploadReq.accept.split(',').map(e => e.trim().toLowerCase());
     const fileExt = '.' + file.name.split('.').pop().toLowerCase();
 
-    // Validate extension
     if (!allowedExts.includes(fileExt)) {
         showUploadResult(uploadReq.type, false,
             `Format non accepté (${fileExt}). Formats autorisés : ${uploadReq.accept}`);
         return;
     }
-
-    // Validate size
     if (file.size > maxBytes) {
         showUploadResult(uploadReq.type, false,
             `Fichier trop volumineux (${(file.size / 1024 / 1024).toFixed(1)} MB). Max : ${uploadReq.max_size_mb} MB`);
         return;
     }
 
-    // Show progress area, hide drop zone
     const dropZone = document.getElementById(`drop-zone-${uploadReq.type}`);
     const progressArea = document.getElementById(`progress-area-${uploadReq.type}`);
     document.getElementById(`file-name-${uploadReq.type}`).textContent = file.name;
     document.getElementById(`file-size-${uploadReq.type}`).textContent =
         `(${(file.size / 1024 / 1024).toFixed(1)} MB)`;
-
     dropZone.style.display = 'none';
     progressArea.style.display = 'block';
 
-    // Upload the file
     uploadFileToAPI(file, uploadReq);
 }
 
@@ -422,20 +469,17 @@ function uploadFileToAPI(file, uploadReq) {
     });
 
     xhr.addEventListener('load', () => {
-        const progressArea = document.getElementById(`progress-area-${uploadReq.type}`);
-        progressArea.style.display = 'none';
-
+        document.getElementById(`progress-area-${uploadReq.type}`).style.display = 'none';
         if (xhr.status >= 200 && xhr.status < 300) {
             try {
                 const result = JSON.parse(xhr.responseText);
                 if (result.success) {
-                    showUploadResult(uploadReq.type, true,
-                        `✅ ${uploadReq.type === 'logo' ? 'Logo' : 'Passeport'} envoyé avec succès !`);
-                    // Notify Rasa
-                    sendToRasa(`Document ${uploadReq.type} uploadé avec succès pour ${uploadReq.ref}`);
+                    const label = uploadReq.type === 'logo' ? 'Logo' : 'Passeport';
+                    showUploadResult(uploadReq.type, true, `✅ ${label} envoyé avec succès !`);
+                    // Advance to next upload or final message
+                    advanceUploadQueue();
                 } else {
-                    showUploadResult(uploadReq.type, false,
-                        result.error || 'Erreur lors de l\'envoi.');
+                    showUploadResult(uploadReq.type, false, result.error || 'Erreur lors de l\'envoi.');
                 }
             } catch (e) {
                 showUploadResult(uploadReq.type, false, 'Réponse invalide du serveur.');

@@ -764,14 +764,24 @@ body {
     border: 1px solid #fecaca;
 }
 
-.upload-skip-link {
+.upload-card-footer {
     text-align: center;
     margin-top: 10px;
     font-size: 11px;
     color: #94a3b8;
 }
 
-.upload-skip-link a {
+.upload-card-footer .upload-skip-link {
     color: #0A2A66;
     text-decoration: underline;
+    cursor: pointer;
+}
+
+.upload-card-footer .upload-skip-link:hover {
+    color: #1e3a8a;
+}
+
+.upload-skip-sep {
+    margin: 0 6px;
+    color: #cbd5e1;
 }

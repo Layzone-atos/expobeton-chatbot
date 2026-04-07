@@ -553,84 +553,85 @@ class ActionSubmitRegistration(Action):
                     "https://expobetonrdc.com/upload_documents.php"
                 )
 
-                # Success message
+                # Build final success message
+                final_msg = (
+                    f"✅ **Félicitation{name_suffix} ! "
+                    f"Inscription réussie avec succès pour ExpoBeton 2026 !**"
+                )
+
+                # Reference number
                 dispatcher.utter_message(
                     text=(
-                        f"✅ **Inscription réussie{name_suffix} !**\n\n"
                         f"Votre numéro de référence : **{ref}**\n"
                         f"Un email de confirmation a été envoyé à {data['email']}."
                     )
                 )
 
-                # Upload cards (custom JSON for widget) + fallback text
-                # NOTE: Rasa wraps json_message inside "custom" automatically,
-                # so we must NOT add an extra "custom" wrapper.
-                # NOTE: Rasa ignores "text" when json_message is present,
-                # so we send fallback text as separate messages.
-                doc_header = f"📎 **Documents à fournir{name_suffix} :**"
-                if needs_logo or needs_passport:
-                    dispatcher.utter_message(text=doc_header)
-
+                # Build upload list
+                uploads = []
                 if needs_logo:
-                    # Custom upload card for widget
-                    dispatcher.utter_message(
-                        json_message={
-                            "upload_request": {
-                                "ref": ref,
-                                "type": "logo",
-                                "accept": ".jpg,.jpeg,.png,.gif,.svg",
-                                "max_size_mb": 10,
-                                "upload_url": f"{upload_base}?ref={ref}&type=logo",
-                                "auth_header": f"Bearer {EXPOBETON_API_KEY}",
-                                "label": "🖼️ Logo de votre entreprise",
-                                "description": "Votre logo sera utilisé sur les supports de communication.\nFormats acceptés : JPG, PNG, SVG — Max 10 MB",
-                            }
-                        }
-                    )
-                    # Fallback text (hidden by widget, visible on other channels)
-                    dispatcher.utter_message(
-                        text=(
-                            f"🖼️ **Logo** (JPG/PNG/SVG, max 10 MB)\n"
-                            f"→ {upload_base}?ref={ref}&type=logo"
-                        )
-                    )
-
+                    uploads.append({
+                        "type": "logo",
+                        "accept": ".jpg,.jpeg,.png,.gif,.svg",
+                        "max_size_mb": 10,
+                        "label": "🖼️ Logo de votre entreprise",
+                        "description": (
+                            "Votre logo sera utilisé sur les supports "
+                            "de communication.\n"
+                            "Formats acceptés : JPG, PNG, SVG — Max 10 MB"
+                        ),
+                    })
                 if needs_passport:
-                    # Custom upload card for widget
+                    uploads.append({
+                        "type": "passport",
+                        "accept": ".pdf",
+                        "max_size_mb": 10,
+                        "label": "🛂 Copie de votre passeport",
+                        "description": (
+                            "Nécessaire pour votre invitation visa.\n"
+                            "Format accepté : PDF uniquement — Max 10 MB"
+                        ),
+                    })
+
+                if uploads:
+                    # Sequential upload sequence (widget handles one-at-a-time)
                     dispatcher.utter_message(
                         json_message={
-                            "upload_request": {
+                            "upload_sequence": {
                                 "ref": ref,
-                                "type": "passport",
-                                "accept": ".pdf",
-                                "max_size_mb": 10,
-                                "upload_url": f"{upload_base}?ref={ref}&type=passport",
+                                "upload_url_base": upload_base,
                                 "auth_header": f"Bearer {EXPOBETON_API_KEY}",
-                                "label": "🛂 Copie de votre passeport",
-                                "description": "Nécessaire pour votre invitation visa.\nFormat accepté : PDF uniquement — Max 10 MB",
+                                "uploads": uploads,
+                                "final_message": final_msg,
+                                "closing": (
+                                    "Notre équipe vous contactera dans les "
+                                    "48 heures.\n"
+                                    "Pour toute question : info@expobetonrdc.com"
+                                ),
                             }
                         }
                     )
-                    # Fallback text
-                    dispatcher.utter_message(
-                        text=(
-                            f"🛂 **Passeport** (PDF)\n"
-                            f"→ {upload_base}?ref={ref}&type=passport"
+                    # Fallback for non-widget channels
+                    fallback = f"📎 **Documents à fournir{name_suffix} :**\n\n"
+                    for u in uploads:
+                        fallback += (
+                            f"• {u['label']}\n"
+                            f"  → {upload_base}?ref={ref}&type={u['type']}\n"
                         )
+                    fallback += (
+                        f"\nOu envoyez par email à "
+                        f"**finance@expobetonrdc.com** (référence: {ref})"
                     )
-
-                if needs_logo or needs_passport:
-                    dispatcher.utter_message(
-                        text=(
-                            f"Ou envoyez vos documents par email à "
-                            f"**finance@expobetonrdc.com** (référence: {ref})"
-                        )
-                    )
+                    dispatcher.utter_message(text=fallback)
+                    dispatcher.utter_message(text=final_msg)
+                else:
+                    # No uploads needed — show success directly
+                    dispatcher.utter_message(text=final_msg)
 
                 dispatcher.utter_message(
                     text=(
-                        f"Notre équipe vous contactera dans les 48 heures.\n"
-                        f"Pour toute question : info@expobetonrdc.com"
+                        "Notre équipe vous contactera dans les 48 heures.\n"
+                        "Pour toute question : info@expobetonrdc.com"
                     )
                 )
         else:

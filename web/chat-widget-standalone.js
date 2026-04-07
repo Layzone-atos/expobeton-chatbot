@@ -478,19 +478,17 @@
             const data = await response.json();
             
             if (data && data.length > 0) {
-                let lastWasUploadCard = false;
+                let hasUploadSequence = false;
                 for (const msg of data) {
-                    if (msg.custom && msg.custom.upload_request) {
-                        await new Promise(resolve => setTimeout(resolve, 500));
-                        renderUploadCardStandalone(msg.custom.upload_request);
-                        lastWasUploadCard = true;
+                    if (msg.custom && msg.custom.upload_sequence) {
+                        hasUploadSequence = true;
+                        await startStandaloneUploadSequence(msg.custom.upload_sequence);
                     } else if (msg.text) {
-                        // Skip fallback text that follows an upload card
-                        if (lastWasUploadCard && msg.text.includes('upload_documents.php')) {
-                            lastWasUploadCard = false;
-                            continue;
-                        }
-                        lastWasUploadCard = false;
+                        if (hasUploadSequence && (
+                            msg.text.includes('upload_documents.php') ||
+                            msg.text.includes('F\u00e9licitation') ||
+                            msg.text.includes('Notre \u00e9quipe vous contactera')
+                        )) { continue; }
                         await new Promise(resolve => setTimeout(resolve, 500));
                         addMessage(msg.text, 'bot');
                     }
@@ -506,9 +504,57 @@
     }
     
     // ========================================
-    // FILE UPLOAD SYSTEM (Standalone)
+    // FILE UPLOAD SYSTEM (Standalone) — Sequential Queue
     // ========================================
-    
+
+    let standaloneUploadQueue = [];
+    let standaloneSeqMeta = null;
+
+    async function startStandaloneUploadSequence(seq) {
+        standaloneSeqMeta = {
+            ref: seq.ref,
+            upload_url_base: seq.upload_url_base,
+            auth_header: seq.auth_header,
+            final_message: seq.final_message,
+            closing: seq.closing,
+        };
+        const allUploads = seq.uploads.map(u => ({
+            ...u,
+            ref: seq.ref,
+            upload_url: `${seq.upload_url_base}?ref=${seq.ref}&type=${u.type}`,
+            auth_header: seq.auth_header,
+        }));
+        standaloneUploadQueue = allUploads.slice(1);
+        if (allUploads.length > 0) {
+            renderUploadCardStandalone(allUploads[0]);
+        } else {
+            finishStandaloneUploadSequence();
+        }
+    }
+
+    function advanceStandaloneQueue() {
+        if (standaloneUploadQueue.length > 0) {
+            const next = standaloneUploadQueue.shift();
+            setTimeout(() => renderUploadCardStandalone(next), 600);
+        } else {
+            setTimeout(() => finishStandaloneUploadSequence(), 400);
+        }
+    }
+
+    function finishStandaloneUploadSequence() {
+        if (standaloneSeqMeta) {
+            if (standaloneSeqMeta.final_message) {
+                addMessage(standaloneSeqMeta.final_message, 'bot');
+            }
+            setTimeout(() => {
+                if (standaloneSeqMeta && standaloneSeqMeta.closing) {
+                    addMessage(standaloneSeqMeta.closing, 'bot');
+                }
+                standaloneSeqMeta = null;
+            }, 400);
+        }
+    }
+
     function renderUploadCardStandalone(uploadReq) {
         const messagesDiv = document.getElementById('expobeton-messages');
         const messageDiv = document.createElement('div');
@@ -530,7 +576,11 @@
                     <span id="sstat-${uploadReq.type}" style="font-size:11px;color:#6C757D;">En cours...</span>
                 </div>
                 <div id="sresult-${uploadReq.type}" style="display:none;"></div>
-                <p style="text-align:center;margin-top:8px;font-size:11px;color:#94a3b8;">Ou <a href="${uploadReq.upload_url}" target="_blank" style="color:#0A2A66;">uploadez via le site web</a></p>
+                <p style="text-align:center;margin-top:8px;font-size:11px;color:#94a3b8;">
+                    <a href="${uploadReq.upload_url}" target="_blank" style="color:#0A2A66;">Uploadez via le site web</a>
+                    <span style="margin:0 4px;">|</span>
+                    <a href="#" id="sskip-${uploadReq.type}" style="color:#0A2A66;">Passer cette étape</a>
+                </p>
             </div>
         `;
         messagesDiv.appendChild(messageDiv);
@@ -548,6 +598,12 @@
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault(); dropZone.style.borderColor = '#cbd5e1'; dropZone.style.background = '#f8fafc';
             if (e.dataTransfer.files.length > 0) standaloneUpload(e.dataTransfer.files[0], uploadReq);
+        });
+        // Skip button
+        document.getElementById(`sskip-${uploadReq.type}`).addEventListener('click', (e) => {
+            e.preventDefault();
+            showStandaloneResult(uploadReq.type, true, `⏭️ Étape passée — vous pourrez envoyer le document plus tard.`);
+            advanceStandaloneQueue();
         });
     }
 
@@ -590,7 +646,7 @@
                     const res = JSON.parse(xhr.responseText);
                     if (res.success) {
                         showStandaloneResult(t, true, `✅ ${t === 'logo' ? 'Logo' : 'Passeport'} envoyé avec succès !`);
-                        sendMessage(`Document ${t} uploadé avec succès pour ${uploadReq.ref}`);
+                        advanceStandaloneQueue();
                     } else { showStandaloneResult(t, false, res.error || 'Erreur.'); }
                 } catch(e) { showStandaloneResult(t, false, 'Réponse invalide.'); }
             } else { showStandaloneResult(t, false, `Erreur serveur (${xhr.status}).`); }
