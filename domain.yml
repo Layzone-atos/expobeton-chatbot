@@ -164,6 +164,12 @@ slots:
         conditions:
           - active_loop: registration_form
             requested_slot: reg_history
+  # Internal phase tracker for category sub-menus (not collected by form)
+  _reg_category_phase:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
   # Ambassador slots
   amb_identity:
     type: text
@@ -306,15 +312,7 @@ responses:
     - text: "🌍 De quel pays venez-vous ?"
   utter_ask_reg_city:
     - text: "🏙️ Dans quelle ville êtes-vous ?"
-  utter_ask_reg_category:
-    - text: |
-        📋 Pour quelle catégorie souhaitez-vous vous inscrire ?
-
-        1️⃣ 🏆 **Sponsor** (Platinum, Gold, Silver, Bronze)
-        2️⃣ 🏗️ **Exposant** (Stand 3×3m, 2×4m, 2×3m)
-        3️⃣ 👤 **Participant Simple** (Gratuit)
-
-        Tapez le numéro ou le nom de la catégorie.
+  # utter_ask_reg_category removed — replaced by action_ask_reg_category
   utter_ask_reg_payment:
     - text: |
         💳 Choisissez un mode de paiement :
@@ -384,6 +382,7 @@ actions:
   - action_submit_registration
   - action_submit_ambassador
   - action_check_api_health
+  - action_ask_reg_category
   - validate_registration_form
 
 forms:

@@ -250,6 +250,49 @@ CATEGORY_MAP = {
 }
 
 
+# ═══════════════════════════════════════════════════════════════════════
+# Custom ask action for reg_category (replaces utter_ask_reg_category)
+# ═══════════════════════════════════════════════════════════════════════
+
+class ActionAskRegCategory(Action):
+    """Custom ask action that shows the correct menu based on _reg_category_phase."""
+
+    def name(self) -> Text:
+        return "action_ask_reg_category"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
+    ) -> List[Dict[Text, Any]]:
+        phase = tracker.get_slot("_reg_category_phase")
+
+        if phase == "sponsor":
+            dispatcher.utter_message(
+                text="🏆 **Choisissez votre niveau de sponsoring :**\n\n"
+                     "1️⃣ Platinum — 40.000 $\n"
+                     "2️⃣ Gold — 20.000 $\n"
+                     "3️⃣ Silver — 15.000 $\n"
+                     "4️⃣ Bronze — 12.000 $\n\n"
+                     "Tapez le numéro ou le nom du niveau."
+            )
+        elif phase == "exposant":
+            dispatcher.utter_message(
+                text="🏗️ **Choisissez votre type de stand :**\n\n"
+                     "1️⃣ Stand 3×3m — 5.000 $\n"
+                     "2️⃣ Stand 2×4m — 3.000 $\n"
+                     "3️⃣ Stand 2×3m — 2.000 $\n\n"
+                     "Tapez le numéro ou le type de stand."
+            )
+        else:
+            dispatcher.utter_message(
+                text="📋 Pour quelle catégorie souhaitez-vous vous inscrire ?\n\n"
+                     "1️⃣ 🏆 **Sponsor** (Platinum, Gold, Silver, Bronze)\n"
+                     "2️⃣ 🏗️ **Exposant** (Stand 3×3m, 2×4m, 2×3m)\n"
+                     "3️⃣ 👤 **Participant Simple** (Gratuit)\n\n"
+                     "Tapez le numéro ou le nom de la catégorie."
+            )
+        return []
+
+
 class ValidateRegistrationForm(FormValidationAction):
     """Validates slots collected by the registration_form."""
 
@@ -328,93 +371,58 @@ class ValidateRegistrationForm(FormValidationAction):
         dispatcher.utter_message(text="Veuillez indiquer votre ville.")
         return {"reg_city": None}
 
-    @staticmethod
-    def _last_bot_text(tracker: Tracker) -> str:
-        """Get the text of the last bot message for context detection."""
-        for event in reversed(tracker.events):
-            if event.get("event") == "bot" and event.get("text"):
-                return event["text"]
-        return ""
-
     def validate_reg_category(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
         tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
+        """Validate category using _reg_category_phase to track sub-menu state.
+        
+        When a sub-menu is needed, we set the phase and return None.
+        action_ask_reg_category will then display the correct menu.
+        We do NOT dispatch messages here — the ask action handles all prompts.
+        """
         sponsor_num = {"1": "Platinum", "2": "Gold", "3": "Silver", "4": "Bronze"}
         stand_num = {"1": "Exposant Stand 3x3m", "2": "Exposant Stand 2x4m", "3": "Exposant Stand 2x3m"}
+        phase = tracker.get_slot("_reg_category_phase")
 
         if slot_value:
             val = str(slot_value).strip().lower()
-            last_bot = self._last_bot_text(tracker)
 
-            # If we just showed the sponsor submenu, interpret numbers as sponsor levels
-            if "niveau de sponsoring" in last_bot:
+            # ── Sponsor sub-menu active ──
+            if phase == "sponsor":
                 if val in sponsor_num:
-                    return {"reg_category": sponsor_num[val]}
-                # Also accept name directly
+                    return {"reg_category": sponsor_num[val], "_reg_category_phase": None}
                 name_match = CATEGORY_MAP.get(val)
                 if name_match and name_match not in ("_sponsor_", "_exposant_"):
-                    return {"reg_category": name_match}
-                dispatcher.utter_message(
-                    text="🏆 **Choisissez votre niveau de sponsoring :**\n\n"
-                         "1️⃣ Platinum — 40.000 $\n"
-                         "2️⃣ Gold — 20.000 $\n"
-                         "3️⃣ Silver — 15.000 $\n"
-                         "4️⃣ Bronze — 12.000 $\n\n"
-                         "Tapez le numéro ou le nom du niveau."
-                )
+                    return {"reg_category": name_match, "_reg_category_phase": None}
+                # Invalid input — keep phase, action_ask will re-show sponsor menu
                 return {"reg_category": None}
 
-            # If we just showed the exposant submenu, interpret numbers as stand types
-            if "type de stand" in last_bot:
+            # ── Exposant sub-menu active ──
+            if phase == "exposant":
                 if val in stand_num:
-                    return {"reg_category": stand_num[val]}
+                    return {"reg_category": stand_num[val], "_reg_category_phase": None}
                 name_match = CATEGORY_MAP.get(val)
                 if name_match and name_match not in ("_sponsor_", "_exposant_"):
-                    return {"reg_category": name_match}
-                dispatcher.utter_message(
-                    text="🏗️ **Choisissez votre type de stand :**\n\n"
-                         "1️⃣ Stand 3×3m — 5.000 $\n"
-                         "2️⃣ Stand 2×4m — 3.000 $\n"
-                         "3️⃣ Stand 2×3m — 2.000 $\n\n"
-                         "Tapez le numéro ou le type de stand."
-                )
+                    return {"reg_category": name_match, "_reg_category_phase": None}
+                # Invalid input — keep phase, action_ask will re-show exposant menu
                 return {"reg_category": None}
 
-            # Main menu context
+            # ── Main menu context ──
             normalized = CATEGORY_MAP.get(val)
             if normalized == "_sponsor_":
-                dispatcher.utter_message(
-                    text="🏆 **Choisissez votre niveau de sponsoring :**\n\n"
-                         "1️⃣ Platinum — 40.000 $\n"
-                         "2️⃣ Gold — 20.000 $\n"
-                         "3️⃣ Silver — 15.000 $\n"
-                         "4️⃣ Bronze — 12.000 $\n\n"
-                         "Tapez le numéro ou le nom du niveau."
-                )
-                return {"reg_category": None}
+                # Set phase so action_ask_reg_category shows sponsor sub-menu
+                return {"reg_category": None, "_reg_category_phase": "sponsor"}
             if normalized == "_exposant_":
-                dispatcher.utter_message(
-                    text="🏗️ **Choisissez votre type de stand :**\n\n"
-                         "1️⃣ Stand 3×3m — 5.000 $\n"
-                         "2️⃣ Stand 2×4m — 3.000 $\n"
-                         "3️⃣ Stand 2×3m — 2.000 $\n\n"
-                         "Tapez le numéro ou le type de stand."
-                )
-                return {"reg_category": None}
+                # Set phase so action_ask_reg_category shows exposant sub-menu
+                return {"reg_category": None, "_reg_category_phase": "exposant"}
             if normalized:
-                return {"reg_category": normalized}
+                return {"reg_category": normalized, "_reg_category_phase": None}
             if slot_value in VALID_CATEGORIES:
-                return {"reg_category": slot_value}
+                return {"reg_category": slot_value, "_reg_category_phase": None}
 
-        dispatcher.utter_message(
-            text="Veuillez choisir une catégorie valide :\n\n"
-                 "1️⃣ Sponsor (Platinum, Gold, Silver, Bronze)\n"
-                 "2️⃣ Exposant (Stand 3×3m, 2×4m, 2×3m)\n"
-                 "3️⃣ Participant Simple (Gratuit)\n\n"
-                 "Tapez le numéro ou le nom de la catégorie."
-        )
-        return {"reg_category": None}
+        # Invalid input — reset to main menu
+        return {"reg_category": None, "_reg_category_phase": None}
 
     def validate_reg_payment(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
@@ -515,15 +523,43 @@ class ActionSubmitRegistration(Action):
                 )
             else:
                 ref = result.get("data", {}).get("reference", "N/A")
-                dispatcher.utter_message(
-                    text=(
-                        f"✅ **Inscription réussie{name_suffix} !**\n\n"
-                        f"Votre numéro de référence : **{ref}**\n"
-                        f"Un email de confirmation a été envoyé à {data['email']}.\n\n"
-                        f"Notre équipe vous contactera dans les 48 heures.\n"
-                        f"Pour toute question : info@expobetonrdc.com"
-                    )
+                # Determine if upload links are needed
+                needs_logo = category not in ("Participant Simple", None)
+                needs_passport = data["visa"].lower() == "oui"
+                upload_base = os.getenv(
+                    "EXPOBETON_UPLOAD_URL",
+                    "https://expobetonrdc.com/upload_documents.php"
                 )
+
+                msg = (
+                    f"✅ **Inscription réussie{name_suffix} !**\n\n"
+                    f"Votre numéro de référence : **{ref}**\n"
+                    f"Un email de confirmation a été envoyé à {data['email']}.\n\n"
+                )
+
+                # Logo upload instructions
+                if needs_logo:
+                    msg += (
+                        f"🖼️ **Logo requis** — Votre logo sera utilisé sur les supports de communication.\n"
+                        f"Veuillez envoyer votre logo (JPG, PNG ou SVG, max 10 MB) :\n"
+                        f"• Par email : **finance@expobetonrdc.com** (référence: {ref})\n"
+                        f"• Ou via le lien : {upload_base}?ref={ref}&type=logo\n\n"
+                    )
+
+                # Passport upload instructions
+                if needs_passport:
+                    msg += (
+                        f"🛂 **Passeport requis** — Nécessaire pour votre invitation visa.\n"
+                        f"Veuillez envoyer une copie de votre passeport (PDF) :\n"
+                        f"• Par email : **finance@expobetonrdc.com** (référence: {ref})\n"
+                        f"• Ou via le lien : {upload_base}?ref={ref}&type=passport\n\n"
+                    )
+
+                msg += (
+                    f"Notre équipe vous contactera dans les 48 heures.\n"
+                    f"Pour toute question : info@expobetonrdc.com"
+                )
+                dispatcher.utter_message(text=msg)
         else:
             errors = result.get("errors", [])
             error_msg = "\n".join(f"• {e}" for e in errors) if errors else result.get("error", "Erreur inconnue")
