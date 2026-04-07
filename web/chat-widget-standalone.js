@@ -478,11 +478,19 @@
             const data = await response.json();
             
             if (data && data.length > 0) {
+                let lastWasUploadCard = false;
                 for (const msg of data) {
                     if (msg.custom && msg.custom.upload_request) {
                         await new Promise(resolve => setTimeout(resolve, 500));
                         renderUploadCardStandalone(msg.custom.upload_request);
+                        lastWasUploadCard = true;
                     } else if (msg.text) {
+                        // Skip fallback text that follows an upload card
+                        if (lastWasUploadCard && msg.text.includes('upload_documents.php')) {
+                            lastWasUploadCard = false;
+                            continue;
+                        }
+                        lastWasUploadCard = false;
                         await new Promise(resolve => setTimeout(resolve, 500));
                         addMessage(msg.text, 'bot');
                     }

@@ -217,12 +217,21 @@ async function sendToRasa(message) {
         
         // Add bot responses
         if (data && data.length > 0) {
+            let lastWasUploadCard = false;
             for (const msg of data) {
                 // Handle custom upload_request messages
                 if (msg.custom && msg.custom.upload_request) {
                     await renderUploadCard(msg.custom.upload_request);
+                    lastWasUploadCard = true;
                     await sleep(300);
                 } else if (msg.text) {
+                    // Skip fallback text that follows an upload card
+                    // (fallback contains upload URL for non-widget channels)
+                    if (lastWasUploadCard && msg.text.includes('upload_documents.php')) {
+                        lastWasUploadCard = false;
+                        continue;
+                    }
+                    lastWasUploadCard = false;
                     await addMessage(msg.text, 'bot');
                     await sleep(300);
                 }

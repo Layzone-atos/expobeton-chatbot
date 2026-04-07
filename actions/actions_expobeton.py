@@ -562,52 +562,61 @@ class ActionSubmitRegistration(Action):
                     )
                 )
 
-                # Send interactive upload cards with fallback text
-                # Widget renders the upload card; non-widget channels show the text
+                # Upload cards (custom JSON for widget) + fallback text
+                # NOTE: Rasa wraps json_message inside "custom" automatically,
+                # so we must NOT add an extra "custom" wrapper.
+                # NOTE: Rasa ignores "text" when json_message is present,
+                # so we send fallback text as separate messages.
+                doc_header = f"📎 **Documents à fournir{name_suffix} :**"
+                if needs_logo or needs_passport:
+                    dispatcher.utter_message(text=doc_header)
+
                 if needs_logo:
-                    logo_fallback = (
-                        f"📎 **Logo de votre entreprise** (JPG/PNG/SVG, max 10 MB)\n"
-                        f"→ {upload_base}?ref={ref}&type=logo"
-                    )
+                    # Custom upload card for widget
                     dispatcher.utter_message(
-                        text=logo_fallback,
                         json_message={
-                            "custom": {
-                                "upload_request": {
-                                    "ref": ref,
-                                    "type": "logo",
-                                    "accept": ".jpg,.jpeg,.png,.gif,.svg",
-                                    "max_size_mb": 10,
-                                    "upload_url": f"{upload_base}?ref={ref}&type=logo",
-                                    "auth_header": f"Bearer {EXPOBETON_API_KEY}",
-                                    "label": "🖼️ Logo de votre entreprise",
-                                    "description": "Votre logo sera utilisé sur les supports de communication.\nFormats acceptés : JPG, PNG, SVG — Max 10 MB",
-                                }
+                            "upload_request": {
+                                "ref": ref,
+                                "type": "logo",
+                                "accept": ".jpg,.jpeg,.png,.gif,.svg",
+                                "max_size_mb": 10,
+                                "upload_url": f"{upload_base}?ref={ref}&type=logo",
+                                "auth_header": f"Bearer {EXPOBETON_API_KEY}",
+                                "label": "🖼️ Logo de votre entreprise",
+                                "description": "Votre logo sera utilisé sur les supports de communication.\nFormats acceptés : JPG, PNG, SVG — Max 10 MB",
                             }
                         }
+                    )
+                    # Fallback text (hidden by widget, visible on other channels)
+                    dispatcher.utter_message(
+                        text=(
+                            f"🖼️ **Logo** (JPG/PNG/SVG, max 10 MB)\n"
+                            f"→ {upload_base}?ref={ref}&type=logo"
+                        )
                     )
 
                 if needs_passport:
-                    passport_fallback = (
-                        f"📎 **Copie de votre passeport** (PDF)\n"
-                        f"→ {upload_base}?ref={ref}&type=passport"
-                    )
+                    # Custom upload card for widget
                     dispatcher.utter_message(
-                        text=passport_fallback,
                         json_message={
-                            "custom": {
-                                "upload_request": {
-                                    "ref": ref,
-                                    "type": "passport",
-                                    "accept": ".pdf",
-                                    "max_size_mb": 10,
-                                    "upload_url": f"{upload_base}?ref={ref}&type=passport",
-                                    "auth_header": f"Bearer {EXPOBETON_API_KEY}",
-                                    "label": "🛂 Copie de votre passeport",
-                                    "description": "Nécessaire pour votre invitation visa.\nFormat accepté : PDF uniquement — Max 10 MB",
-                                }
+                            "upload_request": {
+                                "ref": ref,
+                                "type": "passport",
+                                "accept": ".pdf",
+                                "max_size_mb": 10,
+                                "upload_url": f"{upload_base}?ref={ref}&type=passport",
+                                "auth_header": f"Bearer {EXPOBETON_API_KEY}",
+                                "label": "🛂 Copie de votre passeport",
+                                "description": "Nécessaire pour votre invitation visa.\nFormat accepté : PDF uniquement — Max 10 MB",
                             }
                         }
+                    )
+                    # Fallback text
+                    dispatcher.utter_message(
+                        text=(
+                            f"🛂 **Passeport** (PDF)\n"
+                            f"→ {upload_base}?ref={ref}&type=passport"
+                        )
                     )
 
                 if needs_logo or needs_passport:
