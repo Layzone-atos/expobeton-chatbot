@@ -87,6 +87,8 @@ stories:
   - action: utter_registration
   - intent: register
   - action: action_start_registration
+  - action: registration_form
+  - active_loop: registration_form
 
 - story: ask corridors story
   steps:
@@ -225,6 +227,8 @@ stories:
     - action: action_show_categories
     - intent: register
     - action: action_start_registration
+    - action: registration_form
+    - active_loop: registration_form
 
 - story: ambassador application
   steps:

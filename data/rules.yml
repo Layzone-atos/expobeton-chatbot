@@ -22,6 +22,8 @@ rules:
     steps:
       - intent: register
       - action: action_start_registration
+      - action: registration_form
+      - active_loop: registration_form
 
   - rule: Submit registration when form complete
     condition:
