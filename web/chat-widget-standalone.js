@@ -483,11 +483,29 @@
                     if (msg.custom && msg.custom.upload_sequence) {
                         hasUploadSequence = true;
                         await startStandaloneUploadSequence(msg.custom.upload_sequence);
+                    } else if (msg.custom && msg.custom.do_uploads) {
+                        hasUploadSequence = true;
+                        await doStandaloneActualUploads(msg.custom.do_uploads);
+                    } else if (msg.custom && msg.custom.single_upload_card) {
+                        hasUploadSequence = true;
+                        const card = msg.custom.single_upload_card;
+                        card.upload_url = null;
+                        renderUploadCardStandalone(card);
+                        standaloneUploadQueue = [];
+                        standaloneSeqMeta = {
+                            mode: card.mode || 'local_store',
+                            on_complete_trigger: card.on_complete_trigger || '/registration_review',
+                            upload_url_base: card.upload_url_base,
+                            auth_header: card.auth_header,
+                        };
+                    } else if (msg.custom && msg.custom.trigger_message) {
+                        hasUploadSequence = true;
+                        await sendMessage(msg.custom.trigger_message);
                     } else if (msg.text) {
                         if (hasUploadSequence && (
                             msg.text.includes('upload_documents.php') ||
-                            msg.text.includes('F\u00e9licitation') ||
-                            msg.text.includes('Notre \u00e9quipe vous contactera')
+                            msg.text.includes('Documents a fournir') ||
+                            msg.text.includes('Verification de vos informations')
                         )) { continue; }
                         await new Promise(resolve => setTimeout(resolve, 500));
                         addMessage(msg.text, 'bot');
@@ -509,20 +527,24 @@
 
     let standaloneUploadQueue = [];
     let standaloneSeqMeta = null;
+    let pendingFiles = {};       // { type: File } - files stored locally until confirmed
 
     async function startStandaloneUploadSequence(seq) {
         standaloneSeqMeta = {
-            ref: seq.ref,
+            ref: seq.ref || null,
             upload_url_base: seq.upload_url_base,
             auth_header: seq.auth_header,
-            final_message: seq.final_message,
-            closing: seq.closing,
+            final_message: seq.final_message || null,
+            closing: seq.closing || null,
+            mode: seq.mode || 'upload',
+            on_complete_trigger: seq.on_complete_trigger || null,
         };
         const allUploads = seq.uploads.map(u => ({
             ...u,
-            ref: seq.ref,
-            upload_url: `${seq.upload_url_base}?ref=${seq.ref}&type=${u.type}`,
+            ref: seq.ref || null,
+            upload_url: seq.ref ? `${seq.upload_url_base}?ref=${seq.ref}&type=${u.type}` : null,
             auth_header: seq.auth_header,
+            mode: seq.mode || 'upload',
         }));
         standaloneUploadQueue = allUploads.slice(1);
         if (allUploads.length > 0) {
@@ -543,6 +565,12 @@
 
     function finishStandaloneUploadSequence() {
         if (standaloneSeqMeta) {
+            // If local_store mode with trigger, send message to Rasa
+            if (standaloneSeqMeta.mode === 'local_store' && standaloneSeqMeta.on_complete_trigger) {
+                sendMessage(standaloneSeqMeta.on_complete_trigger);
+                standaloneSeqMeta = null;
+                return;
+            }
             if (standaloneSeqMeta.final_message) {
                 addMessage(standaloneSeqMeta.final_message, 'bot');
             }
@@ -627,6 +655,20 @@
         document.getElementById(`sfn-${t}`).textContent = file.name;
         document.getElementById(`sfs-${t}`).textContent = `(${(file.size/1024/1024).toFixed(1)} MB)`;
 
+        // Local store mode: save file locally
+        if (uploadReq.mode === 'local_store') {
+            pendingFiles[t] = file;
+            document.getElementById(`sfill-${t}`).style.width = '100%';
+            document.getElementById(`sstat-${t}`).textContent = 'Fichier selectionne';
+            setTimeout(() => {
+                document.getElementById(`sprogress-${t}`).style.display = 'none';
+                const label = t === 'logo' ? 'Logo' : 'Passeport';
+                showStandaloneResult(t, true, `${label} selectionne !`);
+                advanceStandaloneQueue();
+            }, 500);
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         const xhr = new XMLHttpRequest();
@@ -674,6 +716,33 @@
         el.style.border = `1px solid ${success ? '#a7f3d0' : '#fecaca'}`;
         el.textContent = message;
         if (!success) setTimeout(() => { const dz = document.getElementById(`sdz-${type}`); if(dz) dz.style.display='block'; }, 2000);
+    }
+
+    // Upload stored files to server after API confirmation
+    async function doStandaloneActualUploads(info) {
+        for (const type of info.uploads) {
+            const file = pendingFiles[type];
+            if (!file) continue;
+            const url = `${info.upload_url_base}?ref=${info.ref}&type=${type}`;
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Authorization': info.auth_header },
+                    body: formData
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    console.log(`[Upload] ${type} uploaded successfully`);
+                } else {
+                    console.error(`[Upload] ${type} failed:`, result.error);
+                }
+            } catch (e) {
+                console.error(`[Upload] ${type} error:`, e);
+            }
+            delete pendingFiles[type];
+        }
     }
 
     function resetInactivityTimer() {

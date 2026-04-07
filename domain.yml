@@ -45,6 +45,7 @@ intents:
   - provide_category
   - provide_payment
   - stop
+  - registration_review
 
 entities:
   - person
@@ -166,6 +167,32 @@ slots:
             requested_slot: reg_history
   # Internal phase tracker for category sub-menus (not collected by form)
   _reg_category_phase:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+  # Review form slot — set to "confirmed" when user types ok
+  _reg_confirmed:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: registration_review_form
+            requested_slot: _reg_confirmed
+  # Tracks which field is being edited in the review summary
+  _reg_edit_field:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+  # Tracks locally selected files ("selected" or null)
+  _reg_logo_file:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+  _reg_passport_file:
     type: text
     influence_conversation: false
     mappings:
@@ -384,6 +411,9 @@ actions:
   - action_check_api_health
   - action_ask_reg_category
   - validate_registration_form
+  - action_ask__reg_confirmed
+  - validate_registration_review_form
+  - action_confirm_registration
 
 forms:
   registration_form:
@@ -398,6 +428,9 @@ forms:
       - reg_payment
       - reg_visa
       - reg_history
+  registration_review_form:
+    required_slots:
+      - _reg_confirmed
   ambassador_form:
     required_slots:
       - amb_identity

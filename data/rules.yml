@@ -114,6 +114,64 @@ rules:
       - action: registration_form
       - active_loop: registration_form
 
+  # ═══ Registration Review Form Rules ═══
+
+  - rule: Start registration review after uploads
+    steps:
+      - intent: registration_review
+      - action: registration_review_form
+      - active_loop: registration_review_form
+
+  - rule: Submit review when confirmed
+    condition:
+      - active_loop: registration_review_form
+    steps:
+      - action: registration_review_form
+      - active_loop: null
+      - slot_was_set:
+          - requested_slot: null
+      - action: action_confirm_registration
+
+  - rule: Affirm during review form
+    condition:
+      - active_loop: registration_review_form
+    steps:
+      - intent: affirm
+      - action: registration_review_form
+      - active_loop: registration_review_form
+
+  - rule: Deny during review form
+    condition:
+      - active_loop: registration_review_form
+    steps:
+      - intent: deny
+      - action: registration_review_form
+      - active_loop: registration_review_form
+
+  - rule: Inform during review form
+    condition:
+      - active_loop: registration_review_form
+    steps:
+      - intent: inform
+      - action: registration_review_form
+      - active_loop: registration_review_form
+
+  - rule: Greet during review form
+    condition:
+      - active_loop: registration_review_form
+    steps:
+      - intent: greet
+      - action: registration_review_form
+      - active_loop: registration_review_form
+
+  - rule: User stops review form
+    condition:
+      - active_loop: registration_review_form
+    steps:
+      - intent: stop
+      - action: action_deactivate_loop
+      - active_loop: null
+
   - rule: Affirm during ambassador form
     condition:
       - active_loop: ambassador_form

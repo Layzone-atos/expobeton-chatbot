@@ -176,7 +176,7 @@ stories:
     - slot_was_set:
         - requested_slot: reg_payment
     - slot_was_set:
-        - reg_payment: "Chèque"
+        - reg_payment: "Cheque"
     - slot_was_set:
         - requested_slot: reg_visa
     - slot_was_set:
@@ -189,6 +189,15 @@ stories:
     - slot_was_set:
         - requested_slot: null
     - action: action_submit_registration
+    - intent: registration_review
+    - action: registration_review_form
+    - active_loop: registration_review_form
+    - slot_was_set:
+        - _reg_confirmed: "confirmed"
+    - active_loop: null
+    - slot_was_set:
+        - requested_slot: null
+    - action: action_confirm_registration
 
 - story: happy path - registration as participant
   steps:
@@ -220,6 +229,15 @@ stories:
     - slot_was_set:
         - requested_slot: null
     - action: action_submit_registration
+    - intent: registration_review
+    - action: registration_review_form
+    - active_loop: registration_review_form
+    - slot_was_set:
+        - _reg_confirmed: "confirmed"
+    - active_loop: null
+    - slot_was_set:
+        - requested_slot: null
+    - action: action_confirm_registration
 
 - story: user asks categories then registers
   steps:

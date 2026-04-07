@@ -701,3 +701,9 @@ nlu:
     - je choisis [chèque](payment_method)
     - je préfère [veuillez facturer](payment_method)
     - [facturer](payment_method)
+
+- intent: registration_review
+  examples: |
+    - /registration_review
+    - documents envoyés
+    - uploads terminés

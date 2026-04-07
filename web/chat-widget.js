@@ -223,12 +223,35 @@ async function sendToRasa(message) {
                 if (msg.custom && msg.custom.upload_sequence) {
                     hasUploadSequence = true;
                     await startUploadSequence(msg.custom.upload_sequence);
+                } else if (msg.custom && msg.custom.do_uploads) {
+                    // After confirmation: upload stored files to server
+                    hasUploadSequence = true;
+                    await doActualUploads(msg.custom.do_uploads);
+                } else if (msg.custom && msg.custom.single_upload_card) {
+                    // Re-upload a single file from review edit
+                    hasUploadSequence = true;
+                    const card = msg.custom.single_upload_card;
+                    card.upload_url = null;
+                    await renderUploadCard(card);
+                    // After re-upload completes, we need to trigger review again
+                    // The skip/select handler will call advanceUploadQueue which calls finishUploadSequence
+                    uploadQueue = [];
+                    uploadSeqMeta = {
+                        mode: card.mode || 'local_store',
+                        on_complete_trigger: card.on_complete_trigger || '/registration_review',
+                        upload_url_base: card.upload_url_base,
+                        auth_header: card.auth_header,
+                    };
+                } else if (msg.custom && msg.custom.trigger_message) {
+                    // Widget should send a message to Rasa
+                    hasUploadSequence = true;
+                    await sendToRasa(msg.custom.trigger_message);
                 } else if (msg.text) {
                     // Skip fallback text when widget handled upload_sequence
                     if (hasUploadSequence && (
                         msg.text.includes('upload_documents.php') ||
-                        msg.text.includes('Félicitation') ||
-                        msg.text.includes('Notre équipe vous contactera')
+                        msg.text.includes('Documents a fournir') ||
+                        msg.text.includes('Verification de vos informations')
                     )) {
                         continue;
                     }
@@ -293,23 +316,30 @@ function addMessage(text, sender) {
 // File Upload System — Sequential Queue
 // ═══════════════════════════════════════════════════════════════
 
+// File Upload System — Sequential Queue + Local Store Mode
+// ═══════════════════════════════════════════════════════════
+
 let uploadQueue = [];        // remaining uploads
-let uploadSeqMeta = null;    // { ref, upload_url_base, auth_header, final_message, closing }
+let uploadSeqMeta = null;    // { upload_url_base, auth_header, mode, on_complete_trigger, ... }
+let pendingFiles = {};       // { type: File } — files stored locally until confirmed
 
 async function startUploadSequence(seq) {
     uploadSeqMeta = {
-        ref: seq.ref,
+        ref: seq.ref || null,
         upload_url_base: seq.upload_url_base,
         auth_header: seq.auth_header,
-        final_message: seq.final_message,
-        closing: seq.closing,
+        final_message: seq.final_message || null,
+        closing: seq.closing || null,
+        mode: seq.mode || 'upload',
+        on_complete_trigger: seq.on_complete_trigger || null,
     };
     // Build full upload request objects
     const allUploads = seq.uploads.map(u => ({
         ...u,
-        ref: seq.ref,
-        upload_url: `${seq.upload_url_base}?ref=${seq.ref}&type=${u.type}`,
+        ref: seq.ref || null,
+        upload_url: seq.ref ? `${seq.upload_url_base}?ref=${seq.ref}&type=${u.type}` : null,
         auth_header: seq.auth_header,
+        mode: seq.mode || 'upload',
     }));
     // Queue all except the first one
     uploadQueue = allUploads.slice(1);
@@ -334,6 +364,12 @@ async function advanceUploadQueue() {
 async function finishUploadSequence() {
     if (uploadSeqMeta) {
         await sleep(400);
+        // If local_store mode with trigger, send message to Rasa
+        if (uploadSeqMeta.mode === 'local_store' && uploadSeqMeta.on_complete_trigger) {
+            await sendToRasa(uploadSeqMeta.on_complete_trigger);
+            uploadSeqMeta = null;
+            return;
+        }
         if (uploadSeqMeta.final_message) {
             await addMessage(uploadSeqMeta.final_message, 'bot');
             await sleep(400);
@@ -449,6 +485,20 @@ function handleFileSelected(file, uploadReq) {
     dropZone.style.display = 'none';
     progressArea.style.display = 'block';
 
+    // Local store mode: just save the file locally
+    if (uploadReq.mode === 'local_store') {
+        pendingFiles[uploadReq.type] = file;
+        document.getElementById(`progress-fill-${uploadReq.type}`).style.width = '100%';
+        document.getElementById(`upload-status-${uploadReq.type}`).textContent = 'Fichier selectionne';
+        setTimeout(() => {
+            document.getElementById(`progress-area-${uploadReq.type}`).style.display = 'none';
+            const label = uploadReq.type === 'logo' ? 'Logo' : 'Passeport';
+            showUploadResult(uploadReq.type, true, `${label} selectionne !`);
+            advanceUploadQueue();
+        }, 500);
+        return;
+    }
+
     uploadFileToAPI(file, uploadReq);
 }
 
@@ -513,6 +563,34 @@ function showUploadResult(type, success, message) {
             const dropZone = document.getElementById(`drop-zone-${type}`);
             if (dropZone) dropZone.style.display = 'block';
         }, 2000);
+    }
+}
+
+// Upload stored files to server after API confirmation
+async function doActualUploads(info) {
+    // info = { ref, upload_url_base, auth_header, uploads: ['logo','passport'] }
+    for (const type of info.uploads) {
+        const file = pendingFiles[type];
+        if (!file) continue;
+        const url = `${info.upload_url_base}?ref=${info.ref}&type=${type}`;
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const resp = await fetch(url, {
+                method: 'POST',
+                headers: { 'Authorization': info.auth_header },
+                body: formData
+            });
+            const result = await resp.json();
+            if (result.success) {
+                console.log(`[Upload] ${type} uploaded successfully`);
+            } else {
+                console.error(`[Upload] ${type} failed:`, result.error);
+            }
+        } catch (e) {
+            console.error(`[Upload] ${type} error:`, e);
+        }
+        delete pendingFiles[type];
     }
 }
 

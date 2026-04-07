@@ -478,10 +478,51 @@ class ValidateRegistrationForm(FormValidationAction):
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# Action: Submit Registration to ExpoBeton API
+# Helper: build upload descriptors + Submit Registration + Review Form
 # ═══════════════════════════════════════════════════════════════════════
 
+def _build_upload_list(category, visa):
+    """Return a list of upload descriptor dicts needed for this registration."""
+    uploads = []
+    if category and category != "Participant Simple":
+        uploads.append({
+            "type": "logo",
+            "accept": ".jpg,.jpeg,.png,.gif,.svg",
+            "max_size_mb": 10,
+            "label": "Logo de votre entreprise",
+            "description": "Votre logo sera utilise sur les supports de communication.\nFormats acceptes : JPG, PNG, SVG - Max 10 MB",
+        })
+    if visa and str(visa).lower() == "oui":
+        uploads.append({
+            "type": "passport",
+            "accept": ".pdf",
+            "max_size_mb": 10,
+            "label": "Copie de votre passeport",
+            "description": "Necessaire pour votre invitation visa.\nFormat accepte : PDF uniquement - Max 10 MB",
+        })
+    return uploads
+
+
+REG_FIELDS = [
+    (1,  "Entreprise",  "reg_company",      "Quel est le nom de votre entreprise ou organisation ?"),
+    (2,  "Contact",     "reg_contact_name", "Quel est le nom complet de la personne de contact ?"),
+    (3,  "Email",       "reg_email",        "Quelle est votre adresse email ?"),
+    (4,  "Telephone",   "reg_phone",        "Quel est votre numero de telephone ?"),
+    (5,  "Pays",        "reg_country",      "De quel pays venez-vous ?"),
+    (6,  "Ville",       "reg_city",         "Dans quelle ville etes-vous ?"),
+    (7,  "Categorie",   "reg_category",     "Quelle categorie ? (Platinum, Gold, Silver, Bronze, Exposant Stand 3x3m/2x4m/2x3m, Participant Simple)"),
+    (8,  "Paiement",    "reg_payment",      "Mode de paiement ? (1. Cheque  2. Veuillez Facturer)"),
+    (9,  "Visa",        "reg_visa",         "Avez-vous besoin d'une assistance visa ? (oui/non)"),
+    (10, "Historique",  "reg_history",      "Avez-vous deja participe a ExpoBeton ? (oui/non)"),
+]
+
+
 class ActionSubmitRegistration(Action):
+    """Triggered when registration_form completes.
+    Does NOT call the API yet - sends upload cards to the widget.
+    After uploads, the widget triggers /registration_review.
+    """
+
     def name(self) -> Text:
         return "action_submit_registration"
 
@@ -489,7 +530,207 @@ class ActionSubmitRegistration(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> List[Dict[Text, Any]]:
 
-        # Collect all slots
+        category = tracker.get_slot("reg_category")
+        visa = tracker.get_slot("reg_visa") or "non"
+        uploads = _build_upload_list(category, visa)
+
+        person = tracker.get_slot("person")
+        first_name = str(person).strip().split()[0].title() if person else None
+        name_suffix = f" {first_name}" if first_name else ""
+
+        upload_base = os.getenv(
+            "EXPOBETON_UPLOAD_URL",
+            "https://expobetonrdc.com/upload_documents.php"
+        )
+
+        events = []
+
+        if uploads:
+            dispatcher.utter_message(
+                text=f"Merci{name_suffix} ! Avant de finaliser, veuillez fournir les documents suivants."
+            )
+            dispatcher.utter_message(
+                json_message={
+                    "upload_sequence": {
+                        "uploads": uploads,
+                        "upload_url_base": upload_base,
+                        "auth_header": f"Bearer {EXPOBETON_API_KEY}",
+                        "mode": "local_store",
+                        "on_complete_trigger": "/registration_review",
+                    }
+                }
+            )
+            # Fallback for non-widget channels
+            fallback = f"Documents a fournir{name_suffix} :\n\n"
+            for u in uploads:
+                fallback += f"- {u['label']}\n"
+            fallback += "\nApres avoir prepare vos documents, tapez 'ok' pour continuer."
+            dispatcher.utter_message(text=fallback)
+            for u in uploads:
+                events.append(SlotSet(f"_reg_{u['type']}_file", None))
+        else:
+            # No uploads needed - go straight to review
+            dispatcher.utter_message(
+                json_message={"trigger_message": "/registration_review"}
+            )
+            dispatcher.utter_message(
+                text=f"Merci{name_suffix} ! Verification de vos informations..."
+            )
+
+        return events
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Action: Show numbered summary (ask for _reg_confirmed)
+# ═══════════════════════════════════════════════════════════════════════
+
+class ActionAskRegConfirmed(Action):
+    """Displays the numbered summary so the user can edit or confirm."""
+
+    def name(self) -> Text:
+        return "action_ask__reg_confirmed"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
+    ) -> List[Dict[Text, Any]]:
+        lines = ["Resume de l'inscription\n"]
+        for num, label, slot, _ in REG_FIELDS:
+            val = tracker.get_slot(slot) or "--"
+            lines.append(f"{num}. {label} : {val}")
+
+        # File status lines
+        category = tracker.get_slot("reg_category")
+        visa = tracker.get_slot("reg_visa") or "non"
+        if category and category != "Participant Simple":
+            logo_status = "selectionne" if tracker.get_slot("_reg_logo_file") else "non fourni"
+            lines.append(f"11. Logo : {logo_status}")
+        if str(visa).lower() == "oui":
+            passport_status = "selectionne" if tracker.get_slot("_reg_passport_file") else "non fourni"
+            lines.append(f"12. Passeport : {passport_status}")
+
+        lines.append("\nTapez un numero (1-12) pour modifier, ou \"ok\" pour confirmer.")
+        dispatcher.utter_message(text="\n".join(lines))
+        return [SlotSet("_reg_edit_field", None)]
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Validator: Registration Review Form
+# ═══════════════════════════════════════════════════════════════════════
+
+class ValidateRegistrationReviewForm(FormValidationAction):
+    """Handles user input during the review summary."""
+
+    def name(self) -> Text:
+        return "validate_registration_review_form"
+
+    def validate__reg_confirmed(
+        self, slot_value: Any, dispatcher: CollectingDispatcher,
+        tracker: Tracker, domain: DomainDict
+    ) -> Dict[Text, Any]:
+        text = str(slot_value).strip().lower()
+        edit_field = tracker.get_slot("_reg_edit_field")
+
+        # Currently in edit mode: save the new value
+        if edit_field:
+            target_slot = None
+            for _, _, slot, _ in REG_FIELDS:
+                if slot == edit_field:
+                    target_slot = slot
+                    break
+            if target_slot:
+                dispatcher.utter_message(text="Mis a jour !")
+                return {
+                    "_reg_confirmed": None,
+                    "_reg_edit_field": None,
+                    target_slot: slot_value.strip() if isinstance(slot_value, str) else slot_value,
+                }
+            return {"_reg_confirmed": None, "_reg_edit_field": None}
+
+        # Number 1-10: enter edit mode
+        if text.isdigit():
+            num = int(text)
+            if 1 <= num <= 10:
+                for n, label, slot, question in REG_FIELDS:
+                    if n == num:
+                        dispatcher.utter_message(text=question)
+                        return {"_reg_confirmed": None, "_reg_edit_field": slot}
+            if num == 11:
+                category = tracker.get_slot("reg_category")
+                if category and category != "Participant Simple":
+                    upload_base = os.getenv(
+                        "EXPOBETON_UPLOAD_URL",
+                        "https://expobetonrdc.com/upload_documents.php"
+                    )
+                    dispatcher.utter_message(
+                        json_message={
+                            "single_upload_card": {
+                                "type": "logo",
+                                "accept": ".jpg,.jpeg,.png,.gif,.svg",
+                                "max_size_mb": 10,
+                                "label": "Logo de votre entreprise",
+                                "description": "Formats acceptes : JPG, PNG, SVG - Max 10 MB",
+                                "mode": "local_store",
+                                "upload_url_base": upload_base,
+                                "auth_header": f"Bearer {EXPOBETON_API_KEY}",
+                                "on_complete_trigger": "/registration_review",
+                            }
+                        }
+                    )
+                    return {"_reg_confirmed": None}
+                else:
+                    dispatcher.utter_message(text="Le logo n'est pas requis pour votre categorie.")
+                    return {"_reg_confirmed": None}
+            if num == 12:
+                visa = tracker.get_slot("reg_visa") or "non"
+                if str(visa).lower() == "oui":
+                    upload_base = os.getenv(
+                        "EXPOBETON_UPLOAD_URL",
+                        "https://expobetonrdc.com/upload_documents.php"
+                    )
+                    dispatcher.utter_message(
+                        json_message={
+                            "single_upload_card": {
+                                "type": "passport",
+                                "accept": ".pdf",
+                                "max_size_mb": 10,
+                                "label": "Copie de votre passeport",
+                                "description": "Format accepte : PDF uniquement - Max 10 MB",
+                                "mode": "local_store",
+                                "upload_url_base": upload_base,
+                                "auth_header": f"Bearer {EXPOBETON_API_KEY}",
+                                "on_complete_trigger": "/registration_review",
+                            }
+                        }
+                    )
+                    return {"_reg_confirmed": None}
+                else:
+                    dispatcher.utter_message(text="Le passeport n'est pas requis (visa = non).")
+                    return {"_reg_confirmed": None}
+
+        # Confirmation keywords
+        if text in ("ok", "oui", "confirmer", "c'est bon", "valider", "confirm", "yes"):
+            return {"_reg_confirmed": "confirmed"}
+
+        # Unrecognised input
+        dispatcher.utter_message(text="Tapez un numero (1-12) pour modifier ou \"ok\" pour confirmer.")
+        return {"_reg_confirmed": None}
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Action: Confirm registration - calls API then triggers file uploads
+# ═══════════════════════════════════════════════════════════════════════
+
+class ActionConfirmRegistration(Action):
+    """Called after user confirms the summary.
+    Calls the API, then sends do_uploads to the widget.
+    """
+
+    def name(self) -> Text:
+        return "action_confirm_registration"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
+    ) -> List[Dict[Text, Any]]:
         data = {
             "company":        tracker.get_slot("reg_company"),
             "contact_name":   tracker.get_slot("reg_contact_name"),
@@ -506,30 +747,12 @@ class ActionSubmitRegistration(Action):
             "history":        tracker.get_slot("reg_history") or "non",
         }
 
-        # Get person's name for personalized messages
         person = tracker.get_slot("person")
         first_name = str(person).strip().split()[0].title() if person else None
         name_suffix = f" {first_name}" if first_name else ""
 
-        # Show summary before submission
-        category = data["category"]
-        phone = data["phone"]
-        dispatcher.utter_message(
-            text=(
-                f"📝 **Résumé de l'inscription**\n\n"
-                f"• Entreprise : **{data['company']}**\n"
-                f"• Contact : **{data['contact_name']}**\n"
-                f"• Email : {data['email']}\n"
-                f"• Téléphone : {phone}\n"
-                f"• Localisation : {data['city']}, {data['country']}\n"
-                f"• Catégorie : **{category}**\n"
-                f"• Paiement : {data['payment']}\n"
-                f"• Visa : {data['visa']}\n\n"
-                f"Soumission de votre inscription en cours..."
-            )
-        )
+        dispatcher.utter_message(text="Soumission de votre inscription en cours...")
 
-        # Call the API
         result = ExpoBetonAPI.register(data)
 
         if result.get("success"):
@@ -537,116 +760,57 @@ class ActionSubmitRegistration(Action):
                 ref = result.get("reference", "N/A")
                 dispatcher.utter_message(
                     text=(
-                        f"ℹ️ Vous êtes déjà inscrit(e) !\n"
-                        f"Référence : **{ref}**\n"
+                        f"Vous etes deja inscrit(e) !\n"
+                        f"Reference : {ref}\n"
                         f"Statut : {result.get('status', 'en attente')}\n\n"
                         f"Contactez info@expobetonrdc.com pour toute modification."
                     )
                 )
                 return [AllSlotsReset()]
-            else:
-                ref = result.get("data", {}).get("reference", "N/A")
-                needs_logo = category not in ("Participant Simple", None)
-                needs_passport = data["visa"].lower() == "oui"
-                upload_base = os.getenv(
-                    "EXPOBETON_UPLOAD_URL",
-                    "https://expobetonrdc.com/upload_documents.php"
-                )
 
-                # Build final success message
-                final_msg = (
-                    f"✅ **Félicitation{name_suffix} ! "
-                    f"Inscription réussie avec succès pour ExpoBeton 2026 !**"
-                )
+            ref = result.get("data", {}).get("reference", "N/A")
+            upload_base = os.getenv(
+                "EXPOBETON_UPLOAD_URL",
+                "https://expobetonrdc.com/upload_documents.php"
+            )
 
-                # Reference number
+            # Tell widget to upload stored files now
+            uploads = _build_upload_list(data["category"], data["visa"])
+            if uploads:
                 dispatcher.utter_message(
-                    text=(
-                        f"Votre numéro de référence : **{ref}**\n"
-                        f"Un email de confirmation a été envoyé à {data['email']}."
-                    )
-                )
-
-                # Build upload list
-                uploads = []
-                if needs_logo:
-                    uploads.append({
-                        "type": "logo",
-                        "accept": ".jpg,.jpeg,.png,.gif,.svg",
-                        "max_size_mb": 10,
-                        "label": "🖼️ Logo de votre entreprise",
-                        "description": (
-                            "Votre logo sera utilisé sur les supports "
-                            "de communication.\n"
-                            "Formats acceptés : JPG, PNG, SVG — Max 10 MB"
-                        ),
-                    })
-                if needs_passport:
-                    uploads.append({
-                        "type": "passport",
-                        "accept": ".pdf",
-                        "max_size_mb": 10,
-                        "label": "🛂 Copie de votre passeport",
-                        "description": (
-                            "Nécessaire pour votre invitation visa.\n"
-                            "Format accepté : PDF uniquement — Max 10 MB"
-                        ),
-                    })
-
-                if uploads:
-                    # Sequential upload sequence (widget handles one-at-a-time)
-                    dispatcher.utter_message(
-                        json_message={
-                            "upload_sequence": {
-                                "ref": ref,
-                                "upload_url_base": upload_base,
-                                "auth_header": f"Bearer {EXPOBETON_API_KEY}",
-                                "uploads": uploads,
-                                "final_message": final_msg,
-                                "closing": (
-                                    "Notre équipe vous contactera dans les "
-                                    "48 heures.\n"
-                                    "Pour toute question : info@expobetonrdc.com"
-                                ),
-                            }
+                    json_message={
+                        "do_uploads": {
+                            "ref": ref,
+                            "upload_url_base": upload_base,
+                            "auth_header": f"Bearer {EXPOBETON_API_KEY}",
+                            "uploads": [u["type"] for u in uploads],
                         }
-                    )
-                    # Fallback for non-widget channels
-                    fallback = f"📎 **Documents à fournir{name_suffix} :**\n\n"
-                    for u in uploads:
-                        fallback += (
-                            f"• {u['label']}\n"
-                            f"  → {upload_base}?ref={ref}&type={u['type']}\n"
-                        )
-                    fallback += (
-                        f"\nOu envoyez par email à "
-                        f"**finance@expobetonrdc.com** (référence: {ref})"
-                    )
-                    dispatcher.utter_message(text=fallback)
-                    dispatcher.utter_message(text=final_msg)
-                else:
-                    # No uploads needed — show success directly
-                    dispatcher.utter_message(text=final_msg)
-
-                dispatcher.utter_message(
-                    text=(
-                        "Notre équipe vous contactera dans les 48 heures.\n"
-                        "Pour toute question : info@expobetonrdc.com"
-                    )
+                    }
                 )
+
+            dispatcher.utter_message(
+                text=(
+                    f"Felicitation{name_suffix} ! "
+                    f"Inscription reussie avec succes pour ExpoBeton 2026 !\n\n"
+                    f"Votre numero de reference : {ref}\n"
+                    f"Un email de confirmation a ete envoye a {data['email']}.\n\n"
+                    f"Notre equipe vous contactera dans les 48 heures.\n"
+                    f"Pour toute question : info@expobetonrdc.com"
+                )
+            )
         else:
             errors = result.get("errors", [])
-            error_msg = "\n".join(f"• {e}" for e in errors) if errors else result.get("error", "Erreur inconnue")
+            error_msg = "\n".join(f"- {e}" for e in errors) if errors else result.get("error", "Erreur inconnue")
             dispatcher.utter_message(
-                text=f"❌ L'inscription n'a pas pu être complétée :\n{error_msg}\n\nVeuillez réessayer ou contacter info@expobetonrdc.com"
+                text=f"L'inscription n'a pas pu etre completee :\n{error_msg}\n\nVeuillez reessayer ou contacter info@expobetonrdc.com"
             )
 
         return [AllSlotsReset()]
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# ===================================================================
 # Action: Submit Ambassador Application
-# ═══════════════════════════════════════════════════════════════════════
+# ===================================================================
 
 class ActionSubmitAmbassador(Action):
     def name(self) -> Text:
@@ -677,25 +841,25 @@ class ActionSubmitAmbassador(Action):
             ref = result.get("data", {}).get("reference", "N/A")
             dispatcher.utter_message(
                 text=(
-                    f"✅ **Candidature ambassadeur soumise !**\n\n"
-                    f"Référence : **{ref}**\n"
+                    f"Candidature ambassadeur soumise !\n\n"
+                    f"Reference : {ref}\n"
                     f"Nous examinerons votre candidature et vous recontacterons.\n"
                     f"Contact : info@expobetonrdc.com"
                 )
             )
         else:
             errors = result.get("errors", [])
-            error_msg = "\n".join(f"• {e}" for e in errors) if errors else result.get("error", "Erreur inconnue")
+            error_msg = "\n".join(f"- {e}" for e in errors) if errors else result.get("error", "Erreur inconnue")
             dispatcher.utter_message(
-                text=f"❌ La candidature n'a pas pu être soumise :\n{error_msg}"
+                text=f"La candidature n'a pas pu etre soumise :\n{error_msg}"
             )
 
         return [AllSlotsReset()]
 
 
-# ═══════════════════════════════════════════════════════════════════════
+# ===================================================================
 # Action: Check API Health
-# ═══════════════════════════════════════════════════════════════════════
+# ===================================================================
 
 class ActionCheckApiHealth(Action):
     def name(self) -> Text:
@@ -706,7 +870,7 @@ class ActionCheckApiHealth(Action):
     ) -> List[Dict[Text, Any]]:
         result = ExpoBetonAPI.health_check()
         if result.get("success"):
-            dispatcher.utter_message(text="✅ ExpoBeton registration system is online.")
+            dispatcher.utter_message(text="ExpoBeton registration system is online.")
         else:
-            dispatcher.utter_message(text="⚠️ Registration system is temporarily unavailable. Please try later.")
+            dispatcher.utter_message(text="Registration system is temporarily unavailable. Please try later.")
         return []
