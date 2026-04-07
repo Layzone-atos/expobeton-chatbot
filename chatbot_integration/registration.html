@@ -1,0 +1,375 @@
+<section class="clients-section-two" id="tg_register">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 px-4 px-md-5 text-center p-0 mt-3 mb-2">
+                <div class="card px-0 pt-4 pb-0 mt-3 mb-3">
+                    <h2 id="heading" data-i18n="registration.title">Fiche d'Inscription et de Sponsoring - Édition 11 - 2026</h2>
+                    <p data-i18n="registration.subtitle">Remplissez tous les champs du formulaire pour passer à l'étape suivante</p>
+                    
+                    <!-- MODIFICATION : Ajout de enctype="multipart/form-data" -->
+                    <form id="msform" enctype="multipart/form-data" method="post" action="process_inscription.php">
+                        <!-- Champ anti-spam caché -->
+                        <input type="hidden" id="form_timestamp" name="timestamp" value="">
+                        <input type="text" name="website" style="display: none;" autocomplete="off">
+                        
+                        <!-- progressbar -->
+                        <ul id="progressbar">
+                            <li class="active" id="etape1"><strong>Société</strong></li>
+                            <li id="etape2"><strong>Contact</strong></li>
+                            <li id="etape3"><strong>Adresse</strong></li>
+                            <li id="etape4"><strong>Email</strong></li>
+                            <li id="etape5"><strong>Téléphone</strong></li>
+                            <li id="etape6"><strong>Catégorie</strong></li>
+                            <li id="etape6b" class="conditional-step" style="display: none;"><strong>Sponsor</strong></li>
+                            <li id="etape6c" class="conditional-step" style="display: none;"><strong>Exposant</strong></li>
+                            <li id="etape7" class="conditional-step" style="display: none;"><strong>Paiement</strong></li>
+                            <li id="etape8" class="conditional-step" style="display: none;"><strong>Visa</strong></li>
+                            <li id="etape9" class="conditional-step" style="display: none;"><strong>Historique</strong></li>
+                            <li id="etape10" class="conditional-step" style="display: none;"><strong>Logo</strong></li>
+                            <li id="etape11" class="conditional-step" style="display: none;"><strong>Passeport</strong></li>
+                        </ul>
+
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                 role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div> <br>
+
+                        <!-- Étape 1 -->
+                        <fieldset data-step="etape1">
+                            <div class="form-card">
+                                <h2 class="fs-title" data-i18n="form.step1.title">Nom de la Société, institution, ou profession</h2>
+                                <input type="text" name="company" data-i18n-placeholder="form.step1.placeholder" placeholder="Nom de la société, institution, ou profession" required>
+                            </div>
+                            <input type="button" name="next" class="next action-button" data-i18n-value="form.button.next" value="Suivant" />
+                        </fieldset>
+
+                        <!-- Étape 2 -->
+                        <fieldset data-step="etape2">
+                            <div class="form-card">
+                                <h2 class="fs-title" data-i18n="form.step2.title">Personne de contact</h2>
+                                <input type="text" name="contact_name" data-i18n-placeholder="form.step2.placeholder" placeholder="Nom du contact" required>
+                            </div>
+                            <input type="button" name="next" class="next action-button" data-i18n-value="form.button.next" value="Suivant" />
+                            <input type="button" name="previous" class="previous action-button-previous" data-i18n-value="form.button.previous" value="Précédent" />
+                        </fieldset>
+
+                      <!-- Étape 3 - Adresse complète -->
+<fieldset data-step="etape3">
+    <div class="form-card">
+        <h2 class="fs-title">Adresse complète</h2>
+        <input type="text" name="address" placeholder="Adresse" required>
+        <input type="text" name="city" placeholder="Ville" required>
+        <input type="text" name="postal" placeholder="Code postal" required>
+
+        <label class="fieldlabels">Pays *</label>
+        <select name="country" class="custom-select country-field" required>
+            <option value="">Sélectionnez un pays</option>
+            <option value="CD" data-flag="cd">République Démocratique du Congo</option>
+            <option value="FR" data-flag="fr">France</option>
+            <option value="BE" data-flag="be">Belgique</option>
+            <option value="US" data-flag="us">États-Unis</option>
+            <option value="CA" data-flag="ca">Canada</option>
+            <option value="CH" data-flag="ch">Suisse</option>
+            <option value="GB" data-flag="gb">Royaume-Uni</option>
+            <option value="DE" data-flag="de">Allemagne</option>
+            <option value="ZA" data-flag="za">Afrique du Sud</option>
+            <option value="SN" data-flag="sn">Sénégal</option>
+            <option value="CI" data-flag="ci">Côte d'Ivoire</option>
+            <option value="CM" data-flag="cm">Cameroun</option>
+            <option value="TG" data-flag="tg">Togo</option>
+            <option value="BJ" data-flag="bj">Bénin</option>
+            <option value="ML" data-flag="ml">Mali</option>
+            <option value="BF" data-flag="bf">Burkina Faso</option>
+            <option value="GN" data-flag="gn">Guinée</option>
+            <option value="NE" data-flag="ne">Niger</option>
+            <option value="TN" data-flag="tn">Tunisie</option>
+            <option value="MA" data-flag="ma">Maroc</option>
+            <option value="DZ" data-flag="dz">Algérie</option>
+            <option value="EG" data-flag="eg">Égypte</option>
+            <option value="KE" data-flag="ke">Kenya</option>
+            <option value="NG" data-flag="ng">Nigeria</option>
+            <option value="GH" data-flag="gh">Ghana</option>
+            <option value="ET" data-flag="et">Éthiopie</option>
+        </select>
+    </div>
+
+    <div class="form-navigation">
+        <input type="button" name="next" class="next action-button" value="Suivant" />
+        <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />    
+    </div>
+</fieldset>
+
+                        <!-- Étape 4 -->
+                        <fieldset data-step="etape4">
+                            <div class="form-card">
+                                <h2 class="fs-title">Email</h2>
+                                <input type="email" name="email" placeholder="Adresse email" required>
+                            </div>
+                            <input type="button" name="next" class="next action-button" value="Suivant" />
+                            <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />
+                        </fieldset>
+
+                    
+
+<!-- Étape 5 - VERSION CORRIGÉE AVEC DRAPEAUX -->
+<fieldset data-step="etape5">
+    <div class="form-card">
+        <h2 class="fs-title">Téléphone</h2>
+        <div class="phone-group">
+            <div class="prefix-select-container">
+                <select name="prefix" id="phone-prefix-select" class="prefix-select" required>
+                    <option value="">Choisir...</option>
+                    <option value="+243" data-flag="cd" data-country="RDC" data-prefix="+243">+243 - RDC</option>
+                    <option value="+33" data-flag="fr" data-country="France" data-prefix="+33">+33 - France</option>
+                    <option value="+32" data-flag="be" data-country="Belgique" data-prefix="+32">+32 - Belgique</option>
+                    <option value="+1" data-flag="us" data-country="USA" data-prefix="+1">+1 - USA</option>
+                    <option value="+1" data-flag="ca" data-country="Canada" data-prefix="+1">+1 - Canada</option>
+                    <option value="+41" data-flag="ch" data-country="Suisse" data-prefix="+41">+41 - Suisse</option>
+                    <option value="+44" data-flag="gb" data-country="UK" data-prefix="+44">+44 - UK</option>
+                    <option value="+49" data-flag="de" data-country="Allemagne" data-prefix="+49">+49 - Allemagne</option>
+                    <option value="+27" data-flag="za" data-country="Afrique Sud" data-prefix="+27">+27 - Afrique Sud</option>
+                    <option value="+221" data-flag="sn" data-country="Sénégal" data-prefix="+221">+221 - Sénégal</option>
+                    <option value="+225" data-flag="ci" data-country="Côte Ivoire" data-prefix="+225">+225 - Côte Ivoire</option>
+                    <option value="+237" data-flag="cm" data-country="Cameroun" data-prefix="+237">+237 - Cameroun</option>
+                    <option value="+228" data-flag="tg" data-country="Togo" data-prefix="+228">+228 - Togo</option>
+                    <option value="+229" data-flag="bj" data-country="Bénin" data-prefix="+229">+229 - Bénin</option>
+                    <option value="+223" data-flag="ml" data-country="Mali" data-prefix="+223">+223 - Mali</option>
+                    <option value="+226" data-flag="bf" data-country="Burkina" data-prefix="+226">+226 - Burkina</option>
+                    <option value="+224" data-flag="gn" data-country="Guinée" data-prefix="+224">+224 - Guinée</option>
+                    <option value="+227" data-flag="ne" data-country="Niger" data-prefix="+227">+227 - Niger</option>
+                    <option value="+216" data-flag="tn" data-country="Tunisie" data-prefix="+216">+216 - Tunisie</option>
+                    <option value="+212" data-flag="ma" data-country="Maroc" data-prefix="+212">+212 - Maroc</option>
+                    <option value="+213" data-flag="dz" data-country="Algérie" data-prefix="+213">+213 - Algérie</option>
+                    <option value="+20" data-flag="eg" data-country="Égypte" data-prefix="+20">+20 - Égypte</option>
+                    <option value="+254" data-flag="ke" data-country="Kenya" data-prefix="+254">+254 - Kenya</option>
+                    <option value="+234" data-flag="ng" data-country="Nigeria" data-prefix="+234">+234 - Nigeria</option>
+                    <option value="+233" data-flag="gh" data-country="Ghana" data-prefix="+233">+233 - Ghana</option>
+                </select>
+            </div>
+            <input type="text" name="phone" placeholder="Numéro de téléphone" class="main-phone" required>
+        </div>
+        <div class="select-hint">Sélectionnez votre pays pour l'indicatif téléphonique</div>
+    </div>
+    <input type="button" name="next" class="next action-button" value="Suivant" />
+    <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />
+</fieldset>
+
+                        <!-- Étape 6 - NOUVELLE LOGIQUE : Type de participation -->
+                        <fieldset data-step="etape6">
+                            <div class="form-card">
+                                <h2 class="fs-title">Type de participation</h2>
+                                <p class="subtitle">Choisissez le type d'inscription qui correspond à votre profil</p>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="category_type" value="sponsor" required><span>Sponsor</span></label>
+                                    <label><input type="radio" name="category_type" value="exposant"><span>Exposant</span></label>
+                                    <label><input type="radio" name="category_type" value="participant"><span>Participant Simple</span></label>
+                                </div>
+                                <div class="category-description" style="display: none;">
+                                    <p id="category-desc"></p>
+                                </div>
+                            </div>
+                            <input type="button" name="next" class="next action-button" value="Suivant" />
+                            <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />
+                        </fieldset>
+
+                        <!-- Étape 6b - Sous-catégorie Sponsor -->
+                        <fieldset data-step="etape6b" class="conditional-step" style="display: none;">
+                            <div class="form-card">
+                                <h2 class="fs-title">Niveau de Sponsoring</h2>
+                                <p class="subtitle">Choisissez votre niveau de sponsoring</p>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="sponsor_level" value="Platinum" required><span>Platinum - 40.000 $</span></label>
+                                    <label><input type="radio" name="sponsor_level" value="Gold"><span>Gold - 20.000 $</span></label>
+                                    <label><input type="radio" name="sponsor_level" value="Silver"><span>Silver - 15.000 $</span></label>
+                                    <label><input type="radio" name="sponsor_level" value="Bronze"><span>Bronze - 12.000 $</span></label>
+                                </div>
+                                <div class="sponsor-benefits">
+                                    <h4>Avantages inclus :</h4>
+                                    <ul>
+                                        <li>Visibilité maximale sur tous nos supports</li>
+                                        <li>Stand premium positionné stratégiquement</li>
+                                        <li>Présentation lors des sessions plénières</li>
+                                        <li>Inclusion dans tous les documents promotionnels</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <input type="button" name="next" class="next action-button" value="Suivant" />
+                            <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />
+                        </fieldset>
+
+                        <!-- Étape 6c - Sous-catégorie Exposant -->
+                        <fieldset data-step="etape6c" class="conditional-step" style="display: none;">
+                            <div class="form-card">
+                                <h2 class="fs-title">Type de Stand</h2>
+                                <p class="subtitle">Choisissez la dimension de votre stand d'exposition</p>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="exposant_stand" value="3x3m" required><span>3x3m - 5000$</span></label>
+                                    <label><input type="radio" name="exposant_stand" value="2x4m"><span>2x4m - 3000$</span></label>
+                                    <label><input type="radio" name="exposant_stand" value="2x3m"><span>2x3m - 2000$</span></label>
+                                </div>
+                                <div class="exposant-benefits">
+                                    <h4>Inclus dans votre stand :</h4>
+                                    <ul>
+                                        <li>Espace d'exposition désigné</li>
+                                        <li>Table et chaises fournies</li>
+                                        <li>Accès à l'électricité</li>
+                                        <li>Listing dans le catalogue des exposants</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <input type="button" name="next" class="next action-button" value="Suivant" />
+                            <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />
+                        </fieldset>
+
+                        <!-- Étape 7 - Paiement (uniquement pour Sponsor et Exposant) -->
+                        <fieldset data-step="etape7" class="conditional-step" style="display: none;">
+                            <div class="form-card">
+                                <h2 class="fs-title">Paiement par</h2>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="payment" value="cheque" required><span>Chèque</span></label>
+                                    <label><input type="radio" name="payment" value="facture"><span>Veuillez Facturer</span></label>
+                                </div>
+                                <div class="payment-info">
+                                    <h4>Informations de paiement :</h4>
+                                    <p>
+                                        Une facture détaillée vous sera envoyée par email dans les 48 heures. 
+                                        Pour tout renseignement concernant le paiement, contactez-nous à 
+                                        <strong>finance@expobetonrdc.com</strong>
+                                    </p>
+                                </div>
+                            </div>
+                            <input type="button" name="next" class="next action-button" value="Suivant" />
+                            <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />
+                        </fieldset>
+
+                        <!-- Étape 8 - Visa (uniquement pour Sponsor et Exposant) -->
+                        <fieldset data-step="etape8" class="conditional-step" style="display: none;">
+                            <div class="form-card">
+                                <h2 class="fs-title">Besoin d'une invitation visa ?</h2>
+                                <p class="subtitle">Une invitation officielle vous sera délivrée pour faciliter votre obtention de visa</p>
+                                <div class="radio-group justify-center">
+                                    <label><input type="radio" name="visa" value="oui" required><span>Oui</span></label>
+                                    <label><input type="radio" name="visa" value="non"><span>Non</span></label>
+                                </div>
+                                <div class="visa-info">
+                                    <h4>Important pour le visa :</h4>
+                                    <p>
+                                        Si vous choisissez "Oui", vous devrez fournir une copie de votre passeport 
+                                        (valide au moins 6 mois) à l'étape suivante. L'invitation officielle vous 
+                                        sera envoyée par email après validation de votre inscription.
+                                    </p>
+                                </div>
+                            </div>
+                            <input type="button" name="next" class="next action-button" value="Suivant" />
+                            <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />
+                        </fieldset>
+
+                        <!-- Étape 9 - Historique (pour tous) -->
+                        <fieldset data-step="etape9" class="conditional-step" style="display: none;">
+                            <div class="form-card">
+                                <h2 class="fs-title">Avez-vous participé aux éditions précédentes ?</h2>
+                                <div class="radio-group justify-center">
+                                    <label><input type="radio" name="history" value="oui" required><span>Oui</span></label>
+                                    <label><input type="radio" name="history" value="non"><span>Non</span></label>
+                                </div>
+                            </div>
+                            <!-- Navigation conditionnelle : Participant Simple soumet directement -->
+                            <div class="form-navigation">
+                                <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />
+                                <input type="button" name="next" class="next action-button" value="Suivant" id="next-history" />
+                                <input type="button" name="submit" class="submit action-button" id="submit-participant" value="Soumettre" style="display: none;" />
+                            </div>
+                        </fieldset>
+
+                        <!-- Étape 10 Logo (uniquement pour Sponsor et Exposant) -->
+                        <fieldset data-step="etape10" class="conditional-step" style="display: none;">
+                            <div class="form-card">
+                                <h2 class="fs-title">Joindre votre logo</h2>
+                                <p class="subtitle">Votre logo sera utilisé pour tous les supports de communication</p>
+                                <div class="file-upload-area">
+                                    <input type="file" name="logo" accept=".jpg,.jpeg,.png,.gif,.svg" data-file-name="logo">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <strong>Faites glisser ou téléversez votre logo ici</strong>
+                                        <p>Formats acceptés: JPG, PNG, SVG<br>Taille max: 10 MB<br>Résolution recommandée: 300x300 px minimum</p>
+                                    </div>
+                                    <div class="upload-progress">
+                                        <div class="upload-progress-bar-container">
+                                            <div class="upload-progress-bar"></div>
+                                        </div>
+                                        <div class="upload-progress-text">0%</div>
+                                    </div>
+                                    <div class="upload-success">
+                                        <i class="fas fa-check"></i> Logo chargé avec succès
+                                    </div>
+                                    <div class="file-uploaded-confirmation">
+                                        <div class="file-uploaded-info">
+                                            <span class="file-uploaded-name"></span>
+                                            <span class="file-uploaded-size"></span>
+                                        </div>
+                                        <div class="file-uploaded-actions">
+                                            <button type="button" class="change-file-btn">Changer le logo</button>
+                                            <button type="button" class="remove-file-btn">Supprimer</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-navigation">
+                                <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />
+                                <input type="button" name="next" class="next action-button" value="Suivant" />
+                            </div>
+                        </fieldset>
+
+                        <!-- Étape 11 Passeport - Conditionnel (uniquement si visa = oui) -->
+                        <fieldset data-step="etape11" class="conditional-step" style="display: none;">
+                            <div class="form-card">
+                                <h2 class="fs-title">Joindre votre passeport</h2>
+                                <p class="subtitle">Nécessaire pour la délivrance de votre invitation visa</p>
+                                <div class="file-upload-area">
+                                    <input type="file" name="passport" accept="application/pdf" data-file-name="passport">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <strong>Faites glisser ou téléversez votre passeport ici</strong>
+                                        <p>Format accepté: PDF uniquement<br>Taille max: 10 MB<br>Validité minimum: 6 mois</p>
+                                    </div>
+                                    <div class="upload-progress">
+                                        <div class="upload-progress-bar-container">
+                                            <div class="upload-progress-bar"></div>
+                                        </div>
+                                        <div class="upload-progress-text">0%</div>
+                                    </div>
+                                    <div class="upload-success">
+                                        <i class="fas fa-check"></i> Passeport chargé avec succès
+                                    </div>
+                                    <div class="file-uploaded-confirmation">
+                                        <div class="file-uploaded-info">
+                                            <span class="file-uploaded-name"></span>
+                                            <span class="file-uploaded-size"></span>
+                                        </div>
+                                        <div class="file-uploaded-actions">
+                                            <button type="button" class="change-file-btn">Changer le passeport</button>
+                                            <button type="button" class="remove-file-btn">Supprimer</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="passport-requirements">
+                                    <h4>⚠️ Conditions importantes :</h4>
+                                    <ul>
+                                        <li>Le passeport doit être valide au moins 6 mois après la date de fin de l'événement</li>
+                                        <li>Assurez-vous que la photo est claire et lisible</li>
+                                        <li>Vérifiez que toutes les informations sont visibles</li>
+                                        <li>Le fichier ne doit pas être protégé par mot de passe</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="form-navigation">
+                                <input type="button" name="previous" class="previous action-button-previous" value="Précédent" />
+                                <input type="submit" name="submit" class="submit action-button" value="Soumettre" />
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

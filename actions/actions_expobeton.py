@@ -18,6 +18,7 @@ Then run the action server:
 """
 
 import logging
+import re
 import requests
 from typing import Any, Dict, List, Text, Optional
 from rasa_sdk import Action, Tracker, FormValidationAction
@@ -115,6 +116,46 @@ class ExpoBetonAPI:
 # Action: Show available registration categories
 # ═══════════════════════════════════════════════════════════════════════
 
+# ═══════════════════════════════════════════════════════════════════════
+# Action: Personalized registration start
+# ═══════════════════════════════════════════════════════════════════════
+
+class ActionStartRegistration(Action):
+    """Greet user by name and start the registration form."""
+
+    def name(self) -> Text:
+        return "action_start_registration"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
+    ) -> List[Dict[Text, Any]]:
+        # Try to get the person's name from the slot (set during greeting)
+        person = tracker.get_slot("person")
+        if person:
+            # Use only first name for friendliness
+            first_name = str(person).strip().split()[0].title()
+            dispatcher.utter_message(
+                text=(
+                    f"D'accord {first_name}, je vais vous aider à vous inscrire "
+                    f"étape par étape. 😊\n\n"
+                    f"Commençons votre inscription à **ExpoBeton RDC 2026** !"
+                )
+            )
+        else:
+            dispatcher.utter_message(
+                text=(
+                    "D'accord, je vais vous aider à vous inscrire "
+                    "étape par étape. 😊\n\n"
+                    "Commençons votre inscription à **ExpoBeton RDC 2026** !"
+                )
+            )
+        return [FollowupAction("registration_form")]
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Action: Show available registration categories
+# ═══════════════════════════════════════════════════════════════════════
+
 class ActionShowCategories(Action):
     def name(self) -> Text:
         return "action_show_categories"
@@ -156,11 +197,11 @@ VALID_PAYMENT_METHODS = [
 ]
 
 CATEGORY_MAP = {
-    # Numbers
+    # Numbers (main menu)
     "1": "_sponsor_",
     "2": "_exposant_",
     "3": "Participant Simple",
-    # Sponsor sub-levels (numbers)
+    # Sponsor sub-levels (dotted numbers)
     "1.1": "Platinum", "1.2": "Gold", "1.3": "Silver", "1.4": "Bronze",
     # Direct names
     "platinum": "Platinum",
@@ -177,9 +218,28 @@ CATEGORY_MAP = {
     "sponsor gold": "Gold",
     "sponsor silver": "Silver",
     "sponsor bronze": "Bronze",
+    # Comma-separated shortcuts ("Sponsor, Platinum" etc.)
+    "sponsor, platinum": "Platinum",
+    "sponsor,platinum": "Platinum",
+    "sponsor, gold": "Gold",
+    "sponsor,gold": "Gold",
+    "sponsor, silver": "Silver",
+    "sponsor,silver": "Silver",
+    "sponsor, bronze": "Bronze",
+    "sponsor,bronze": "Bronze",
+    "exposant, 3x3": "Exposant Stand 3x3m",
+    "exposant, 2x4": "Exposant Stand 2x4m",
+    "exposant, 2x3": "Exposant Stand 2x3m",
+    # Stand variations
     "stand 3x3": "Exposant Stand 3x3m",
     "stand 2x4": "Exposant Stand 2x4m",
     "stand 2x3": "Exposant Stand 2x3m",
+    "3x3": "Exposant Stand 3x3m",
+    "2x4": "Exposant Stand 2x4m",
+    "2x3": "Exposant Stand 2x3m",
+    "3x3m": "Exposant Stand 3x3m",
+    "2x4m": "Exposant Stand 2x4m",
+    "2x3m": "Exposant Stand 2x3m",
     "exposant": "_exposant_",
     "stand": "_exposant_",
     # Participant variations
@@ -195,6 +255,14 @@ class ValidateRegistrationForm(FormValidationAction):
 
     def name(self) -> Text:
         return "validate_registration_form"
+
+    @staticmethod
+    def _first_name(tracker: Tracker) -> str:
+        """Get the user's first name from the person slot, or empty string."""
+        person = tracker.get_slot("person")
+        if person:
+            return str(person).strip().split()[0].title()
+        return ""
 
     def validate_reg_company(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
@@ -218,7 +286,6 @@ class ValidateRegistrationForm(FormValidationAction):
         self, slot_value: Any, dispatcher: CollectingDispatcher,
         tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
-        import re
         if slot_value and re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$', str(slot_value).strip()):
             return {"reg_email": slot_value.strip().lower()}
         dispatcher.utter_message(text="Veuillez fournir une adresse email valide.")
@@ -228,7 +295,6 @@ class ValidateRegistrationForm(FormValidationAction):
         self, slot_value: Any, dispatcher: CollectingDispatcher,
         tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
-        import re
         cleaned = re.sub(r'[\s\-\(\)]', '', str(slot_value or ''))
         if len(cleaned) >= 6 and cleaned.replace('+', '').isdigit():
             return {"reg_phone": cleaned}
@@ -399,16 +465,21 @@ class ActionSubmitRegistration(Action):
             "contact_name":   tracker.get_slot("reg_contact_name"),
             "email":          tracker.get_slot("reg_email"),
             "phone":          tracker.get_slot("reg_phone"),
-            "phone_prefix":   tracker.get_slot("reg_phone_prefix") or "+243",
+            "prefix":         tracker.get_slot("reg_phone_prefix") or "+243",
             "country":        tracker.get_slot("reg_country"),
             "city":           tracker.get_slot("reg_city"),
             "address":        tracker.get_slot("reg_address") or "",
             "postal":         tracker.get_slot("reg_postal") or "",
             "category":       tracker.get_slot("reg_category"),
-            "payment_method": tracker.get_slot("reg_payment"),
-            "visa_required":  tracker.get_slot("reg_visa") or "non",
-            "previous_participation": tracker.get_slot("reg_history") or "non",
+            "payment":        tracker.get_slot("reg_payment"),
+            "visa":           tracker.get_slot("reg_visa") or "non",
+            "history":        tracker.get_slot("reg_history") or "non",
         }
+
+        # Get person's name for personalized messages
+        person = tracker.get_slot("person")
+        first_name = str(person).strip().split()[0].title() if person else None
+        name_suffix = f" {first_name}" if first_name else ""
 
         # Show summary before submission
         category = data["category"]
@@ -422,8 +493,8 @@ class ActionSubmitRegistration(Action):
                 f"• Téléphone : {phone}\n"
                 f"• Localisation : {data['city']}, {data['country']}\n"
                 f"• Catégorie : **{category}**\n"
-                f"• Paiement : {data['payment_method']}\n"
-                f"• Visa : {data['visa_required']}\n\n"
+                f"• Paiement : {data['payment']}\n"
+                f"• Visa : {data['visa']}\n\n"
                 f"Soumission de votre inscription en cours..."
             )
         )
@@ -446,7 +517,7 @@ class ActionSubmitRegistration(Action):
                 ref = result.get("data", {}).get("reference", "N/A")
                 dispatcher.utter_message(
                     text=(
-                        f"✅ **Inscription réussie !**\n\n"
+                        f"✅ **Inscription réussie{name_suffix} !**\n\n"
                         f"Votre numéro de référence : **{ref}**\n"
                         f"Un email de confirmation a été envoyé à {data['email']}.\n\n"
                         f"Notre équipe vous contactera dans les 48 heures.\n"

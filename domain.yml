@@ -73,10 +73,6 @@ slots:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_entity
-        entity: company_name
-        conditions:
-          - active_loop: registration_form
       - type: from_text
         conditions:
           - active_loop: registration_form
@@ -85,10 +81,6 @@ slots:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_entity
-        entity: person_name
-        conditions:
-          - active_loop: registration_form
       - type: from_text
         conditions:
           - active_loop: registration_form
@@ -97,10 +89,6 @@ slots:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_entity
-        entity: email
-        conditions:
-          - active_loop: registration_form
       - type: from_text
         conditions:
           - active_loop: registration_form
@@ -109,10 +97,6 @@ slots:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_entity
-        entity: phone_number
-        conditions:
-          - active_loop: registration_form
       - type: from_text
         conditions:
           - active_loop: registration_form
@@ -121,16 +105,11 @@ slots:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_entity
-        entity: phone_number
+      - type: custom
   reg_country:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_entity
-        entity: country
-        conditions:
-          - active_loop: registration_form
       - type: from_text
         conditions:
           - active_loop: registration_form
@@ -139,10 +118,6 @@ slots:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_entity
-        entity: city
-        conditions:
-          - active_loop: registration_form
       - type: from_text
         conditions:
           - active_loop: registration_form
@@ -161,18 +136,6 @@ slots:
     type: text
     influence_conversation: true
     mappings:
-      - type: from_entity
-        entity: category
-        conditions:
-          - active_loop: registration_form
-      - type: from_entity
-        entity: sponsor_level
-        conditions:
-          - active_loop: registration_form
-      - type: from_entity
-        entity: stand_type
-        conditions:
-          - active_loop: registration_form
       - type: from_text
         conditions:
           - active_loop: registration_form
@@ -181,10 +144,6 @@ slots:
     type: text
     influence_conversation: false
     mappings:
-      - type: from_entity
-        entity: payment_method
-        conditions:
-          - active_loop: registration_form
       - type: from_text
         conditions:
           - active_loop: registration_form
@@ -421,6 +380,7 @@ actions:
   - utter_partners
   - utter_tourism_culture
   - action_show_categories
+  - action_start_registration
   - action_submit_registration
   - action_submit_ambassador
   - action_check_api_health

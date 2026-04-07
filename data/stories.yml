@@ -86,8 +86,7 @@ stories:
   - intent: ask_registration
   - action: utter_registration
   - intent: register
-  - action: registration_form
-  - active_loop: registration_form
+  - action: action_start_registration
 
 - story: ask corridors story
   steps:
@@ -141,6 +140,7 @@ stories:
 - story: happy path - registration as sponsor
   steps:
     - intent: register
+    - action: action_start_registration
     - action: registration_form
     - active_loop: registration_form
     - slot_was_set:
@@ -158,11 +158,11 @@ stories:
     - slot_was_set:
         - requested_slot: reg_phone
     - slot_was_set:
-        - reg_phone: "812345678"
+        - reg_phone: "+243812345678"
     - slot_was_set:
         - requested_slot: reg_country
     - slot_was_set:
-        - reg_country: "CD"
+        - reg_country: "RDC"
     - slot_was_set:
         - requested_slot: reg_city
     - slot_was_set:
@@ -170,11 +170,19 @@ stories:
     - slot_was_set:
         - requested_slot: reg_category
     - slot_was_set:
-        - reg_category: "Gold"
+        - reg_category: "Platinum"
     - slot_was_set:
         - requested_slot: reg_payment
     - slot_was_set:
-        - reg_payment: "Mobile Money"
+        - reg_payment: "Chèque"
+    - slot_was_set:
+        - requested_slot: reg_visa
+    - slot_was_set:
+        - reg_visa: "oui"
+    - slot_was_set:
+        - requested_slot: reg_history
+    - slot_was_set:
+        - reg_history: "non"
     - active_loop: null
     - slot_was_set:
         - requested_slot: null
@@ -183,6 +191,7 @@ stories:
 - story: happy path - registration as participant
   steps:
     - intent: register
+    - action: action_start_registration
     - action: registration_form
     - active_loop: registration_form
     - slot_was_set:
@@ -192,15 +201,19 @@ stories:
     - slot_was_set:
         - reg_email: "marie@email.com"
     - slot_was_set:
-        - reg_phone: "998877665"
+        - reg_phone: "+243998877665"
     - slot_was_set:
-        - reg_country: "CD"
+        - reg_country: "RDC"
     - slot_was_set:
         - reg_city: "Kalemie"
     - slot_was_set:
         - reg_category: "Participant Simple"
     - slot_was_set:
         - reg_payment: "N/A"
+    - slot_was_set:
+        - reg_visa: "non"
+    - slot_was_set:
+        - reg_history: "non"
     - active_loop: null
     - slot_was_set:
         - requested_slot: null
@@ -211,8 +224,7 @@ stories:
     - intent: show_categories
     - action: action_show_categories
     - intent: register
-    - action: registration_form
-    - active_loop: registration_form
+    - action: action_start_registration
 
 - story: ambassador application
   steps:

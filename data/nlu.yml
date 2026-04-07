@@ -693,8 +693,11 @@ nlu:
 
 - intent: provide_payment
   examples: |
-    - par [Mobile Money](payment_method)
-    - payer par [Cash](payment_method)
-    - par [Virement bancaire](payment_method)
-    - via [Western Union](payment_method)
-    - par [Carte bancaire](payment_method)
+    - par [Chèque](payment_method)
+    - payer par [chèque](payment_method)
+    - par [cheque](payment_method)
+    - [Veuillez Facturer](payment_method)
+    - par [facture](payment_method)
+    - je choisis [chèque](payment_method)
+    - je préfère [veuillez facturer](payment_method)
+    - [facturer](payment_method)

@@ -21,8 +21,7 @@ rules:
   - rule: Activate registration form
     steps:
       - intent: register
-      - action: registration_form
-      - active_loop: registration_form
+      - action: action_start_registration
 
   - rule: Submit registration when form complete
     condition:
@@ -97,67 +96,19 @@ rules:
       - action: registration_form
       - active_loop: registration_form
 
-  - rule: Provide company during registration form
+  - rule: Register intent during registration form (keep form active)
     condition:
       - active_loop: registration_form
     steps:
-      - intent: provide_company
+      - intent: register
       - action: registration_form
       - active_loop: registration_form
 
-  - rule: Provide name during registration form
+  - rule: Greet during registration form (keep form active)
     condition:
       - active_loop: registration_form
     steps:
-      - intent: provide_name
-      - action: registration_form
-      - active_loop: registration_form
-
-  - rule: Provide email during registration form
-    condition:
-      - active_loop: registration_form
-    steps:
-      - intent: provide_email
-      - action: registration_form
-      - active_loop: registration_form
-
-  - rule: Provide phone during registration form
-    condition:
-      - active_loop: registration_form
-    steps:
-      - intent: provide_phone
-      - action: registration_form
-      - active_loop: registration_form
-
-  - rule: Provide country during registration form
-    condition:
-      - active_loop: registration_form
-    steps:
-      - intent: provide_country
-      - action: registration_form
-      - active_loop: registration_form
-
-  - rule: Provide city during registration form
-    condition:
-      - active_loop: registration_form
-    steps:
-      - intent: provide_city
-      - action: registration_form
-      - active_loop: registration_form
-
-  - rule: Provide category during registration form
-    condition:
-      - active_loop: registration_form
-    steps:
-      - intent: provide_category
-      - action: registration_form
-      - active_loop: registration_form
-
-  - rule: Provide payment during registration form
-    condition:
-      - active_loop: registration_form
-    steps:
-      - intent: provide_payment
+      - intent: greet
       - action: registration_form
       - active_loop: registration_form
 
