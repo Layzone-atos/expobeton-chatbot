@@ -562,9 +562,15 @@ class ActionSubmitRegistration(Action):
                     )
                 )
 
-                # Send interactive upload cards via custom JSON
+                # Send interactive upload cards with fallback text
+                # Widget renders the upload card; non-widget channels show the text
                 if needs_logo:
+                    logo_fallback = (
+                        f"📎 **Logo de votre entreprise** (JPG/PNG/SVG, max 10 MB)\n"
+                        f"→ {upload_base}?ref={ref}&type=logo"
+                    )
                     dispatcher.utter_message(
+                        text=logo_fallback,
                         json_message={
                             "custom": {
                                 "upload_request": {
@@ -582,7 +588,12 @@ class ActionSubmitRegistration(Action):
                     )
 
                 if needs_passport:
+                    passport_fallback = (
+                        f"📎 **Copie de votre passeport** (PDF)\n"
+                        f"→ {upload_base}?ref={ref}&type=passport"
+                    )
                     dispatcher.utter_message(
+                        text=passport_fallback,
                         json_message={
                             "custom": {
                                 "upload_request": {
@@ -599,24 +610,13 @@ class ActionSubmitRegistration(Action):
                         }
                     )
 
-                # Fallback text for non-widget channels (email links)
                 if needs_logo or needs_passport:
-                    fallback_msg = "📎 **Documents à fournir :**\n\n"
-                    if needs_logo:
-                        fallback_msg += (
-                            f"• **Logo** (JPG/PNG/SVG, max 10 MB)\n"
-                            f"  → {upload_base}?ref={ref}&type=logo\n"
+                    dispatcher.utter_message(
+                        text=(
+                            f"Ou envoyez vos documents par email à "
+                            f"**finance@expobetonrdc.com** (référence: {ref})"
                         )
-                    if needs_passport:
-                        fallback_msg += (
-                            f"• **Passeport** (PDF)\n"
-                            f"  → {upload_base}?ref={ref}&type=passport\n"
-                        )
-                    fallback_msg += (
-                        f"\nOu envoyez par email à **finance@expobetonrdc.com** "
-                        f"(référence: {ref})"
                     )
-                    dispatcher.utter_message(text=fallback_msg)
 
                 dispatcher.utter_message(
                     text=(
