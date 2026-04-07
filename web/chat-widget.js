@@ -218,8 +218,14 @@ async function sendToRasa(message) {
         // Add bot responses
         if (data && data.length > 0) {
             for (const msg of data) {
-                await addMessage(msg.text, 'bot');
-                await sleep(300); // Slight delay between multiple messages
+                // Handle custom upload_request messages
+                if (msg.custom && msg.custom.upload_request) {
+                    await renderUploadCard(msg.custom.upload_request);
+                    await sleep(300);
+                } else if (msg.text) {
+                    await addMessage(msg.text, 'bot');
+                    await sleep(300);
+                }
             }
         } else {
             await addMessage("Désolé, je n'ai pas pu traiter votre message. Veuillez réessayer.", 'bot');
@@ -272,6 +278,189 @@ function addMessage(text, sender) {
         
         setTimeout(resolve, 100);
     });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// File Upload System
+// ═══════════════════════════════════════════════════════════════
+
+function renderUploadCard(uploadReq) {
+    return new Promise((resolve) => {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message bot';
+
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = 'message-avatar';
+        avatarDiv.textContent = '🤖';
+
+        const card = document.createElement('div');
+        card.className = 'upload-card';
+        card.innerHTML = `
+            <div class="upload-card-header">
+                <span class="upload-card-label">${uploadReq.label}</span>
+            </div>
+            <p class="upload-card-desc">${uploadReq.description.replace(/\n/g, '<br>')}</p>
+            <div class="upload-drop-zone" id="drop-zone-${uploadReq.type}">
+                <div class="upload-drop-icon">📁</div>
+                <p>Glissez votre fichier ici ou</p>
+                <label class="upload-btn" for="file-input-${uploadReq.type}">Choisir un fichier</label>
+                <input type="file" id="file-input-${uploadReq.type}" accept="${uploadReq.accept}" style="display:none">
+            </div>
+            <div class="upload-progress-area" id="progress-area-${uploadReq.type}" style="display:none">
+                <div class="upload-file-info">
+                    <span class="upload-file-name" id="file-name-${uploadReq.type}"></span>
+                    <span class="upload-file-size" id="file-size-${uploadReq.type}"></span>
+                </div>
+                <div class="upload-progress-bar">
+                    <div class="upload-progress-fill" id="progress-fill-${uploadReq.type}"></div>
+                </div>
+                <span class="upload-status" id="upload-status-${uploadReq.type}">En cours...</span>
+            </div>
+            <div class="upload-result" id="upload-result-${uploadReq.type}" style="display:none"></div>
+            <p class="upload-skip-link">Ou <a href="${uploadReq.upload_url}" target="_blank">uploadez via le site web</a></p>
+        `;
+
+        messageDiv.appendChild(avatarDiv);
+        messageDiv.appendChild(card);
+        messagesList.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        playSound('botMessage');
+
+        // Store in messages
+        chatState.messages.push({
+            text: `[Upload demandé: ${uploadReq.label}]`,
+            sender: 'bot',
+            timestamp: new Date().toISOString()
+        });
+
+        // Set up file input handler
+        const fileInput = document.getElementById(`file-input-${uploadReq.type}`);
+        const dropZone = document.getElementById(`drop-zone-${uploadReq.type}`);
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelected(e.target.files[0], uploadReq);
+            }
+        });
+
+        // Drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files.length > 0) {
+                handleFileSelected(e.dataTransfer.files[0], uploadReq);
+            }
+        });
+
+        setTimeout(resolve, 100);
+    });
+}
+
+function handleFileSelected(file, uploadReq) {
+    const maxBytes = uploadReq.max_size_mb * 1024 * 1024;
+    const allowedExts = uploadReq.accept.split(',').map(e => e.trim().toLowerCase());
+    const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+
+    // Validate extension
+    if (!allowedExts.includes(fileExt)) {
+        showUploadResult(uploadReq.type, false,
+            `Format non accepté (${fileExt}). Formats autorisés : ${uploadReq.accept}`);
+        return;
+    }
+
+    // Validate size
+    if (file.size > maxBytes) {
+        showUploadResult(uploadReq.type, false,
+            `Fichier trop volumineux (${(file.size / 1024 / 1024).toFixed(1)} MB). Max : ${uploadReq.max_size_mb} MB`);
+        return;
+    }
+
+    // Show progress area, hide drop zone
+    const dropZone = document.getElementById(`drop-zone-${uploadReq.type}`);
+    const progressArea = document.getElementById(`progress-area-${uploadReq.type}`);
+    document.getElementById(`file-name-${uploadReq.type}`).textContent = file.name;
+    document.getElementById(`file-size-${uploadReq.type}`).textContent =
+        `(${(file.size / 1024 / 1024).toFixed(1)} MB)`;
+
+    dropZone.style.display = 'none';
+    progressArea.style.display = 'block';
+
+    // Upload the file
+    uploadFileToAPI(file, uploadReq);
+}
+
+function uploadFileToAPI(file, uploadReq) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const xhr = new XMLHttpRequest();
+    const progressFill = document.getElementById(`progress-fill-${uploadReq.type}`);
+    const statusEl = document.getElementById(`upload-status-${uploadReq.type}`);
+
+    xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            progressFill.style.width = pct + '%';
+            statusEl.textContent = `Envoi en cours... ${pct}%`;
+        }
+    });
+
+    xhr.addEventListener('load', () => {
+        const progressArea = document.getElementById(`progress-area-${uploadReq.type}`);
+        progressArea.style.display = 'none';
+
+        if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+                const result = JSON.parse(xhr.responseText);
+                if (result.success) {
+                    showUploadResult(uploadReq.type, true,
+                        `✅ ${uploadReq.type === 'logo' ? 'Logo' : 'Passeport'} envoyé avec succès !`);
+                    // Notify Rasa
+                    sendToRasa(`Document ${uploadReq.type} uploadé avec succès pour ${uploadReq.ref}`);
+                } else {
+                    showUploadResult(uploadReq.type, false,
+                        result.error || 'Erreur lors de l\'envoi.');
+                }
+            } catch (e) {
+                showUploadResult(uploadReq.type, false, 'Réponse invalide du serveur.');
+            }
+        } else {
+            showUploadResult(uploadReq.type, false,
+                `Erreur serveur (${xhr.status}). Réessayez ou envoyez par email.`);
+        }
+    });
+
+    xhr.addEventListener('error', () => {
+        document.getElementById(`progress-area-${uploadReq.type}`).style.display = 'none';
+        showUploadResult(uploadReq.type, false,
+            'Erreur de connexion. Veuillez réessayer ou envoyer par email.');
+    });
+
+    xhr.open('POST', uploadReq.upload_url);
+    xhr.setRequestHeader('Authorization', uploadReq.auth_header);
+    xhr.send(formData);
+}
+
+function showUploadResult(type, success, message) {
+    const resultEl = document.getElementById(`upload-result-${type}`);
+    resultEl.style.display = 'block';
+    resultEl.className = `upload-result ${success ? 'upload-success' : 'upload-error'}`;
+    resultEl.textContent = message;
+
+    // If failed, show drop zone again for retry
+    if (!success) {
+        setTimeout(() => {
+            const dropZone = document.getElementById(`drop-zone-${type}`);
+            if (dropZone) dropZone.style.display = 'block';
+        }, 2000);
+    }
 }
 
 // Show Typing Indicator

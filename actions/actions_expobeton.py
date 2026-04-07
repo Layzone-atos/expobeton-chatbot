@@ -97,6 +97,28 @@ class ExpoBetonAPI:
             return {"success": False, "error": str(e)}
 
     @staticmethod
+    def upload_document(ref: str, doc_type: str, file_content: bytes, filename: str) -> dict:
+        """Upload a document (logo or passport) for a registration."""
+        upload_base = os.getenv(
+            "EXPOBETON_UPLOAD_URL",
+            "https://expobetonrdc.com/upload_documents.php"
+        )
+        try:
+            r = requests.post(
+                f"{upload_base}?ref={ref}&type={doc_type}",
+                files={"file": (filename, file_content)},
+                headers={
+                    "Authorization": f"Bearer {EXPOBETON_API_KEY}",
+                    "User-Agent": "RasaChatbot/1.0 ExpoBeton",
+                },
+                timeout=60,
+            )
+            return r.json()
+        except Exception as e:
+            logger.error(f"Document upload failed: {e}")
+            return {"success": False, "error": str(e)}
+
+    @staticmethod
     def submit_ambassador(data: dict) -> dict:
         """Submit a new ambassador application."""
         try:
@@ -521,9 +543,9 @@ class ActionSubmitRegistration(Action):
                         f"Contactez info@expobetonrdc.com pour toute modification."
                     )
                 )
+                return [AllSlotsReset()]
             else:
                 ref = result.get("data", {}).get("reference", "N/A")
-                # Determine if upload links are needed
                 needs_logo = category not in ("Participant Simple", None)
                 needs_passport = data["visa"].lower() == "oui"
                 upload_base = os.getenv(
@@ -531,35 +553,77 @@ class ActionSubmitRegistration(Action):
                     "https://expobetonrdc.com/upload_documents.php"
                 )
 
-                msg = (
-                    f"✅ **Inscription réussie{name_suffix} !**\n\n"
-                    f"Votre numéro de référence : **{ref}**\n"
-                    f"Un email de confirmation a été envoyé à {data['email']}.\n\n"
+                # Success message
+                dispatcher.utter_message(
+                    text=(
+                        f"✅ **Inscription réussie{name_suffix} !**\n\n"
+                        f"Votre numéro de référence : **{ref}**\n"
+                        f"Un email de confirmation a été envoyé à {data['email']}."
+                    )
                 )
 
-                # Logo upload instructions
+                # Send interactive upload cards via custom JSON
                 if needs_logo:
-                    msg += (
-                        f"🖼️ **Logo requis** — Votre logo sera utilisé sur les supports de communication.\n"
-                        f"Veuillez envoyer votre logo (JPG, PNG ou SVG, max 10 MB) :\n"
-                        f"• Par email : **finance@expobetonrdc.com** (référence: {ref})\n"
-                        f"• Ou via le lien : {upload_base}?ref={ref}&type=logo\n\n"
+                    dispatcher.utter_message(
+                        json_message={
+                            "custom": {
+                                "upload_request": {
+                                    "ref": ref,
+                                    "type": "logo",
+                                    "accept": ".jpg,.jpeg,.png,.gif,.svg",
+                                    "max_size_mb": 10,
+                                    "upload_url": f"{upload_base}?ref={ref}&type=logo",
+                                    "auth_header": f"Bearer {EXPOBETON_API_KEY}",
+                                    "label": "🖼️ Logo de votre entreprise",
+                                    "description": "Votre logo sera utilisé sur les supports de communication.\nFormats acceptés : JPG, PNG, SVG — Max 10 MB",
+                                }
+                            }
+                        }
                     )
 
-                # Passport upload instructions
                 if needs_passport:
-                    msg += (
-                        f"🛂 **Passeport requis** — Nécessaire pour votre invitation visa.\n"
-                        f"Veuillez envoyer une copie de votre passeport (PDF) :\n"
-                        f"• Par email : **finance@expobetonrdc.com** (référence: {ref})\n"
-                        f"• Ou via le lien : {upload_base}?ref={ref}&type=passport\n\n"
+                    dispatcher.utter_message(
+                        json_message={
+                            "custom": {
+                                "upload_request": {
+                                    "ref": ref,
+                                    "type": "passport",
+                                    "accept": ".pdf",
+                                    "max_size_mb": 10,
+                                    "upload_url": f"{upload_base}?ref={ref}&type=passport",
+                                    "auth_header": f"Bearer {EXPOBETON_API_KEY}",
+                                    "label": "🛂 Copie de votre passeport",
+                                    "description": "Nécessaire pour votre invitation visa.\nFormat accepté : PDF uniquement — Max 10 MB",
+                                }
+                            }
+                        }
                     )
 
-                msg += (
-                    f"Notre équipe vous contactera dans les 48 heures.\n"
-                    f"Pour toute question : info@expobetonrdc.com"
+                # Fallback text for non-widget channels (email links)
+                if needs_logo or needs_passport:
+                    fallback_msg = "📎 **Documents à fournir :**\n\n"
+                    if needs_logo:
+                        fallback_msg += (
+                            f"• **Logo** (JPG/PNG/SVG, max 10 MB)\n"
+                            f"  → {upload_base}?ref={ref}&type=logo\n"
+                        )
+                    if needs_passport:
+                        fallback_msg += (
+                            f"• **Passeport** (PDF)\n"
+                            f"  → {upload_base}?ref={ref}&type=passport\n"
+                        )
+                    fallback_msg += (
+                        f"\nOu envoyez par email à **finance@expobetonrdc.com** "
+                        f"(référence: {ref})"
+                    )
+                    dispatcher.utter_message(text=fallback_msg)
+
+                dispatcher.utter_message(
+                    text=(
+                        f"Notre équipe vous contactera dans les 48 heures.\n"
+                        f"Pour toute question : info@expobetonrdc.com"
+                    )
                 )
-                dispatcher.utter_message(text=msg)
         else:
             errors = result.get("errors", [])
             error_msg = "\n".join(f"• {e}" for e in errors) if errors else result.get("error", "Erreur inconnue")

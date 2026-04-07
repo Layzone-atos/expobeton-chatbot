@@ -479,7 +479,10 @@
             
             if (data && data.length > 0) {
                 for (const msg of data) {
-                    if (msg.text) {
+                    if (msg.custom && msg.custom.upload_request) {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        renderUploadCardStandalone(msg.custom.upload_request);
+                    } else if (msg.text) {
                         await new Promise(resolve => setTimeout(resolve, 500));
                         addMessage(msg.text, 'bot');
                     }
@@ -494,6 +497,121 @@
         }
     }
     
+    // ========================================
+    // FILE UPLOAD SYSTEM (Standalone)
+    // ========================================
+    
+    function renderUploadCardStandalone(uploadReq) {
+        const messagesDiv = document.getElementById('expobeton-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'expobeton-message bot';
+        messageDiv.innerHTML = `
+            <div class="expobeton-message-avatar">🤖</div>
+            <div class="expobeton-upload-card">
+                <div style="font-weight:700;color:#0A2A66;margin-bottom:6px;">${escapeHtml(uploadReq.label)}</div>
+                <p style="font-size:12px;color:#6C757D;margin-bottom:10px;">${escapeHtml(uploadReq.description).replace(/<br>/g,'<br>')}</p>
+                <div class="expobeton-drop-zone" id="sdz-${uploadReq.type}">
+                    <div style="font-size:28px;">📁</div>
+                    <p style="font-size:12px;color:#64748b;margin:4px 0 8px;">Glissez votre fichier ici ou</p>
+                    <label style="display:inline-block;padding:8px 18px;background:linear-gradient(135deg,#0A2A66,#1e3a8a);color:white;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;" for="sfi-${uploadReq.type}">Choisir un fichier</label>
+                    <input type="file" id="sfi-${uploadReq.type}" accept="${uploadReq.accept}" style="display:none">
+                </div>
+                <div id="sprogress-${uploadReq.type}" style="display:none;padding:10px 0;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span id="sfn-${uploadReq.type}" style="font-size:12px;font-weight:600;"></span><span id="sfs-${uploadReq.type}" style="font-size:11px;color:#6C757D;"></span></div>
+                    <div style="width:100%;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;"><div id="sfill-${uploadReq.type}" style="height:100%;width:0%;background:linear-gradient(135deg,#0A2A66,#3b82f6);border-radius:3px;transition:width 0.3s;"></div></div>
+                    <span id="sstat-${uploadReq.type}" style="font-size:11px;color:#6C757D;">En cours...</span>
+                </div>
+                <div id="sresult-${uploadReq.type}" style="display:none;"></div>
+                <p style="text-align:center;margin-top:8px;font-size:11px;color:#94a3b8;">Ou <a href="${uploadReq.upload_url}" target="_blank" style="color:#0A2A66;">uploadez via le site web</a></p>
+            </div>
+        `;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        chatState.messages.push({text: `[Upload: ${uploadReq.label}]`, sender: 'bot', timestamp: new Date().toISOString()});
+
+        const fileInput = document.getElementById(`sfi-${uploadReq.type}`);
+        const dropZone = document.getElementById(`sdz-${uploadReq.type}`);
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) standaloneUpload(e.target.files[0], uploadReq);
+        });
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor = '#0A2A66'; dropZone.style.background = '#eef2ff'; });
+        dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = '#cbd5e1'; dropZone.style.background = '#f8fafc'; });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault(); dropZone.style.borderColor = '#cbd5e1'; dropZone.style.background = '#f8fafc';
+            if (e.dataTransfer.files.length > 0) standaloneUpload(e.dataTransfer.files[0], uploadReq);
+        });
+    }
+
+    function standaloneUpload(file, uploadReq) {
+        const maxBytes = uploadReq.max_size_mb * 1024 * 1024;
+        const allowedExts = uploadReq.accept.split(',').map(e => e.trim().toLowerCase());
+        const ext = '.' + file.name.split('.').pop().toLowerCase();
+        const t = uploadReq.type;
+
+        if (!allowedExts.includes(ext)) {
+            showStandaloneResult(t, false, `Format non accepté (${ext}). Formats : ${uploadReq.accept}`);
+            return;
+        }
+        if (file.size > maxBytes) {
+            showStandaloneResult(t, false, `Fichier trop volumineux. Max : ${uploadReq.max_size_mb} MB`);
+            return;
+        }
+
+        document.getElementById(`sdz-${t}`).style.display = 'none';
+        document.getElementById(`sprogress-${t}`).style.display = 'block';
+        document.getElementById(`sfn-${t}`).textContent = file.name;
+        document.getElementById(`sfs-${t}`).textContent = `(${(file.size/1024/1024).toFixed(1)} MB)`;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+                const pct = Math.round((e.loaded / e.total) * 100);
+                document.getElementById(`sfill-${t}`).style.width = pct + '%';
+                document.getElementById(`sstat-${t}`).textContent = `Envoi... ${pct}%`;
+            }
+        });
+
+        xhr.addEventListener('load', () => {
+            document.getElementById(`sprogress-${t}`).style.display = 'none';
+            if (xhr.status >= 200 && xhr.status < 300) {
+                try {
+                    const res = JSON.parse(xhr.responseText);
+                    if (res.success) {
+                        showStandaloneResult(t, true, `✅ ${t === 'logo' ? 'Logo' : 'Passeport'} envoyé avec succès !`);
+                        sendMessage(`Document ${t} uploadé avec succès pour ${uploadReq.ref}`);
+                    } else { showStandaloneResult(t, false, res.error || 'Erreur.'); }
+                } catch(e) { showStandaloneResult(t, false, 'Réponse invalide.'); }
+            } else { showStandaloneResult(t, false, `Erreur serveur (${xhr.status}).`); }
+        });
+        xhr.addEventListener('error', () => {
+            document.getElementById(`sprogress-${t}`).style.display = 'none';
+            showStandaloneResult(t, false, 'Erreur de connexion.');
+        });
+
+        xhr.open('POST', uploadReq.upload_url);
+        xhr.setRequestHeader('Authorization', uploadReq.auth_header);
+        xhr.send(formData);
+    }
+
+    function showStandaloneResult(type, success, message) {
+        const el = document.getElementById(`sresult-${type}`);
+        el.style.display = 'block';
+        el.style.padding = '10px 14px';
+        el.style.borderRadius = '8px';
+        el.style.fontSize = '13px';
+        el.style.fontWeight = '500';
+        el.style.marginTop = '8px';
+        el.style.background = success ? '#ecfdf5' : '#fef2f2';
+        el.style.color = success ? '#065f46' : '#991b1b';
+        el.style.border = `1px solid ${success ? '#a7f3d0' : '#fecaca'}`;
+        el.textContent = message;
+        if (!success) setTimeout(() => { const dz = document.getElementById(`sdz-${type}`); if(dz) dz.style.display='block'; }, 2000);
+    }
+
     function resetInactivityTimer() {
         chatState.lastActivityTime = Date.now();
         

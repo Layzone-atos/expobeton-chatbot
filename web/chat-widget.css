@@ -619,3 +619,159 @@ body {
         padding: 20px;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Upload Card Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+.upload-card {
+    max-width: 85%;
+    background: white;
+    border-radius: 15px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.upload-card-header {
+    margin-bottom: 8px;
+}
+
+.upload-card-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0A2A66;
+}
+
+.upload-card-desc {
+    font-size: 12px;
+    color: #6C757D;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.upload-drop-zone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-drop-zone:hover,
+.upload-drop-zone.drag-over {
+    border-color: #0A2A66;
+    background: #eef2ff;
+}
+
+.upload-drop-icon {
+    font-size: 28px;
+    margin-bottom: 6px;
+}
+
+.upload-drop-zone p {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.upload-btn {
+    display: inline-block;
+    padding: 8px 18px;
+    background: linear-gradient(135deg, #0A2A66 0%, #1e3a8a 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(10, 42, 102, 0.3);
+}
+
+/* Progress area */
+.upload-progress-area {
+    padding: 10px 0;
+}
+
+.upload-file-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.upload-file-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1f2937;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 70%;
+}
+
+.upload-file-size {
+    font-size: 11px;
+    color: #6C757D;
+}
+
+.upload-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.upload-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(135deg, #0A2A66 0%, #3b82f6 100%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.upload-status {
+    font-size: 11px;
+    color: #6C757D;
+}
+
+/* Upload result */
+.upload-result {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+.upload-success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.upload-error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.upload-skip-link {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.upload-skip-link a {
+    color: #0A2A66;
+    text-decoration: underline;
+}
