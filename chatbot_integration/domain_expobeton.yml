@@ -1,0 +1,403 @@
+# ═══════════════════════════════════════════════════════════════════════
+# ExpoBeton RDC — Rasa Domain Configuration (Registration & Ambassador)
+# ═══════════════════════════════════════════════════════════════════════
+# Merge this into your existing domain.yml
+# ═══════════════════════════════════════════════════════════════════════
+
+version: "3.1"
+
+# ─── Intents ──────────────────────────────────────────────────────────
+intents:
+  - register
+  - apply_ambassador
+  - show_categories
+  - affirm
+  - deny
+  - inform
+  - provide_company
+  - provide_name
+  - provide_email
+  - provide_phone
+  - provide_country
+  - provide_city
+  - provide_category
+  - provide_payment
+  - stop
+
+# ─── Entities ─────────────────────────────────────────────────────────
+entities:
+  - company_name
+  - person_name
+  - email
+  - phone_number
+  - country
+  - city
+  - category
+  - payment_method
+  - sponsor_level
+  - stand_type
+  - gender
+  - think_tank_choice
+
+# ─── Slots (Registration) ────────────────────────────────────────────
+slots:
+  # Registration slots
+  reg_company:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: company_name
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_company
+
+  reg_contact_name:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: person_name
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_contact_name
+
+  reg_email:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: email
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_email
+
+  reg_phone:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: phone_number
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_phone
+
+  reg_phone_prefix:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: phone_number
+        conditions:
+          - active_loop: registration_form
+
+  reg_country:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: country
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_country
+
+  reg_city:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: city
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_city
+
+  reg_address:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_address
+
+  reg_postal:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_postal
+
+  reg_category:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: category
+        conditions:
+          - active_loop: registration_form
+      - type: from_entity
+        entity: sponsor_level
+        conditions:
+          - active_loop: registration_form
+      - type: from_entity
+        entity: stand_type
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_category
+
+  reg_payment:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: payment_method
+        conditions:
+          - active_loop: registration_form
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_payment
+
+  reg_visa:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_visa
+
+  reg_history:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: registration_form
+            requested_slot: reg_history
+
+  # Ambassador slots
+  amb_identity:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_identity
+
+  amb_gender:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_gender
+
+  amb_phone:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_phone
+
+  amb_email:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_email
+
+  amb_company:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_company
+
+  amb_country:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_country
+
+  amb_city:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_city
+
+  amb_think_tank:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_think_tank
+
+  amb_contribution:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_contribution
+
+  amb_experience:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: ambassador_form
+            requested_slot: amb_experience
+
+# ─── Forms ────────────────────────────────────────────────────────────
+forms:
+  registration_form:
+    required_slots:
+      - reg_company
+      - reg_contact_name
+      - reg_email
+      - reg_phone
+      - reg_country
+      - reg_city
+      - reg_category
+      - reg_payment
+
+  ambassador_form:
+    required_slots:
+      - amb_identity
+      - amb_gender
+      - amb_phone
+      - amb_email
+      - amb_company
+      - amb_country
+      - amb_city
+      - amb_think_tank
+      - amb_contribution
+      - amb_experience
+
+# ─── Responses ────────────────────────────────────────────────────────
+responses:
+  utter_ask_reg_company:
+    - text: "🏢 What is your company or organization name?"
+
+  utter_ask_reg_contact_name:
+    - text: "👤 What is the contact person's full name?"
+
+  utter_ask_reg_email:
+    - text: "📧 What is your email address?"
+
+  utter_ask_reg_phone:
+    - text: "📞 What is your phone number? (e.g. +243 812345678)"
+
+  utter_ask_reg_country:
+    - text: "🌍 Which country are you from?"
+
+  utter_ask_reg_city:
+    - text: "🏙️ What city are you in?"
+
+  utter_ask_reg_category:
+    - text: |
+        📋 Which category would you like to register for?
+
+        **🏆 Sponsor:** Platinum ($40K), Gold ($20K), Silver ($15K), Bronze ($12K)
+        **🏗️ Exhibitor:** Stand 3×3m ($5K), 2×4m ($3K), 2×3m ($2K)
+        **👤 Simple Participant** (Free)
+
+  utter_ask_reg_payment:
+    - text: |
+        💳 Choose a payment method:
+        • Virement bancaire (Bank transfer)
+        • Mobile Money
+        • Western Union
+        • Carte bancaire (Credit card)
+        • Cash
+
+  utter_ask_reg_visa:
+    - text: "🛂 Do you need visa assistance? (yes/no)"
+
+  utter_ask_reg_history:
+    - text: "📊 Have you previously participated in ExpoBeton? (yes/no)"
+
+  # Ambassador responses
+  utter_ask_amb_identity:
+    - text: "👤 What is your full name?"
+
+  utter_ask_amb_gender:
+    - text: "What is your gender? (homme/femme)"
+
+  utter_ask_amb_phone:
+    - text: "📞 What is your phone number?"
+
+  utter_ask_amb_email:
+    - text: "📧 What is your email address?"
+
+  utter_ask_amb_company:
+    - text: "🏢 What is your company or organization?"
+
+  utter_ask_amb_country:
+    - text: "🌍 Which country?"
+
+  utter_ask_amb_city:
+    - text: "🏙️ Which city?"
+
+  utter_ask_amb_think_tank:
+    - text: |
+        🧠 Which Think Tank would you like to join?
+        • **Développement des Villes** (City Development)
+        • **Finance et Investissement** (Finance & Investment)
+
+  utter_ask_amb_contribution:
+    - text: "💡 How do you plan to contribute to the Think Tank?"
+
+  utter_ask_amb_experience:
+    - text: "Do you have experience in this field? (oui/non)"
+
+# ─── Actions ──────────────────────────────────────────────────────────
+actions:
+  - action_show_categories
+  - action_submit_registration
+  - action_submit_ambassador
+  - action_check_api_health
+  - validate_registration_form
+  - validate_ambassador_form

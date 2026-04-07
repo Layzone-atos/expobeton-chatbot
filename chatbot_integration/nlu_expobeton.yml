@@ -1,0 +1,173 @@
+# ═══════════════════════════════════════════════════════════════════════
+# ExpoBeton RDC — NLU Training Data for Registration Intents
+# ═══════════════════════════════════════════════════════════════════════
+# Merge into your existing data/nlu.yml
+# ═══════════════════════════════════════════════════════════════════════
+
+version: "3.1"
+
+nlu:
+  - intent: register
+    examples: |
+      - I want to register
+      - I'd like to sign up
+      - register for expobeton
+      - I want to register for the event
+      - sign me up
+      - inscription
+      - je veux m'inscrire
+      - je souhaite m'inscrire
+      - enregistrement
+      - s'inscrire
+      - inscription sponsoring
+      - register as sponsor
+      - register as exhibitor
+      - register as participant
+      - I want to attend ExpoBeton
+      - how do I register
+      - comment s'inscrire
+      - je voudrais participer
+      - inscription expobeton
+      - I want to be a sponsor
+      - I want to exhibit
+      - become an exhibitor
+      - devenir exposant
+      - devenir sponsor
+
+  - intent: apply_ambassador
+    examples: |
+      - I want to be an ambassador
+      - apply as ambassador
+      - ambassador application
+      - je veux devenir ambassadeur
+      - candidature ambassadeur
+      - postuler comme ambassadeur
+      - join the think tank
+      - ambassador program
+
+  - intent: show_categories
+    examples: |
+      - what are the categories
+      - show me the categories
+      - what sponsorship levels are available
+      - how much does it cost
+      - pricing
+      - tarifs
+      - quelles sont les catégories
+      - combien ça coûte
+      - show prices
+      - what are the options
+      - sponsor levels
+      - stand types
+      - types de stand
+
+  - intent: affirm
+    examples: |
+      - yes
+      - oui
+      - sure
+      - correct
+      - that's right
+      - absolutely
+      - d'accord
+      - ok
+      - yep
+      - yeah
+
+  - intent: deny
+    examples: |
+      - no
+      - non
+      - not really
+      - I don't think so
+      - pas vraiment
+      - nope
+
+  - intent: stop
+    examples: |
+      - stop
+      - cancel
+      - annuler
+      - never mind
+      - forget it
+      - arrêter
+      - I changed my mind
+
+  - intent: inform
+    examples: |
+      - [Acme Corp](company_name)
+      - my company is [BuildPro](company_name)
+      - [Jean Dupont](person_name)
+      - my name is [Marie Kabila](person_name)
+      - [jean@example.com](email)
+      - my email is [info@company.com](email)
+      - [+243812345678](phone_number)
+      - my phone is [0812345678](phone_number)
+      - [Congo](country)
+      - I'm from [France](country)
+      - [Kinshasa](city)
+      - I live in [Kalemie](city)
+      - [Gold](sponsor_level)
+      - [Platinum](sponsor_level) sponsor
+      - [3x3m](stand_type) stand
+      - stand [2x4m](stand_type)
+      - [Mobile Money](payment_method)
+      - pay by [Cash](payment_method)
+      - [Participant Simple](category)
+      - [homme](gender)
+      - [femme](gender)
+      - [developpement_villes](think_tank_choice)
+      - [finance_investissement](think_tank_choice)
+
+  - intent: provide_company
+    examples: |
+      - [Congo Builders](company_name)
+      - our company is [Matériaux Pro](company_name)
+      - [ExpoBuild International](company_name)
+
+  - intent: provide_name
+    examples: |
+      - [Pierre Mukendi](person_name)
+      - my name is [Sarah Lukaku](person_name)
+      - [Emmanuel Tshisekedi](person_name)
+
+  - intent: provide_email
+    examples: |
+      - [pierre@company.cd](email)
+      - my email is [contact@builders.com](email)
+
+  - intent: provide_phone
+    examples: |
+      - [+243 81 234 5678](phone_number)
+      - [0998877665](phone_number)
+
+  - intent: provide_country
+    examples: |
+      - [RDC](country)
+      - [République Démocratique du Congo](country)
+      - [France](country)
+      - [Belgique](country)
+
+  - intent: provide_city
+    examples: |
+      - [Kinshasa](city)
+      - [Kalemie](city)
+      - [Lubumbashi](city)
+      - [Paris](city)
+
+  - intent: provide_category
+    examples: |
+      - [Platinum](sponsor_level)
+      - [Gold](sponsor_level) level
+      - I want [Silver](sponsor_level)
+      - [Bronze](sponsor_level) sponsor
+      - [Exposant Stand 3x3m](category)
+      - [Participant Simple](category)
+
+  - intent: provide_payment
+    examples: |
+      - [Mobile Money](payment_method)
+      - pay with [Cash](payment_method)
+      - [Virement bancaire](payment_method)
+      - [Western Union](payment_method)
+      - by [Carte bancaire](payment_method)

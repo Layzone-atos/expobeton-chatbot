@@ -1,0 +1,132 @@
+
+RUN rasa train --config config_simple.yml --fixed-model-name expobeton-railway --out models/
+6s
+/usr/local/lib/python3.10/site-packages/rasa/core/tracker_store.py:1044: MovedIn20Warning: Deprecated API features detected! These feature(s) are not compatible with SQLAlchemy 2.0. To prevent incompatible upgrades prior to updating applications, ensure requirements files are pinned to "sqlalchemy<2.0". Set environment variable SQLALCHEMY_WARN_20=1 to show all deprecation warnings.  Set environment variable SQLALCHEMY_SILENCE_UBER_WARNING=1 to silence this message. (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  Base: DeclarativeMeta = declarative_base()
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/validation.py:134: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+  import pkg_resources
+/usr/local/lib/python3.10/site-packages/pkg_resources/__init__.py:3117: DeprecationWarning: Deprecated call to `pkg_resources.declare_namespace('mpl_toolkits')`.
+Implementing implicit namespace packages (as specified in PEP 420) is preferred to `pkg_resources.declare_namespace`. See https://setuptools.pypa.io/en/latest/references/keywords.html#keyword-namespace-packages
+  declare_namespace(pkg)
+/usr/local/lib/python3.10/site-packages/pkg_resources/__init__.py:3117: DeprecationWarning: Deprecated call to `pkg_resources.declare_namespace('ruamel')`.
+Implementing implicit namespace packages (as specified in PEP 420) is preferred to `pkg_resources.declare_namespace`. See https://setuptools.pypa.io/en/latest/references/keywords.html#keyword-namespace-packages
+  declare_namespace(pkg)
+2026-04-07 11:15:18 INFO     rasa.cli.train  - Started validating domain and training data...
+/usr/local/lib/python3.10/site-packages/tensorflow/lite/python/util.py:52: DeprecationWarning: jax.xla_computation is deprecated. Please use the AOT APIs.
+  from jax import xla_computation as _xla_computation
+2026-04-07 11:15:21 INFO     rasa.validator  - Validating intents...
+2026-04-07 11:15:21 INFO     rasa.validator  - Validating uniqueness of intents and stories...
+2026-04-07 11:15:21 INFO     rasa.validator  - Validating utterances...
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_amb_identity' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_amb_contribution' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_reg_company' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_reg_payment' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_reg_history' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_reg_category' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_amb_city' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_amb_experience' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_end_conversation' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_reg_visa' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_human_handoff' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_reg_phone' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_amb_company' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_amb_country' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_amb_think_tank' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_reg_contact_name' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_amb_gender' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_amb_email' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_reg_email' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_reg_city' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_greet' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_amb_phone' is not used in any story or rule.
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: The utterance 'utter_ask_reg_country' is not used in any story or rule.
+2026-04-07 11:15:21 INFO     rasa.validator  - Story structure validation...
+(0lqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk(B
+(0x(B Rasa Open Source reports anonymous usage telemetry to help improve the product (0x(B
+(0x(B for all its users.                                                             (0x(B
+(0x(B                                                                                (0x(B
+(0x(B If you'd like to opt-out, you can use `rasa telemetry disable`.                (0x(B
+(0x(B To learn more, check out https://rasa.com/docs/rasa/telemetry/telemetry.       (0x(B
+(0mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj(B
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s]
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=2]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks:   0%|          | 0/32 [00:00<?, ?it/s, # trackers=1]
+
+Processed story blocks: 100%|██████████| 32/32 [00:00<00:00, 3135.27it/s, # trackers=1]
+2026-04-07 11:15:21 INFO     rasa.core.training.story_conflict  - Considering all preceding turns for conflict analysis.
+2026-04-07 11:15:21 INFO     rasa.validator  - No story structure conflicts found.
+/usr/local/lib/python3.10/site-packages/rasa/engine/recipes/recipe.py:35: FutureWarning: From Rasa Open Source 4.0.0 onwards it will be required to specify a recipe in your model configuration. Defaulting to recipe 'default.v1'.
+  rasa.shared.utils.io.raise_deprecation_warning(
+/usr/local/lib/python3.10/site-packages/matplotlib/fontconfig_pattern.py:66: PyparsingDeprecationWarning: 'setParseAction' deprecated - use 'set_parse_action'
+  ).setParseAction(self._family)
+/usr/local/lib/python3.10/site-packages/matplotlib/fontconfig_pattern.py:127: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+  self._parser.parseString(pattern)
+/usr/local/lib/python3.10/site-packages/matplotlib/fontconfig_pattern.py:134: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+  self._parser.resetCache()
+/usr/local/lib/python3.10/site-packages/rasa/shared/utils/io.py:100: UserWarning: 'RulePolicy' is not included in the model's policy configuration. Default intents such as 'restart' and 'back' will not trigger actions 'action_restart' and 'action_back'.
+  More info at https://rasa.com/docs/rasa/default-actions
+2026-04-07 11:15:22 ERROR    rasa.engine.graph  - Error running graph component for node schema_validator.
+InvalidDomain: You have defined a form action, but have not added the 'RulePolicy' to your policy ensemble. Either remove all forms from your domain or add the 'RulePolicy' to your policy configuration.
+Build Failed: build daemon returned an error < failed to solve: process "/bin/sh -c rasa train --config config_simple.yml --fixed-model-name expobeton-railway --out models/" did not complete successfully: exit code: 1 >

@@ -351,17 +351,19 @@ responses:
     - text: |
         📋 Pour quelle catégorie souhaitez-vous vous inscrire ?
 
-        **🏆 Sponsor :** Platinum ($40K), Gold ($20K), Silver ($15K), Bronze ($12K)
-        **🏗️ Exposant :** Stand 3×3m ($5K), 2×4m ($3K), 2×3m ($2K)
-        **👤 Participant Simple** (Gratuit)
+        1️⃣ 🏆 **Sponsor** (Platinum, Gold, Silver, Bronze)
+        2️⃣ 🏗️ **Exposant** (Stand 3×3m, 2×4m, 2×3m)
+        3️⃣ 👤 **Participant Simple** (Gratuit)
+
+        Tapez le numéro ou le nom de la catégorie.
   utter_ask_reg_payment:
     - text: |
         💳 Choisissez un mode de paiement :
-        • Virement bancaire
-        • Mobile Money
-        • Western Union
-        • Carte bancaire
-        • Cash
+
+        1️⃣ Chèque
+        2️⃣ Veuillez Facturer
+
+        Tapez le numéro ou le nom.
   utter_ask_reg_visa:
     - text: "🛂 Avez-vous besoin d'une assistance visa ? (oui/non)"
   utter_ask_reg_history:
