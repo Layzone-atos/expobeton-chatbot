@@ -189,6 +189,16 @@ nlu:
     - combien d'éditions ont eu lieu ?
     - combien d'éditions ?
     - nombre d'éditions
+    - nous sommes a quelle edition
+    - on est a quelle edition
+    - quelle edition
+    - c'est quelle edition
+    - c'est la combientieme edition
+    - quelle edition d'expobeton
+    - nous sommes a la combientieme edition
+    - c'est la quelle edition en 2026
+    - edition actuelle
+    - prochaine edition c'est la combien
     - qu'est-ce qui s'est passé en 2023 ?
     - que s'est-il passé en 2023 ?
     - édition 2023

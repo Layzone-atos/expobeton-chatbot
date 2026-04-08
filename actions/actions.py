@@ -474,11 +474,16 @@ class ActionGreetPersonalized(Action):
             dispatcher.utter_message(text=answer)
             return []
         
-        # Number of editions
-        if any(word in user_message for word in ['combien', 'how many']) and any(word in user_message for word in ['édition', 'edition']):
-            answer = "📅 **Historique des éditions ExpoBeton RDC:**\n\n✅ **10 éditions organisées** depuis 2016\n\n1️⃣ 2016: 1ère édition - Kinshasa\n2️⃣ 2017: 2ème édition - Kinshasa\n3️⃣ 2018: 3ème édition - Kinshasa\n4️⃣ 2019: 4ème édition - Kinshasa\n5️⃣ 2021: 5ème édition - Kinshasa\n6️⃣ 2022: 6ème édition - Kinshasa\n7️⃣ 2023: 7ème édition - Kolwezi (Lualaba)\n8️⃣ 2024: 8ème édition - Kinshasa + Matadi\n9️⃣ 2025: 9ème édition\n🔟 2025: 10ème édition\n\n🎯 **Prochaine (11ème):** 30 avril - 1er mai 2026 à Lubumbashi"
-            dispatcher.utter_message(text=answer)
-            return []
+        # Which edition / how many editions
+        if any(word in user_message for word in ['edition']):
+            if any(kw in user_message for kw in ['quelle', 'laquelle', 'sommes', 'actuelle', 'en cours', 'prochaine', 'which', 'current', 'next']):
+                answer = "Nous sommes a la **11eme edition** d'ExpoBeton RDC ! Elle se tiendra du **27 au 30 mai 2026** a **Kalemie**, Province du Tanganyika.\n\nLe theme : **Kalemie - Capital du Lithium et carrefour strategique au coeur des corridors africains de l'Est, du Sud, de l'Ouest.**\n\nC'est la toute premiere edition organisee a Kalemie !"
+                dispatcher.utter_message(text=answer)
+                return []
+            if any(word in user_message for word in ['combien', 'how many', 'nombre']):
+                answer = "**10 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016. La **11eme edition** aura lieu du **27 au 30 mai 2026 a Kalemie**."
+                dispatcher.utter_message(text=answer)
+                return []
         
         # =============================================================
         # ONLY proceed with greeting if it's NOT a question!
@@ -572,13 +577,22 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
-        # Number of editions - CHECK BEFORE GREETINGS (TO AVOID "COMBIEN" FALSE POSITIVE)
-        if any(word in user_question for word in ['combien', 'how many']) and any(word in user_question for word in ['édition', 'edition']):
-            answer = "📅 **Historique des éditions ExpoBeton RDC:**\n\n✅ **10 éditions organisées** depuis 2016\n\n1️⃣ 2016: 1ère édition - Kinshasa\n2️⃣ 2017: 2ème édition - Kinshasa\n3️⃣ 2018: 3ème édition - Kinshasa\n4️⃣ 2019: 4ème édition - Kinshasa\n5️⃣ 2021: 5ème édition - Kinshasa\n6️⃣ 2022: 6ème édition - Kinshasa\n7️⃣ 2023: 7ème édition - Kolwezi (Lualaba)\n8️⃣ 2024: 8ème édition - Kinshasa + Matadi\n9️⃣ 2025: 9ème édition\n🔟 2025: 10ème édition\n\n🎯 **Prochaine (11ème):** 30 avril - 1er mai 2026 à Lubumbashi"
-            dispatcher.utter_message(text=answer)
-            bot_response = answer
-            log_conversation_message(session_id, 'bot', bot_response, metadata)
-            return []
+        # Which edition are we on? - "quelle edition", "nous sommes a quelle edition", etc.
+        if any(word in user_question for word in ['édition', 'edition']):
+            # "which edition" pattern: quelle, laquelle, sommes, actuelle, en cours, prochaine, which, current
+            if any(kw in user_question for kw in ['quelle', 'laquelle', 'sommes', 'actuelle', 'en cours', 'prochaine', 'which', 'current', 'next', 'upcoming']):
+                answer = "Nous sommes a la **11eme edition** d'ExpoBeton RDC ! Elle se tiendra du **27 au 30 mai 2026** a **Kalemie**, Province du Tanganyika.\n\nLe theme : **Kalemie - Capital du Lithium et carrefour strategique au coeur des corridors africains de l'Est, du Sud, de l'Ouest.**\n\nC'est la toute premiere edition organisee a Kalemie !"
+                dispatcher.utter_message(text=answer)
+                bot_response = answer
+                log_conversation_message(session_id, 'bot', bot_response, metadata)
+                return []
+            # "how many editions" pattern
+            if any(word in user_question for word in ['combien', 'how many', 'nombre']):
+                answer = "**10 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016 :\n\n1. 2016 : 1ere edition - Kinshasa\n2. 2017 : 2eme edition - Kinshasa\n3. 2018 : 3eme edition - Kinshasa\n4. 2019 : 4eme edition - Kinshasa\n5. 2021 : 5eme edition - Kinshasa\n6. 2022 : 6eme edition - Kinshasa\n7. 2023 : 7eme edition - Kolwezi (Lualaba)\n8. 2024 : 8eme edition - Kinshasa + Matadi\n9. 2025 : 9eme edition - Kinshasa\n10. 2025 : 10eme edition - Kinshasa\n\nLa **11eme edition** aura lieu du **27 au 30 mai 2026 a Kalemie**."
+                dispatcher.utter_message(text=answer)
+                bot_response = answer
+                log_conversation_message(session_id, 'bot', bot_response, metadata)
+                return []
         
         # Greetings and politeness responses (FRIENDLY with emojis)
         if any(word in user_question for word in ['bonjour', 'salut', 'hello', 'hi', 'bonsoir', 'hola', 'привет', '你好', 'مرحبا']):
@@ -688,13 +702,7 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
-        # Number of editions - CHECK BEFORE "COMBIEN DE JOURS" (DURATION)
-        if any(word in user_question for word in ['combien', 'how many']) and any(word in user_question for word in ['édition', 'edition']):
-            answer = "📅 **Historique des éditions ExpoBeton RDC:**\n\n✅ **10 éditions organisées** depuis 2016\n\n1️⃣ 2016: 1ère édition - Kinshasa\n2️⃣ 2017: 2ème édition - Kinshasa\n3️⃣ 2018: 3ème édition - Kinshasa\n4️⃣ 2019: 4ème édition - Kinshasa\n5️⃣ 2021: 5ème édition - Kinshasa\n6️⃣ 2022: 6ème édition - Kinshasa\n7️⃣ 2023: 7ème édition - Kolwezi (Lualaba)\n8️⃣ 2024: 8ème édition - Kinshasa + Matadi\n9️⃣ 2025: 9ème édition\n🔟 2025: 10ème édition\n\n🎯 **Prochaine (11ème):** 30 avril - 1er mai 2026 à Lubumbashi"
-            dispatcher.utter_message(text=answer)
-            bot_response = answer
-            log_conversation_message(session_id, 'bot', bot_response, metadata)
-            return []
+        # (Edition check already handled earlier - removed duplicate)
         
         # ANY mention of Lubumbashi - ULTRA BROAD MATCH (no conditions!)
         # Match ANY variation of Lubumbashi, with or without question mark
