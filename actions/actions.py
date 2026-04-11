@@ -484,6 +484,18 @@ class ActionGreetPersonalized(Action):
                 answer = "**10 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016. La **11eme edition** aura lieu du **27 au 30 mai 2026 a Kalemie**."
                 dispatcher.utter_message(text=answer)
                 return []
+
+        # Location questions in greeting message
+        location_kw = ['lieu', 'lieux', 'location', 'address', 'adresse',
+                       'se passe', 'se passera', 'se tiendra', 'se deroule',
+                       'se deroulera', 'se tient', 'where', 'venue']
+        has_loc_kw = any(kw in user_message for kw in location_kw)
+        has_ou = any(w in user_message for w in [' ou ', ' ou', 'ou ', 'ou?', 'ou?'])
+        has_loc_ctx = any(w in user_message for w in ['se passera', 'se passe', 'se tiendra', 'edition', 'expobeton', 'salon', '2026'])
+        if has_loc_kw or (has_ou and has_loc_ctx):
+            answer = "La 11eme edition d'ExpoBeton RDC se tiendra a **Kalemie**, Province du Tanganyika, RDC.\n\nKalemie est la capitale du lithium grace aux gisements de Manono (~400M tonnes de reserves) et une porte d'entree strategique vers les corridors africains via son port sur le lac Tanganyika.\n\nLa date : du **27 au 30 mai 2026**."
+            dispatcher.utter_message(text=answer)
+            return []
         
         # =============================================================
         # ONLY proceed with greeting if it's NOT a question!
@@ -566,7 +578,71 @@ class ActionAnswerExpoBeton(Action):
         
         # ====================================================================
         # CRITICAL: CHECK SPECIFIC QUESTIONS FIRST (BEFORE GENERIC GREETINGS)
+        # A greeting like 'bonjour' can be combined with a question in the same
+        # message -- e.g. 'bonjour ou se passera l edition 2026'. Questions MUST
+        # be answered, not dismissed as greetings.
         # ====================================================================
+        
+        # --- Location questions (CHECK VERY EARLY -- often combined with greeting) ---
+        location_keywords = [
+            'lieu', 'lieux', 'location', 'address', 'adresse',
+            'se passe', 'se passera', 'se tiendra', 'se deroule',
+            'se deroulera', 'se tient', 'organise', 'organisee',
+            'where', 'venue'
+        ]
+        # Also check for 'ou' or 'ou' (where) but only if combined with context
+        has_where_word = any(kw in user_question for kw in location_keywords)
+        has_ou = any(w in user_question for w in [' ou ', ' ou', 'ou ', 'ou?', 'ou?'])
+        has_location_context = any(w in user_question for w in [
+            'se passera', 'se passe', 'se tiendra', 'se tient', 'edition',
+            'expobeton', 'salon', 'evenement', '2026', 'prochain'
+        ])
+        if has_where_word or (has_ou and has_location_context):
+            answer = (
+                "La 11eme edition d'ExpoBeton RDC se tiendra a **Kalemie**, "
+                "Province du Tanganyika, RDC.\n\n"
+                "Kalemie est la capitale du lithium grace aux gisements de "
+                "Manono (~400M tonnes de reserves) et une porte d'entree "
+                "strategique vers les corridors africains via son port sur "
+                "le lac Tanganyika.\n\n"
+                "La date : du **27 au 30 mai 2026**."
+            )
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+        
+        # --- Date questions (often combined with greeting too) ---
+        if any(kw in user_question for kw in ['date', 'quand', 'when', 'calendrier', 'duree', 'combien de jours', 'period']):
+            if any(w in user_question for w in ['expobeton', 'salon', 'edition', 'evenement', '2026']):
+                answer = (
+                    "La 11eme edition d'ExpoBeton RDC se tiendra du **27 au 30 mai 2026** "
+                    "(4 jours) a **Kalemie**, Province du Tanganyika.\n\n"
+                    "Programme resume :\n"
+                    "• Mer 27 mai : Journee Portes Ouvertes, Touristique et Culturelle\n"
+                    "• Jeu 28 mai : Ouverture officielle + Panels Habitat & Territoire\n"
+                    "• Ven 29 mai : Corridors transfrontaliers, ZES, Energie\n"
+                    "• Sam 30 mai : Jeunesse & Innovation + CLOTURE"
+                )
+                dispatcher.utter_message(text=answer)
+                bot_response = answer
+                log_conversation_message(session_id, 'bot', bot_response, metadata)
+                return []
+        
+        # --- Theme questions ---
+        if any(kw in user_question for kw in ['theme', 'sujet', 'topic', 'tema']):
+            if any(w in user_question for w in ['edition', '2026', 'expobeton', 'salon']):
+                answer = (
+                    "Le theme de la 11eme edition (2026) est : "
+                    "**Kalemie - Capital du Lithium et carrefour strategique au coeur "
+                    "des corridors africains de l'Est, du Sud, de l'Ouest.**\n\n"
+                    "Cette edition est entierement dediee a Kalemie et met en lumiere "
+                    "le potentiel strategique du lithium."
+                )
+                dispatcher.utter_message(text=answer)
+                bot_response = answer
+                log_conversation_message(session_id, 'bot', bot_response, metadata)
+                return []
         
         # History of ExpoBeton - CHECK BEFORE "HI" TO AVOID "HISTOIRE" COLLISION!
         if any(word in user_question for word in ['histoire', 'history', 'historique']):
