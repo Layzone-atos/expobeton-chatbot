@@ -146,19 +146,42 @@ function ensureTables() {
 function authenticate() {
     $token = null;
     
-    // Check Authorization header
-    $headers = getallheaders();
-    foreach ($headers as $key => $value) {
-        if (strtolower($key) === 'authorization') {
-            if (preg_match('/Bearer\s+(.+)/i', $value, $matches)) {
-                $token = $matches[1];
+    // Check Authorization header (multiple methods for cPanel/Apache compatibility)
+    // Method 1: getallheaders()
+    if (function_exists('getallheaders')) {
+        $headers = getallheaders();
+        foreach ($headers as $key => $value) {
+            if (strtolower($key) === 'authorization') {
+                if (preg_match('/Bearer\s+(.+)/i', $value, $matches)) {
+                    $token = $matches[1];
+                }
             }
         }
     }
     
-    // Fallback: query parameter
+    // Method 2: Apache CGI/FastCGI workarounds
+    if (!$token && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        if (preg_match('/Bearer\s+(.+)/i', $_SERVER['REDIRECT_HTTP_AUTHORIZATION'], $matches)) {
+            $token = $matches[1];
+        }
+    }
+    if (!$token && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        if (preg_match('/Bearer\s+(.+)/i', $_SERVER['HTTP_AUTHORIZATION'], $matches)) {
+            $token = $matches[1];
+        }
+    }
+    
+    // Method 3: Fallback - query parameter
     if (!$token && isset($_GET['api_key'])) {
         $token = $_GET['api_key'];
+    }
+    
+    // Method 4: Fallback - POST body
+    if (!$token) {
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (isset($input['api_key'])) {
+            $token = $input['api_key'];
+        }
     }
     
     if (!$token || $token !== API_KEY) {

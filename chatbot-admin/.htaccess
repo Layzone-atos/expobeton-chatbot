@@ -1,6 +1,11 @@
 Options -Indexes
 DirectoryIndex index.php
 
+# Pass Authorization header through Apache CGI/FastCGI
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 # Protect config file
 <Files "config.php">
     Order Allow,Deny

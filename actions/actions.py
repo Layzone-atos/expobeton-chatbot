@@ -65,7 +65,7 @@ def send_analytics_event(action: str, data: dict):
         def _post():
             try:
                 req_lib.post(
-                    f"{ANALYTICS_API_URL}?action={action}",
+                    f"{ANALYTICS_API_URL}?action={action}&api_key={ANALYTICS_API_KEY}",
                     json=data,
                     headers={"Authorization": f"Bearer {ANALYTICS_API_KEY}"},
                     timeout=5
@@ -946,19 +946,31 @@ class ActionAnswerExpoBeton(Action):
             traceback.print_exc()
         
         # Default: show help and log unanswered question
-        if any(word in user_question for word in ['fondateur', 'créateur', 'président', 'qui est', 'qui sont']):
+        if any(word in user_question for word in ['fondateur', 'créateur', 'président', 'qui est', 'qui sont', 'responsable', 'organisateur', 'dirige', 'tête']):
             if 'jean' in user_question or 'bamanisa' in user_question or 'fondateur' in user_question or 'créateur' in user_question:
                 answer = "Jean Bamanisa Saïdi est le président, promoteur, créateur et fondateur d'ExpoBeton RDC. C'est un homme d'affaires et personnalité politique congolaise, ancien gouverneur de la province de l'Ituri. Il porte la vision stratégique de l'événement et met en avant la reconstruction, l'urbanisation et le développement durable de la RDC."
                 dispatcher.utter_message(text=answer)
                 suggestion = "\n💡 Vous pourriez aussi demander :\n• Qui est le vice-président ?\n• Comment devenir ambassadeur ?\n• Quelles sont les dates de l'événement ?"
                 dispatcher.utter_message(text=suggestion)
+                log_conversation_message(session_id, 'bot', answer, metadata)
                 return []
             if 'momo' in user_question or 'sungunza' in user_question or 'vice' in user_question:
                 answer = "Momo Sungunza est le vice-président d'ExpoBeton RDC. Il assure la coordination opérationnelle et organisationnelle du forum, et travaille en tandem avec Jean Bamanisa pour mobiliser les partenaires publics et privés."
                 dispatcher.utter_message(text=answer)
                 suggestion = "\n💡 Vous pourriez aussi demander :\n• Qui est le fondateur ?\n• C'est quoi le thème de l'édition 2025 ?\n• Comment participer ?"
                 dispatcher.utter_message(text=suggestion)
+                log_conversation_message(session_id, 'bot', answer, metadata)
                 return []
+            # Generic: who runs / who is responsible / who organizes ExpoBeton
+            if detected_lang == 'fr':
+                answer = "ExpoBeton RDC est dirigé par :\n\n👤 **Jean Bamanisa Saïdi** — Président, promoteur, créateur et fondateur d'ExpoBeton RDC. Homme d'affaires et personnalité politique congolaise, ancien gouverneur de la province de l'Ituri.\n\n👤 **Momo Sungunza** — Vice-président d'ExpoBeton RDC. Il assure la coordination opérationnelle et organisationnelle du forum."
+            else:
+                answer = "ExpoBeton RDC is led by:\n\n👤 **Jean Bamanisa Saïdi** — President, promoter, creator and founder of ExpoBeton RDC. Congolese businessman and political figure, former governor of Ituri province.\n\n👤 **Momo Sungunza** — Vice-president of ExpoBeton RDC. He manages the operational and organizational coordination of the forum."
+            dispatcher.utter_message(text=answer)
+            suggestion = "\n💡 Vous pourriez aussi demander :\n• Comment devenir ambassadeur ?\n• Quelles sont les dates de l'événement ?\n• Comment participer ?"
+            dispatcher.utter_message(text=suggestion)
+            log_conversation_message(session_id, 'bot', answer, metadata)
+            return []
         
         # What is ExpoBeton (handle typos like 'expbeton', 'expo beton')
         if any(word in user_question for word in ['quoi', 'what', 'est-ce', 'c\'est', 'qué', '什么', 'что', 'ما']):
