@@ -15,9 +15,9 @@
 //   3. Create user: chatbot_api (with strong password)
 //   4. Add user to database with ALL PRIVILEGES
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'chatbot_analytics');
-define('DB_USER', 'chatbot_api');
-define('DB_PASS', 'CHANGE_ME');  // <-- Set your MySQL password here
+define('DB_NAME', 'expobetonrdc_admincb');
+define('DB_USER', 'expobetonrdc_admincb');
+define('DB_PASS', '5NOLnwx&WPbS');
 
 // ============================================================
 // API AUTHENTICATION

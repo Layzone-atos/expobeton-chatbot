@@ -54,7 +54,7 @@ SESSION_LANGUAGES = {}  # Track detected language per session for consistency
 ANALYTICS_SESSIONS_STARTED = set()  # Track which sessions already sent session_start
 
 # Analytics API configuration
-ANALYTICS_API_URL = os.getenv("ANALYTICS_API_URL", "https://expobetonrdc.com/api_chatbot_analytics.php")
+ANALYTICS_API_URL = os.getenv("ANALYTICS_API_URL", "https://admincb.expobetonrdc.com/api_chatbot_analytics.php")
 ANALYTICS_API_KEY = os.getenv("EXPOBETON_API_KEY", "")
 
 def send_analytics_event(action: str, data: dict):
