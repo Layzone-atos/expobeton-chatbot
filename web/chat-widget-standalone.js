@@ -45,6 +45,42 @@
     function generateSessionId() {
         return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
+
+    // Collect device metadata for analytics
+    function getDeviceMetadata() {
+        const ua = navigator.userAgent;
+        let deviceType = 'desktop';
+        if (/Mobi|Android/i.test(ua)) deviceType = 'mobile';
+        else if (/Tablet|iPad/i.test(ua)) deviceType = 'tablet';
+
+        let browser = 'Unknown';
+        if (ua.indexOf('Firefox') > -1) browser = 'Firefox';
+        else if (ua.indexOf('Edg') > -1) browser = 'Edge';
+        else if (ua.indexOf('Chrome') > -1) browser = 'Chrome';
+        else if (ua.indexOf('Safari') > -1) browser = 'Safari';
+        else if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) browser = 'Opera';
+
+        let os = 'Unknown';
+        if (ua.indexOf('Windows') > -1) os = 'Windows';
+        else if (ua.indexOf('Mac OS') > -1) os = 'macOS';
+        else if (ua.indexOf('Linux') > -1) os = 'Linux';
+        else if (ua.indexOf('Android') > -1) os = 'Android';
+        else if (ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1) os = 'iOS';
+
+        return {
+            device_type: deviceType,
+            browser: browser,
+            os: os,
+            screen_width: window.screen.width,
+            screen_height: window.screen.height,
+            language: navigator.language || 'unknown',
+            referrer: document.referrer || '',
+            user_agent: ua,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
+    }
+
+    const _deviceMetadata = getDeviceMetadata();
     
     function injectStyles() {
         const style = document.createElement('style');
@@ -467,7 +503,7 @@
                 body: JSON.stringify({
                     sender: chatState.sessionId,
                     message: message,
-                    metadata: chatState.userInfo
+                    metadata: Object.assign({}, chatState.userInfo, _deviceMetadata)
                 })
             });
             
@@ -793,6 +829,7 @@
                             text: '/end_conversation',
                             metadata: {
                                 ...chatState.userInfo,
+                                ..._deviceMetadata,
                                 messages: chatState.messages,
                                 session_id: chatState.sessionId
                             }

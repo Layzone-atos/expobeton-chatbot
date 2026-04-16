@@ -1,0 +1,91 @@
+/* ExpoBeton Chatbot Analytics Dashboard Styles */
+
+body {
+    background-color: #f0f2f5;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.navbar .nav-link {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem !important;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.card-header {
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+/* Chat bubbles for conversation detail */
+.chat-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.chat-user {
+    background: #0A2A66;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-bot {
+    background: white;
+    color: #333;
+    border: 1px solid #e0e0e0;
+    border-bottom-left-radius: 4px;
+}
+
+/* Table hover */
+.table-hover tbody tr:hover {
+    background-color: rgba(10, 42, 102, 0.04);
+}
+
+/* Badge tweaks */
+.badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+/* KPI cards */
+.card-body .fs-2 {
+    font-size: 1.75rem !important;
+}
+
+/* Responsive nav */
+@media (max-width: 991px) {
+    .navbar-nav {
+        flex-wrap: wrap;
+    }
+    .navbar-nav .nav-link {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.5rem !important;
+    }
+}
+
+/* Scrollbar for chat history */
+.chat-history::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-history::-webkit-scrollbar-track {
+    background: transparent;
+}
+.chat-history::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+/* Pagination active */
+.page-item.active .page-link {
+    background-color: #0A2A66;
+    border-color: #0A2A66;
+}
+.page-link {
+    color: #0A2A66;
+}

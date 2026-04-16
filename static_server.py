@@ -55,6 +55,20 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
                 content_length = int(self.headers['Content-Length'])
                 post_data = self.rfile.read(content_length)
                 
+                # Inject client IP into metadata so the action server can use it
+                try:
+                    data = json.loads(post_data)
+                    if 'metadata' not in data or data['metadata'] is None:
+                        data['metadata'] = {}
+                    data['metadata']['client_ip'] = self.client_address[0]
+                    # Also check X-Forwarded-For for proxied requests (Railway)
+                    forwarded_for = self.headers.get('X-Forwarded-For', '')
+                    if forwarded_for:
+                        data['metadata']['client_ip'] = forwarded_for.split(',')[0].strip()
+                    post_data = json.dumps(data).encode('utf-8')
+                except (json.JSONDecodeError, TypeError):
+                    pass  # If not JSON, forward as-is
+                
                 # Forward to Rasa server (assuming it's running on port 5005)
                 rasa_url = f'http://localhost:5005{self.path}'
                 
@@ -63,7 +77,7 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
                     rasa_url,
                     data=post_data,
                     headers={
-                        'Content-Type': self.headers['Content-Type'],
+                        'Content-Type': self.headers.get('Content-Type', 'application/json'),
                         'Content-Length': str(len(post_data))
                     },
                     method='POST'

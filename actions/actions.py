@@ -51,6 +51,30 @@ EMBEDDINGS_CACHE = None
 # Conversation tracking
 CONVERSATION_LOGS = {}
 SESSION_LANGUAGES = {}  # Track detected language per session for consistency
+ANALYTICS_SESSIONS_STARTED = set()  # Track which sessions already sent session_start
+
+# Analytics API configuration
+ANALYTICS_API_URL = os.getenv("ANALYTICS_API_URL", "https://expobetonrdc.com/api_chatbot_analytics.php")
+ANALYTICS_API_KEY = os.getenv("EXPOBETON_API_KEY", "")
+
+def send_analytics_event(action: str, data: dict):
+    """Fire-and-forget POST to analytics API. Never blocks the chatbot."""
+    try:
+        import threading
+        import requests as req_lib
+        def _post():
+            try:
+                req_lib.post(
+                    f"{ANALYTICS_API_URL}?action={action}",
+                    json=data,
+                    headers={"Authorization": f"Bearer {ANALYTICS_API_KEY}"},
+                    timeout=5
+                )
+            except Exception as e:
+                print(f"[ANALYTICS] Failed to send {action}: {e}")
+        threading.Thread(target=_post, daemon=True).start()
+    except Exception:
+        pass  # Never block the chatbot
 
 def send_conversation_email(session_id: str, user_info: dict, messages: list):
     """Send complete conversation transcript via email"""
@@ -150,6 +174,22 @@ def log_conversation_message(session_id: str, sender: str, text: str, user_info:
     })
     CONVERSATION_LOGS[session_id]['last_activity'] = datetime.now()
     CONVERSATION_LOGS[session_id]['user_info'] = user_info or CONVERSATION_LOGS[session_id]['user_info']
+    
+    # --- Analytics: log bot messages (user messages are logged in the action) ---
+    if sender == 'bot' and text:
+        send_analytics_event('log_message', {
+            'session_id': session_id,
+            'sender': 'bot',
+            'message_text': text[:2000]  # truncate very long responses
+        })
+    
+    # --- Analytics: update session with user info if email provided ---
+    if user_info and (user_info.get('email') or user_info.get('name')):
+        send_analytics_event('update_session', {
+            'session_id': session_id,
+            'user_email': user_info.get('email', ''),
+            'user_name': user_info.get('name', '')
+        })
 
 def send_unanswered_question_email(user_question: str):
     """Send email notification for unanswered questions"""
@@ -549,6 +589,34 @@ class ActionAnswerExpoBeton(Action):
         
         # Log user message
         log_conversation_message(session_id, 'user', user_message_original, metadata)
+        
+        # --- Analytics: session_start on first message ---
+        if session_id not in ANALYTICS_SESSIONS_STARTED:
+            ANALYTICS_SESSIONS_STARTED.add(session_id)
+            send_analytics_event('session_start', {
+                'session_id': session_id,
+                'ip_address': metadata.get('client_ip', ''),
+                'device_type': metadata.get('device_type', 'unknown'),
+                'browser': metadata.get('browser', 'unknown'),
+                'os': metadata.get('os', 'unknown'),
+                'screen_width': metadata.get('screen_width'),
+                'screen_height': metadata.get('screen_height'),
+                'language': metadata.get('language', ''),
+                'referrer': metadata.get('referrer', ''),
+                'user_agent': metadata.get('user_agent', ''),
+                'user_name': metadata.get('name', ''),
+                'user_email': metadata.get('email', '')
+            })
+        
+        # --- Analytics: log user message ---
+        intent_info = tracker.latest_message.get('intent', {})
+        send_analytics_event('log_message', {
+            'session_id': session_id,
+            'sender': 'user',
+            'message_text': user_message_original,
+            'intent': intent_info.get('name'),
+            'confidence': intent_info.get('confidence')
+        })
         
         bot_response = ""
         
@@ -1247,6 +1315,12 @@ class ActionEndConversation(Action):
         dispatcher.utter_message(
             text="👋 Merci pour votre visite! La conversation a été enregistrée."
         )
+        
+        # --- Analytics: end session ---
+        send_analytics_event('session_end', {'session_id': session_id})
+        
+        # Clean up analytics tracking
+        ANALYTICS_SESSIONS_STARTED.discard(session_id)
         
         return []
 
