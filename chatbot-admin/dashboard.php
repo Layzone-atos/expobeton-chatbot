@@ -12,18 +12,18 @@ $avgDuration = $db->query("SELECT COALESCE(AVG(duration_seconds), 0) FROM sessio
 
 // Sessions per day (last 30 days)
 $dailyData = $db->query("SELECT DATE(started_at) as day, COUNT(*) as cnt FROM sessions WHERE started_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) GROUP BY day ORDER BY day")->fetchAll();
-$chartLabels = array_map(fn($r) => $r['day'], $dailyData);
-$chartValues = array_map(fn($r) => (int)$r['cnt'], $dailyData);
+$chartLabels = array_map(function($r) { return $r['day']; }, $dailyData);
+$chartValues = array_map(function($r) { return (int)$r['cnt']; }, $dailyData);
 
 // Device breakdown
 $devices = $db->query("SELECT device_type, COUNT(*) as cnt FROM sessions GROUP BY device_type ORDER BY cnt DESC")->fetchAll();
-$deviceLabels = array_map(fn($r) => ucfirst($r['device_type'] ?? 'unknown'), $devices);
-$deviceValues = array_map(fn($r) => (int)$r['cnt'], $devices);
+$deviceLabels = array_map(function($r) { return ucfirst(isset($r['device_type']) ? $r['device_type'] : 'unknown'); }, $devices);
+$deviceValues = array_map(function($r) { return (int)$r['cnt']; }, $devices);
 
 // Top countries
 $countries = $db->query("SELECT country, COUNT(*) as cnt FROM sessions WHERE country IS NOT NULL AND country != '' GROUP BY country ORDER BY cnt DESC LIMIT 10")->fetchAll();
-$countryLabels = array_map(fn($r) => $r['country'], $countries);
-$countryValues = array_map(fn($r) => (int)$r['cnt'], $countries);
+$countryLabels = array_map(function($r) { return $r['country']; }, $countries);
+$countryValues = array_map(function($r) { return (int)$r['cnt']; }, $countries);
 
 // Recent conversations
 $recent = $db->query("SELECT session_id, user_name, user_email, country, device_type, duration_seconds, message_count, started_at FROM sessions ORDER BY started_at DESC LIMIT 20")->fetchAll();

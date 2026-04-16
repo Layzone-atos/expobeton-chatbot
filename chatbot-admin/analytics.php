@@ -4,57 +4,57 @@ requireLogin();
 $db = getDB();
 
 // Date range
-$dateFrom = trim($_GET['date_from'] ?? date('Y-m-d', strtotime('-30 days')));
-$dateTo = trim($_GET['date_to'] ?? date('Y-m-d'));
+$dateFrom = trim(isset($_GET['date_from']) ? $_GET['date_from'] : date('Y-m-d', strtotime('-30 days')));
+$dateTo = trim(isset($_GET['date_to']) ? $_GET['date_to'] : date('Y-m-d'));
 
 // Daily sessions trend
 $daily = $db->prepare("SELECT DATE(started_at) as day, COUNT(*) as cnt FROM sessions WHERE DATE(started_at) BETWEEN ? AND ? GROUP BY day ORDER BY day");
 $daily->execute([$dateFrom, $dateTo]);
 $dailyData = $daily->fetchAll();
-$dailyLabels = array_map(fn($r) => $r['day'], $dailyData);
-$dailyValues = array_map(fn($r) => (int)$r['cnt'], $dailyData);
+$dailyLabels = array_map(function($r) { return $r['day']; }, $dailyData);
+$dailyValues = array_map(function($r) { return (int)$r['cnt']; }, $dailyData);
 
 // Hourly distribution
 $hourly = $db->prepare("SELECT HOUR(started_at) as hr, COUNT(*) as cnt FROM sessions WHERE DATE(started_at) BETWEEN ? AND ? GROUP BY hr ORDER BY hr");
 $hourly->execute([$dateFrom, $dateTo]);
 $hourlyData = $hourly->fetchAll();
-$hourlyLabels = array_map(fn($r) => str_pad($r['hr'], 2, '0', STR_PAD_LEFT) . ':00', $hourlyData);
-$hourlyValues = array_map(fn($r) => (int)$r['cnt'], $hourlyData);
+$hourlyLabels = array_map(function($r) { return str_pad($r['hr'], 2, '0', STR_PAD_LEFT) . ':00'; }, $hourlyData);
+$hourlyValues = array_map(function($r) { return (int)$r['cnt']; }, $hourlyData);
 
 // Device types
 $devStmt = $db->prepare("SELECT device_type, COUNT(*) as cnt FROM sessions WHERE DATE(started_at) BETWEEN ? AND ? GROUP BY device_type ORDER BY cnt DESC");
 $devStmt->execute([$dateFrom, $dateTo]);
 $devData = $devStmt->fetchAll();
-$devLabels = array_map(fn($r) => ucfirst($r['device_type'] ?? 'unknown'), $devData);
-$devValues = array_map(fn($r) => (int)$r['cnt'], $devData);
+$devLabels = array_map(function($r) { return ucfirst(isset($r['device_type']) ? $r['device_type'] : 'unknown'); }, $devData);
+$devValues = array_map(function($r) { return (int)$r['cnt']; }, $devData);
 
 // Browsers
 $brStmt = $db->prepare("SELECT browser, COUNT(*) as cnt FROM sessions WHERE DATE(started_at) BETWEEN ? AND ? AND browser IS NOT NULL GROUP BY browser ORDER BY cnt DESC LIMIT 10");
 $brStmt->execute([$dateFrom, $dateTo]);
 $brData = $brStmt->fetchAll();
-$brLabels = array_map(fn($r) => $r['browser'], $brData);
-$brValues = array_map(fn($r) => (int)$r['cnt'], $brData);
+$brLabels = array_map(function($r) { return $r['browser']; }, $brData);
+$brValues = array_map(function($r) { return (int)$r['cnt']; }, $brData);
 
 // OS versions
 $osStmt = $db->prepare("SELECT os, COUNT(*) as cnt FROM sessions WHERE DATE(started_at) BETWEEN ? AND ? AND os IS NOT NULL GROUP BY os ORDER BY cnt DESC LIMIT 10");
 $osStmt->execute([$dateFrom, $dateTo]);
 $osData = $osStmt->fetchAll();
-$osLabels = array_map(fn($r) => $r['os'], $osData);
-$osValues = array_map(fn($r) => (int)$r['cnt'], $osData);
+$osLabels = array_map(function($r) { return $r['os']; }, $osData);
+$osValues = array_map(function($r) { return (int)$r['cnt']; }, $osData);
 
 // Top countries
 $cStmt = $db->prepare("SELECT country, COUNT(*) as cnt FROM sessions WHERE DATE(started_at) BETWEEN ? AND ? AND country IS NOT NULL AND country != '' GROUP BY country ORDER BY cnt DESC LIMIT 15");
 $cStmt->execute([$dateFrom, $dateTo]);
 $cData = $cStmt->fetchAll();
-$cLabels = array_map(fn($r) => $r['country'], $cData);
-$cValues = array_map(fn($r) => (int)$r['cnt'], $cData);
+$cLabels = array_map(function($r) { return $r['country']; }, $cData);
+$cValues = array_map(function($r) { return (int)$r['cnt']; }, $cData);
 
 // Avg duration trend
 $durStmt = $db->prepare("SELECT DATE(started_at) as day, AVG(duration_seconds) as avg_dur FROM sessions WHERE DATE(started_at) BETWEEN ? AND ? AND duration_seconds IS NOT NULL GROUP BY day ORDER BY day");
 $durStmt->execute([$dateFrom, $dateTo]);
 $durData = $durStmt->fetchAll();
-$durLabels = array_map(fn($r) => $r['day'], $durData);
-$durValues = array_map(fn($r) => round($r['avg_dur']), $durData);
+$durLabels = array_map(function($r) { return $r['day']; }, $durData);
+$durValues = array_map(function($r) { return round($r['avg_dur']); }, $durData);
 
 // Export CSV
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
