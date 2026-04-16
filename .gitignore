@@ -40,6 +40,10 @@ unanswered_questions.log
 .DS_Store
 Thumbs.db
 
+# Screenshots / temp
+*.png
+_ftp_*.py
+
 # Build
 dist/
 build/
