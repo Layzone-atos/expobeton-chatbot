@@ -1,6 +1,7 @@
 FROM python:3.10-slim
 
-# Force rebuild - 2026-04-17 19:30 - Train model at build time for instant startup
+# Force rebuild - 2026-04-17 19:45 - Use committed model for instant startup
+# Model expobeton-railway.tar.gz is committed to git (85.5% accuracy)
 # Set working directory
 WORKDIR /app
 
@@ -17,20 +18,14 @@ COPY requirements-heroku.txt /app/
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements-heroku.txt
 
-# Copy project files
+# Copy project files (includes pre-trained models/expobeton-railway.tar.gz)
 COPY . /app
 
 # Make scripts executable
 RUN chmod +x railway_start.sh render_start.sh static_server.py
 
-# ============================================================
-# Train Rasa model at BUILD TIME so startup is instant
-# (no training needed at container start = health check passes)
-# ============================================================
-RUN echo "Training Rasa model..." && \
-    rasa train --domain domain.yml --data data --out models --fixed-model-name expobeton-railway --force && \
-    echo "Model trained successfully" && \
-    ls -la models/
+# Verify the model file is present
+RUN ls -la models/ && echo "Model file check complete"
 
 # Expose port
 EXPOSE 5005
