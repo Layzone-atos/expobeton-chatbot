@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Force rebuild - Updated 2026 responses (Nov 4, 2025)
+# Force rebuild - 2026-04-17 - SyntaxError fix + analytics + participation flow
 # Set working directory
 WORKDIR /app
 

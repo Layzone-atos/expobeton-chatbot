@@ -1,5 +1,5 @@
 #!/bin/bash
-# FORCE REDEPLOY: 2025-11-08 17:30 - LUBUMBASHI FIX V4 - CRITICAL RELOAD REQUIRED
+# FORCE REDEPLOY: 2026-04-17 18:00 - FIX SYNTAX ERROR + ANALYTICS + PARTICIPATION FLOW
 # Timestamp changed to force full redeploy and Python cache invalidation
 
 echo "🧹 Cleaning Python cache..."
