@@ -151,10 +151,60 @@ class ActionStartRegistration(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> List[Dict[Text, Any]]:
-        # Try to get the person's name from the slot (set during greeting)
+        # Get the user's last message to check if it's a participation inquiry
+        user_message = (tracker.latest_message.get('text', '') or '').lower().strip()
+        
+        # Participation inquiry keywords — user is asking HOW to participate,
+        # not directly requesting registration. Ask for confirmation first.
+        participation_inquiry_words = [
+            'comment participer', 'comment faire pour participer',
+            'participer', 'how to participate', 'how can i participate',
+            'quels documents', 'conditions de participation',
+            'frais de participation', 'qui peut participer',
+        ]
+        is_inquiry = any(w in user_message for w in participation_inquiry_words)
+        
+        # Direct registration keywords — user explicitly wants to register
+        direct_register_words = [
+            'inscrire', 'inscription', 'enregistrer', 'enregistrement',
+            'register', 'sign up', 'signup', 'exposant', 'sponsor',
+            'oui', 'yes', 'd\'accord', 'ok', 'bien sûr', 'absolument',
+            'allons-y', 'je veux', 'je souhaite', 'go ahead',
+        ]
+        is_direct = any(w in user_message for w in direct_register_words)
+        
+        if is_inquiry and not is_direct:
+            # Ask confirmation before starting registration
+            person = tracker.get_slot("person")
+            if person:
+                first_name = str(person).strip().split()[0].title()
+                msg = (
+                    f"Pour participer à **ExpoBeton RDC 2026** (27-30 mai, Kalemie), "
+                    f"vous devez vous inscrire, {first_name}.\n\n"
+                    f"📋 **3 catégories disponibles :**\n"
+                    f"1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n"
+                    f"2️⃣ 🏗️ **Exposant** (stand 3×3m, 2×4m ou 2×3m)\n"
+                    f"3️⃣ 👤 **Participant Simple** (Gratuit)\n\n"
+                    f"💬 **Souhaitez-vous que je vous guide dans l'inscription ?** "
+                    f"Tapez « oui » ou « je veux m'inscrire » pour commencer."
+                )
+            else:
+                msg = (
+                    "Pour participer à **ExpoBeton RDC 2026** (27-30 mai, Kalemie), "
+                    "vous devez vous inscrire.\n\n"
+                    "📋 **3 catégories disponibles :**\n"
+                    "1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n"
+                    "2️⃣ 🏗️ **Exposant** (stand 3×3m, 2×4m ou 2×3m)\n"
+                    "3️⃣ 👤 **Participant Simple** (Gratuit)\n\n"
+                    "💬 **Souhaitez-vous que je vous guide dans l'inscription ?** "
+                    "Tapez « oui » ou « je veux m'inscrire » pour commencer."
+                )
+            dispatcher.utter_message(text=msg)
+            return []  # Don't start the form yet
+        
+        # Direct registration request — proceed with form
         person = tracker.get_slot("person")
         if person:
-            # Use only first name for friendliness
             first_name = str(person).strip().split()[0].title()
             dispatcher.utter_message(
                 text=(

@@ -415,9 +415,9 @@ MULTILINGUAL_CONTENT = {
         'ar': "فيما يتعلق بهذا السؤال، لا يمكنني تقديم إجابة في الوقت الحالي. أقترح عليك الاتصال بفريقنا عبر البريد الإلكتروني info@expobetonrdc.com.\n\n💡 إليك ما يمكنني مساعدتك به:\n• حدث ExpoBeton\n• التواريخ والموقع\n• الموضوع\n• المؤسسون\n• كيفية المشاركة\n• أن تصبح سفيراً"
     },
     'registration': {
-        'fr': "Pour participer à ExpoBeton RDC 2025, inscrivez-vous en ligne sur https://expobetonrdc.com/#tg_register.\n\n💡 Vous pourriez aussi demander :\n• Quelles sont les dates ?\n• Comment devenir ambassadeur ?\n• Quel est le thème ?",
-        'en': "To participate in ExpoBeton RDC 2025, register online at https://expobetonrdc.com/#tg_register.\n\n💡 You might also ask:\n• What are the dates?\n• How to become an ambassador?\n• What is the theme?",
-        'zh': "要参加ExpoBeton RDC 2025，请在https://expobetonrdc.com/#tg_register在线注册。\n\n💡 您还可以问：\n• 日期是什么时候？\n• 如何成为大使？\n• 主题是什么？",
+        'fr': "Pour participer à ExpoBeton RDC 2026, vous devez vous inscrire.\n\n📋 **3 catégories disponibles :**\n1️⃣ 🏆 Sponsor (Platinum/Gold/Silver/Bronze)\n2️⃣ 🏗️ Exposant (stand 3×3m, 2×4m ou 2×3m)\n3️⃣ 👤 Participant Simple (Gratuit)\n\n💬 Souhaitez-vous que je vous guide dans l'inscription ? Tapez « oui » ou « je veux m'inscrire » pour commencer.\n\n💡 Vous pourriez aussi demander :\n• Quelles sont les dates ?\n• Comment devenir ambassadeur ?\n• Quel est le thème ?",
+        'en': "To participate in ExpoBeton RDC 2026, you need to register.\n\n📋 **3 categories available:**\n1️⃣ 🏆 Sponsor (Platinum/Gold/Silver/Bronze)\n2️⃣ 🏗️ Exhibitor (stand 3×3m, 2×4m or 2×3m)\n3️⃣ 👤 Simple Participant (Free)\n\n💬 Would you like me to guide you through the registration? Type 'yes' or 'I want to register' to begin.\n\n💡 You might also ask:\n• What are the dates?\n• How to become an ambassador?\n• What is the theme?",
+        'zh': "要参加ExpoBeton RDC 2026，您需要注册。\n\n📋 **3个类别可选：**\n1️⃣ 🏆 赞助商\n2️⃣ 🏗️ 参展商\n3️⃣ 👤 普通参与者（免费）\n\n💬 您想让我引导您完成注册吗？输入"是"开始。",
         'ru': "Чтобы принять участие в ExpoBeton RDC 2025, зарегистрируйтесь онлайн на https://expobetonrdc.com/#tg_register.\n\n💡 Вы также можете спросить:\n• Какие даты?\n• Как стать послом?\n• Какая тема?",
         'es': "Para participar en ExpoBeton RDC 2025, regístrese en línea en https://expobetonrdc.com/#tg_register.\n\n💡 También podría preguntar:\n• ¿Cuáles son las fechas?\n• ¿Cómo convertirse en embajador?\n• ¿Cuál es el tema?",
         'ar': "للمشاركة في ExpoBeton RDC 2025، سجل عبر الإنترنت على https://expobetonrdc.com/#tg_register.\n\n💡 قد تسأل أيضاً:\n• ما هي التواريخ؟\n• كيف تصبح سفيراً؟\n• ما هو الموضوع؟"
@@ -427,11 +427,23 @@ MULTILINGUAL_CONTENT = {
 def detect_language(text: str) -> str:
     """Detect language from user text. Returns language code."""
     text_lower = text.lower()
+    # Split into words for whole-word matching
+    words = set(text_lower.split())
     
-    # French keywords
-    french_keywords = ['bonjour', 'salut', 'merci', 'quoi', 'comment', 'pourquoi', 'quand', 'où', 'est-ce', 'c\'est', 'quelles', 'quel', 'quelle']
-    # English keywords  
-    english_keywords = ['hello', 'hi', 'thank', 'what', 'how', 'why', 'when', 'where', 'is', 'are', 'can', 'could', 'would']
+    # French keywords (whole words only)
+    french_keywords = ['bonjour', 'salut', 'merci', 'quoi', 'comment', 'pourquoi',
+                       'quand', 'où', 'c\'est', 'quelles', 'quel', 'quelle',
+                       'qui', 'sont', 'les', 'des', 'une', 'est', 'pour', 'dans',
+                       'avec', 'sur', 'pas', 'nous', 'vous', 'votre', 'notre',
+                       'cette', 'ces', 'aussi', 'mais', 'donc', 'oui', 'non',
+                       'je', 'tu', 'il', 'elle', 'ils', 'elles', 'mon', 'ton',
+                       'son', 'mes', 'tes', 'ses', 'leur', 'leurs']
+    # English keywords (whole words only)
+    english_keywords = ['hello', 'hi', 'thank', 'thanks', 'what', 'how', 'why',
+                        'when', 'where', 'the', 'and', 'can', 'could', 'would',
+                        'should', 'will', 'have', 'has', 'this', 'that', 'with',
+                        'from', 'about', 'yes', 'no', 'please', 'want', 'need',
+                        'like', 'know', 'tell', 'me', 'my', 'your', 'they']
     # Spanish keywords
     spanish_keywords = ['hola', 'gracias', 'qué', 'cómo', 'cuándo', 'dónde', 'por qué', 'buenos', 'días']
     # Russian keywords (Cyrillic)
@@ -441,9 +453,10 @@ def detect_language(text: str) -> str:
     # Arabic characters detection
     has_arabic = any('\u0600' <= char <= '\u06ff' for char in text)
     
-    # Count matches
-    french_score = sum(1 for keyword in french_keywords if keyword in text_lower)
-    english_score = sum(1 for keyword in english_keywords if keyword in text_lower)
+    # Count matches using whole-word matching (set intersection)
+    french_score = len(words & set(french_keywords))
+    english_score = len(words & set(english_keywords))
+    # Spanish still uses substring for multi-word phrases
     spanish_score = sum(1 for keyword in spanish_keywords if keyword in text_lower)
     russian_score = sum(1 for keyword in russian_keywords if keyword in text_lower)
     
