@@ -325,8 +325,22 @@ function addMessage(text, sender) {
         contentDiv.className = 'message-content';
         contentDiv.textContent = text;
         
+        // Timestamp
+        const now = new Date();
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        timeDiv.textContent = now.toLocaleString('fr-FR', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+        
+        const wrapperDiv = document.createElement('div');
+        wrapperDiv.className = 'message-bubble';
+        wrapperDiv.appendChild(contentDiv);
+        wrapperDiv.appendChild(timeDiv);
+        
         messageDiv.appendChild(avatarDiv);
-        messageDiv.appendChild(contentDiv);
+        messageDiv.appendChild(wrapperDiv);
         
         messagesList.appendChild(messageDiv);
         

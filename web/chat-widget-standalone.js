@@ -241,12 +241,36 @@
                 flex-shrink: 0;
             }
             
+            .expobeton-message-bubble {
+                max-width: 75%;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .expobeton-message-bubble .expobeton-message-content {
+                max-width: 100%;
+            }
+            
             .expobeton-message-content {
-                max-width: 70%;
                 padding: 12px 16px;
                 border-radius: 12px;
                 line-height: 1.5;
                 font-size: 14px;
+            }
+            
+            .expobeton-message-time {
+                font-size: 10px;
+                color: #9ca3af;
+                margin-top: 3px;
+                padding: 0 4px;
+            }
+            
+            .expobeton-message.user .expobeton-message-time {
+                text-align: right;
+            }
+            
+            .expobeton-message.bot .expobeton-message-time {
+                text-align: left;
             }
             
             .expobeton-message.bot .expobeton-message-content {
@@ -466,9 +490,18 @@
         const messageDiv = document.createElement('div');
         messageDiv.className = `expobeton-message ${sender}`;
         
+        const now = new Date();
+        const timeStr = now.toLocaleString('fr-FR', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+        
         messageDiv.innerHTML = `
             <div class="expobeton-message-avatar">${sender === 'bot' ? '🤖' : '👤'}</div>
-            <div class="expobeton-message-content">${escapeHtml(text)}</div>
+            <div class="expobeton-message-bubble">
+                <div class="expobeton-message-content">${escapeHtml(text)}</div>
+                <div class="expobeton-message-time">${timeStr}</div>
+            </div>
         `;
         
         messagesDiv.appendChild(messageDiv);
