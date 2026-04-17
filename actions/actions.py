@@ -514,16 +514,16 @@ class ActionGreetPersonalized(Action):
             dispatcher.utter_message(text=answer)
             return []
         
-        # Which edition / how many editions
-        if any(word in user_message for word in ['edition']):
-            if any(kw in user_message for kw in ['quelle', 'laquelle', 'sommes', 'actuelle', 'en cours', 'prochaine', 'which', 'current', 'next']):
-                answer = "Nous sommes a la **11eme edition** d'ExpoBeton RDC ! Elle se tiendra du **27 au 30 mai 2026** a **Kalemie**, Province du Tanganyika.\n\nLe theme : **Kalemie - Capital du Lithium et carrefour strategique au coeur des corridors africains de l'Est, du Sud, de l'Ouest.**\n\nC'est la toute premiere edition organisee a Kalemie !"
-                dispatcher.utter_message(text=answer)
-                return []
-            if any(word in user_message for word in ['combien', 'how many', 'nombre']):
+        # Which edition / how many editions (with typo support)
+        if any(word in user_message for word in ['edition', 'édition', 'edtion', 'editon', 'ediiton', 'ediition']):
+            if any(kw in user_message for kw in ['combien', 'how many', 'nombre']):
                 answer = "**10 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016. La **11eme edition** aura lieu du **27 au 30 mai 2026 a Kalemie**."
                 dispatcher.utter_message(text=answer)
                 return []
+            # Default: assume user is asking which edition (most common question)
+            answer = "Nous sommes a la **11eme edition** d'ExpoBeton RDC ! Elle se tiendra du **27 au 30 mai 2026** a **Kalemie**, Province du Tanganyika.\n\nLe theme : **Kalemie - Capital du Lithium et carrefour strategique au coeur des corridors africains de l'Est, du Sud, de l'Ouest.**\n\nC'est la toute premiere edition organisee a Kalemie !"
+            dispatcher.utter_message(text=answer)
+            return []
 
         # Location questions in greeting message
         location_kw = ['lieu', 'lieux', 'location', 'address', 'adresse',
@@ -531,7 +531,7 @@ class ActionGreetPersonalized(Action):
                        'se deroulera', 'se tient', 'where', 'venue']
         has_loc_kw = any(kw in user_message for kw in location_kw)
         has_ou = any(w in user_message for w in [' ou ', ' ou', 'ou ', 'ou?', 'ou?'])
-        has_loc_ctx = any(w in user_message for w in ['se passera', 'se passe', 'se tiendra', 'edition', 'expobeton', 'salon', '2026'])
+        has_loc_ctx = any(w in user_message for w in ['se passera', 'se passe', 'se tiendra', 'edition', 'edtion', 'editon', 'expobeton', 'salon', '2026'])
         if has_loc_kw or (has_ou and has_loc_ctx):
             answer = "La 11eme edition d'ExpoBeton RDC se tiendra a **Kalemie**, Province du Tanganyika, RDC.\n\nKalemie est la capitale du lithium grace aux gisements de Manono (~400M tonnes de reserves) et une porte d'entree strategique vers les corridors africains via son port sur le lac Tanganyika.\n\nLa date : du **27 au 30 mai 2026**."
             dispatcher.utter_message(text=answer)
@@ -662,7 +662,7 @@ class ActionAnswerExpoBeton(Action):
         has_where_word = any(kw in user_question for kw in location_keywords)
         has_ou = any(w in user_question for w in [' ou ', ' ou', 'ou ', 'ou?', 'ou?'])
         has_location_context = any(w in user_question for w in [
-            'se passera', 'se passe', 'se tiendra', 'se tient', 'edition',
+            'se passera', 'se passe', 'se tiendra', 'se tient', 'edition', 'edtion', 'editon',
             'expobeton', 'salon', 'evenement', '2026', 'prochain'
         ])
         if has_where_word or (has_ou and has_location_context):
@@ -682,7 +682,7 @@ class ActionAnswerExpoBeton(Action):
         
         # --- Date questions (often combined with greeting too) ---
         if any(kw in user_question for kw in ['date', 'quand', 'when', 'calendrier', 'duree', 'combien de jours', 'period']):
-            if any(w in user_question for w in ['expobeton', 'salon', 'edition', 'evenement', '2026']):
+            if any(w in user_question for w in ['expobeton', 'salon', 'edition', 'edtion', 'editon', 'evenement', '2026']):
                 answer = (
                     "La 11eme edition d'ExpoBeton RDC se tiendra du **27 au 30 mai 2026** "
                     "(4 jours) a **Kalemie**, Province du Tanganyika.\n\n"
@@ -699,7 +699,7 @@ class ActionAnswerExpoBeton(Action):
         
         # --- Theme questions ---
         if any(kw in user_question for kw in ['theme', 'sujet', 'topic', 'tema']):
-            if any(w in user_question for w in ['edition', '2026', 'expobeton', 'salon']):
+            if any(w in user_question for w in ['edition', 'edtion', 'editon', '2026', 'expobeton', 'salon']):
                 answer = (
                     "Le theme de la 11eme edition (2026) est : "
                     "**Kalemie - Capital du Lithium et carrefour strategique au coeur "
@@ -721,22 +721,21 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
-        # Which edition are we on? - "quelle edition", "nous sommes a quelle edition", etc.
-        if any(word in user_question for word in ['édition', 'edition']):
-            # "which edition" pattern: quelle, laquelle, sommes, actuelle, en cours, prochaine, which, current
-            if any(kw in user_question for kw in ['quelle', 'laquelle', 'sommes', 'actuelle', 'en cours', 'prochaine', 'which', 'current', 'next', 'upcoming']):
-                answer = "Nous sommes a la **11eme edition** d'ExpoBeton RDC ! Elle se tiendra du **27 au 30 mai 2026** a **Kalemie**, Province du Tanganyika.\n\nLe theme : **Kalemie - Capital du Lithium et carrefour strategique au coeur des corridors africains de l'Est, du Sud, de l'Ouest.**\n\nC'est la toute premiere edition organisee a Kalemie !"
-                dispatcher.utter_message(text=answer)
-                bot_response = answer
-                log_conversation_message(session_id, 'bot', bot_response, metadata)
-                return []
-            # "how many editions" pattern
+        # Which edition are we on? - "quelle edition", "c'est quelle edtion", etc. (with typo support)
+        if any(word in user_question for word in ['édition', 'edition', 'edtion', 'editon', 'ediiton', 'ediition']):
+            # "how many editions" pattern - check first (more specific)
             if any(word in user_question for word in ['combien', 'how many', 'nombre']):
                 answer = "**10 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016 :\n\n1. 2016 : 1ere edition - Kinshasa\n2. 2017 : 2eme edition - Kinshasa\n3. 2018 : 3eme edition - Kinshasa\n4. 2019 : 4eme edition - Kinshasa\n5. 2021 : 5eme edition - Kinshasa\n6. 2022 : 6eme edition - Kinshasa\n7. 2023 : 7eme edition - Kolwezi (Lualaba)\n8. 2024 : 8eme edition - Kinshasa + Matadi\n9. 2025 : 9eme edition - Kinshasa\n10. 2025 : 10eme edition - Kinshasa\n\nLa **11eme edition** aura lieu du **27 au 30 mai 2026 a Kalemie**."
                 dispatcher.utter_message(text=answer)
                 bot_response = answer
                 log_conversation_message(session_id, 'bot', bot_response, metadata)
                 return []
+            # Default: assume user is asking which edition (most common question)
+            answer = "Nous sommes a la **11eme edition** d'ExpoBeton RDC ! Elle se tiendra du **27 au 30 mai 2026** a **Kalemie**, Province du Tanganyika.\n\nLe theme : **Kalemie - Capital du Lithium et carrefour strategique au coeur des corridors africains de l'Est, du Sud, de l'Ouest.**\n\nC'est la toute premiere edition organisee a Kalemie !"
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
         
         # Greetings and politeness responses (FRIENDLY with emojis)
         if any(word in user_question for word in ['bonjour', 'salut', 'hello', 'hi', 'bonsoir', 'hola', 'привет', '你好', 'مرحبا']):
