@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Force rebuild - 2026-04-17 - SyntaxError fix + analytics + participation flow
+# Force rebuild - 2026-04-17 19:30 - Train model at build time for instant startup
 # Set working directory
 WORKDIR /app
 
@@ -22,6 +22,15 @@ COPY . /app
 
 # Make scripts executable
 RUN chmod +x railway_start.sh render_start.sh static_server.py
+
+# ============================================================
+# Train Rasa model at BUILD TIME so startup is instant
+# (no training needed at container start = health check passes)
+# ============================================================
+RUN echo "Training Rasa model..." && \
+    rasa train --domain domain.yml --data data --out models --fixed-model-name expobeton-railway --force && \
+    echo "Model trained successfully" && \
+    ls -la models/
 
 # Expose port
 EXPOSE 5005
