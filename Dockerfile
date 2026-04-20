@@ -21,8 +21,11 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy project files (includes pre-trained models/expobeton-railway.tar.gz)
 COPY . /app
 
-# Make scripts executable
-RUN chmod +x railway_start.sh render_start.sh static_server.py
+# Make scripts executable AND strip Windows CRLF line endings
+# (git on Windows may commit \r\n bytes even with .gitattributes)
+RUN sed -i 's/\r$//' railway_start.sh render_start.sh static_server.py && \
+    chmod +x railway_start.sh render_start.sh static_server.py && \
+    echo "Line endings fixed" && head -1 railway_start.sh | cat -A
 
 # Verify the model file is present
 RUN ls -la models/ && echo "Model file check complete"
