@@ -27,8 +27,11 @@ RUN sed -i 's/\r$//' railway_start.sh render_start.sh static_server.py && \
     chmod +x railway_start.sh render_start.sh static_server.py && \
     echo "Line endings fixed" && head -1 railway_start.sh | cat -A
 
-# Verify the model file is present
-RUN ls -la models/ && echo "Model file check complete"
+# Train model with current rules/stories/NLU data
+# Uses config_build.yml (30 epochs) for faster Docker builds
+RUN rasa train --config config_build.yml --domain domain.yml --data data/ \
+    --out models/ --fixed-model-name expobeton-railway \
+    && ls -la models/ && echo "Model training complete"
 
 # Expose port
 EXPOSE 5005
