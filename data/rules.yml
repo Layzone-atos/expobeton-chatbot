@@ -1,16 +1,135 @@
 version: "3.1"
 
 rules:
+  # ═══ Basic Intent Rules (deterministic) ═══
+
+  - rule: Greet user
+    steps:
+      - intent: greet
+      - action: action_greet_personalized
+
+  - rule: Say goodbye
+    steps:
+      - intent: goodbye
+      - action: utter_goodbye
+
+  - rule: Show help
+    steps:
+      - intent: help
+      - action: utter_help
+
+  - rule: Show FAQs
+    steps:
+      - intent: show_faqs
+      - action: utter_show_faqs
+
+  - rule: Handle feedback
+    steps:
+      - intent: feedback
+      - action: utter_feedback
+
+  - rule: Human handoff
+    steps:
+      - intent: human_handoff
+      - action: action_human_handoff
+
   - rule: Handle end conversation command
     steps:
       - intent: end_conversation
       - action: action_end_conversation
-  
-  - rule: Handle general questions (histoire, dates, etc.)
+
+  # ═══ ExpoBeton Info Rules ═══
+
+  - rule: Answer event dates
+    steps:
+      - intent: ask_event_dates
+      - action: utter_event_dates
+
+  - rule: Answer about expobeton
+    steps:
+      - intent: ask_about_expobeton
+      - action: utter_about_expobeton
+
+  - rule: Answer event location
+    steps:
+      - intent: ask_event_location
+      - action: utter_event_location
+
+  - rule: Answer event theme
+    steps:
+      - intent: ask_event_theme
+      - action: utter_event_theme
+
+  - rule: Answer why kalemie
+    steps:
+      - intent: ask_why_kalemie
+      - action: utter_why_kalemie
+
+  - rule: Answer urban development
+    steps:
+      - intent: ask_urban_development
+      - action: utter_urban_development
+
+  - rule: Answer city population
+    steps:
+      - intent: ask_city_population
+      - action: utter_city_population
+
+  - rule: Answer program
+    steps:
+      - intent: ask_program
+      - action: utter_program
+
+  - rule: Answer speakers
+    steps:
+      - intent: ask_speakers
+      - action: utter_speakers
+
+  - rule: Answer registration info
+    steps:
+      - intent: ask_registration
+      - action: utter_registration
+
+  - rule: Answer corridors
+    steps:
+      - intent: ask_corridors
+      - action: utter_corridors
+
+  - rule: Answer lithium
+    steps:
+      - intent: ask_lithium
+      - action: utter_lithium
+
+  - rule: Answer edition 10
+    steps:
+      - intent: ask_edition_10
+      - action: utter_edition_10
+
+  - rule: Answer objectives
+    steps:
+      - intent: ask_objectives
+      - action: utter_objectives
+
+  - rule: Answer partners
+    steps:
+      - intent: ask_partners
+      - action: utter_partners
+
+  - rule: Answer tourism culture
+    steps:
+      - intent: ask_tourism_culture
+      - action: utter_tourism_culture
+
+  - rule: Answer about people
+    steps:
+      - intent: ask_about_people
+      - action: action_answer_expobeton
+
+  - rule: Handle general questions
     steps:
       - intent: ask_general_question
       - action: action_answer_expobeton
-  
+
   - rule: Handle nlu_fallback with action_answer_expobeton
     steps:
       - intent: nlu_fallback
