@@ -151,92 +151,36 @@ class ActionStartRegistration(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> List[Dict[Text, Any]]:
-        # Get the user's last message to check if it's a participation inquiry
-        user_message = (tracker.latest_message.get('text', '') or '').lower().strip()
-        
-        # Participation/registration inquiry keywords — user is asking HOW to register/participate,
-        # not directly requesting registration. Ask for confirmation first.
-        participation_inquiry_words = [
-            # "Comment participer" variants
-            'comment participer', 'comment faire pour participer',
-            'participer', 'how to participate', 'how can i participate',
-            'quels documents', 'conditions de participation',
-            'frais de participation', 'qui peut participer',
-            # "Comment s'enregistrer" variants
-            "comment s'enregistrer", "comment s'enregistré",
-            "comment s'inscrire", "comment faire pour s'inscrire",
-            "comment m'inscrire", "comment m'enregistrer",
-            'how to register', 'how to sign up', 'how can i register',
-            'quels documents', 'conditions d\'inscription',
-            'frais d\'inscription', 'qui peut s\'inscrire',
-        ]
-        is_inquiry = any(w in user_message for w in participation_inquiry_words)
-        
-        # Direct registration keywords — user explicitly wants to register NOW
-        # Only match when there's NO inquiry word present
-        direct_register_words = [
-            # Direct commands (without "comment")
-            'je veux m\'inscrire', 'je veux m\'enregistrer',
-            'je souhaite m\'inscrire', 'je souhaite m\'enregistrer',
-            'inscrire moi', 'enregistrer moi',
-            'register me', 'sign me up',
-            # Category selections
-            'exposant', 'sponsor', 'ambassadeur',
-            # Confirmation words (used after confirmation prompt)
-            'oui', 'yes', 'd\'accord', 'ok', 'bien sûr', 'absolument',
-            'allons-y', 'je veux', 'je souhaite', 'go ahead',
-        ]
-        is_direct = any(w in user_message for w in direct_register_words)
-        
-        if is_inquiry and not is_direct:
-            # Ask confirmation before starting registration
-            person = tracker.get_slot("person")
-            if person:
-                first_name = str(person).strip().split()[0].title()
-                msg = (
-                    f"Pour participer à **ExpoBeton RDC 2026** (27-30 mai, Kalemie), "
-                    f"vous devez vous inscrire, {first_name}.\n\n"
-                    f"📋 **3 catégories disponibles :**\n"
-                    f"1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n"
-                    f"2️⃣ 🏗️ **Exposant** (stand 3×3m, 2×4m ou 2×3m)\n"
-                    f"3️⃣ 👤 **Participant Simple** (Gratuit)\n\n"
-                    f"💬 **Souhaitez-vous que je vous guide dans l'inscription ?** "
-                    f"Tapez « oui » ou « je veux m'inscrire » pour commencer."
-                )
-            else:
-                msg = (
-                    "Pour participer à **ExpoBeton RDC 2026** (27-30 mai, Kalemie), "
-                    "vous devez vous inscrire.\n\n"
-                    "📋 **3 catégories disponibles :**\n"
-                    "1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n"
-                    "2️⃣ 🏗️ **Exposant** (stand 3×3m, 2×4m ou 2×3m)\n"
-                    "3️⃣ 👤 **Participant Simple** (Gratuit)\n\n"
-                    "💬 **Souhaitez-vous que je vous guide dans l'inscription ?** "
-                    "Tapez « oui » ou « je veux m'inscrire » pour commencer."
-                )
-            dispatcher.utter_message(text=msg)
-            return []  # Don't start the form yet
-        
-        # Direct registration request — proceed with form
-        person = tracker.get_slot("person")
+        # Always show categories info and start the form
+        # (Rasa rule handles form activation - can't conditionally skip)
+        person = tracker.get_slot('person')
         if person:
             first_name = str(person).strip().split()[0].title()
             dispatcher.utter_message(
                 text=(
-                    f"D'accord {first_name}, je vais vous aider à vous inscrire "
-                    f"étape par étape. 😊\n\n"
-                    f"Commençons votre inscription à **ExpoBeton RDC 2026** !"
+                    f'Pour participer à **ExpoBeton RDC 2026** (27-30 mai, Kalemie), '
+                    f'vous devez vous inscrire, {first_name}.\n\n'
+                    f'📋 **3 catégories disponibles :**\n'
+                    f'1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n'
+                    f'2️⃣ 🏗️ **Exposant** (stand 3×3m, 2×4m ou 2×3m)\n'
+                    f'3️⃣ 👤 **Participant Simple** (Gratuit)\n\n'
+                    f'Commençons votre inscription étape par étape. 😊'
                 )
             )
         else:
             dispatcher.utter_message(
                 text=(
-                    "D'accord, je vais vous aider à vous inscrire "
-                    "étape par étape. 😊\n\n"
-                    "Commençons votre inscription à **ExpoBeton RDC 2026** !"
+                    'Pour participer à **ExpoBeton RDC 2026** (27-30 mai, Kalemie), '
+                    'vous devez vous inscrire.\n\n'
+                    '📋 **3 catégories disponibles :**\n'
+                    '1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n'
+                    '2️⃣ 🏗️ **Exposant** (stand 3×3m, 2×4m ou 2×3m)\n'
+                    '3️⃣ 👤 **Participant Simple** (Gratuit)\n\n'
+                    'Commençons votre inscription étape par étape. 😊'
                 )
             )
-        return [FollowupAction("registration_form")]
+        # Form will be activated by Rasa rule automatically
+        return []
 
 
 # ═══════════════════════════════════════════════════════════════════════
