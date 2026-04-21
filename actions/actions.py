@@ -62,19 +62,22 @@ def send_analytics_event(action: str, data: dict):
     try:
         import threading
         import requests as req_lib
+        url = f"{ANALYTICS_API_URL}?action={action}&api_key={ANALYTICS_API_KEY}"
+        print(f"[ANALYTICS] Sending {action} to {ANALYTICS_API_URL} (key={'SET' if ANALYTICS_API_KEY else 'EMPTY'})")
         def _post():
             try:
-                req_lib.post(
-                    f"{ANALYTICS_API_URL}?action={action}&api_key={ANALYTICS_API_KEY}",
+                resp = req_lib.post(
+                    url,
                     json=data,
                     headers={"Authorization": f"Bearer {ANALYTICS_API_KEY}"},
-                    timeout=5
+                    timeout=10
                 )
+                print(f"[ANALYTICS] {action} response: status={resp.status_code}, body={resp.text[:200]}")
             except Exception as e:
                 print(f"[ANALYTICS] Failed to send {action}: {e}")
         threading.Thread(target=_post, daemon=True).start()
-    except Exception:
-        pass  # Never block the chatbot
+    except Exception as e:
+        print(f"[ANALYTICS] Thread error: {e}")
 
 def send_conversation_email(session_id: str, user_info: dict, messages: list):
     """Send complete conversation transcript via email"""
