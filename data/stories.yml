@@ -87,8 +87,7 @@ stories:
   - action: utter_registration
   - intent: register
   - action: action_start_registration
-  - action: registration_form
-  - active_loop: registration_form
+  # Form activation handled by action_start_registration via FollowupAction
 
 - story: ask corridors story
   steps:

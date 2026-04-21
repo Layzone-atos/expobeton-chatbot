@@ -18,12 +18,12 @@ rules:
 
   # ═══ Registration & Ambassador Rules ═══
 
-  - rule: Activate registration form
+  - rule: Start registration (action decides whether to show form or confirmation)
     steps:
       - intent: register
       - action: action_start_registration
-      - action: registration_form
-      - active_loop: registration_form
+      # registration_form activation is handled inside action_start_registration
+      # based on whether user is asking "how to participate" vs direct registration
 
   - rule: Submit registration when form complete
     condition:

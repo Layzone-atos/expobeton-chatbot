@@ -55,7 +55,7 @@ ANALYTICS_SESSIONS_STARTED = set()  # Track which sessions already sent session_
 
 # Analytics API configuration
 ANALYTICS_API_URL = os.getenv("ANALYTICS_API_URL", "https://admincb.expobetonrdc.com/api_chatbot_analytics.php")
-ANALYTICS_API_KEY = os.getenv("EXPOBETON_API_KEY", "")
+ANALYTICS_API_KEY = os.getenv("ANALYTICS_API_KEY", "")  # Fixed: was EXPOBETON_API_KEY (wrong)
 
 def send_analytics_event(action: str, data: dict):
     """Fire-and-forget POST to analytics API. Never blocks the chatbot."""
