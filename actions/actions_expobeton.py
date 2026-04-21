@@ -154,20 +154,35 @@ class ActionStartRegistration(Action):
         # Get the user's last message to check if it's a participation inquiry
         user_message = (tracker.latest_message.get('text', '') or '').lower().strip()
         
-        # Participation inquiry keywords — user is asking HOW to participate,
+        # Participation/registration inquiry keywords — user is asking HOW to register/participate,
         # not directly requesting registration. Ask for confirmation first.
         participation_inquiry_words = [
+            # "Comment participer" variants
             'comment participer', 'comment faire pour participer',
             'participer', 'how to participate', 'how can i participate',
             'quels documents', 'conditions de participation',
             'frais de participation', 'qui peut participer',
+            # "Comment s'enregistrer" variants
+            "comment s'enregistrer", "comment s'enregistré",
+            "comment s'inscrire", "comment faire pour s'inscrire",
+            "comment m'inscrire", "comment m'enregistrer",
+            'how to register', 'how to sign up', 'how can i register',
+            'quels documents', 'conditions d\'inscription',
+            'frais d\'inscription', 'qui peut s\'inscrire',
         ]
         is_inquiry = any(w in user_message for w in participation_inquiry_words)
         
-        # Direct registration keywords — user explicitly wants to register
+        # Direct registration keywords — user explicitly wants to register NOW
+        # Only match when there's NO inquiry word present
         direct_register_words = [
-            'inscrire', 'inscription', 'enregistrer', 'enregistrement',
-            'register', 'sign up', 'signup', 'exposant', 'sponsor',
+            # Direct commands (without "comment")
+            'je veux m\'inscrire', 'je veux m\'enregistrer',
+            'je souhaite m\'inscrire', 'je souhaite m\'enregistrer',
+            'inscrire moi', 'enregistrer moi',
+            'register me', 'sign me up',
+            # Category selections
+            'exposant', 'sponsor', 'ambassadeur',
+            # Confirmation words (used after confirmation prompt)
             'oui', 'yes', 'd\'accord', 'ok', 'bien sûr', 'absolument',
             'allons-y', 'je veux', 'je souhaite', 'go ahead',
         ]
