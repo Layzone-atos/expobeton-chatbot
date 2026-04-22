@@ -47,7 +47,7 @@ $totalPages = max(1, ceil($total / ITEMS_PER_PAGE));
 $offset = ($page - 1) * ITEMS_PER_PAGE;
 
 // Fetch
-$stmt = $db->prepare("SELECT s.* FROM sessions s $whereSQL ORDER BY s.started_at DESC LIMIT " . ITEMS_PER_PAGE . " OFFSET $offset");
+$stmt = $db->prepare("SELECT s.*, (SELECT COUNT(*) FROM messages m WHERE m.session_id = s.session_id) AS real_message_count FROM sessions s $whereSQL ORDER BY s.started_at DESC LIMIT " . ITEMS_PER_PAGE . " OFFSET $offset");
 $stmt->execute($params);
 $sessions = $stmt->fetchAll();
 
@@ -147,7 +147,7 @@ $deviceList = $db->query("SELECT DISTINCT device_type FROM sessions WHERE device
                             <td><?= escape($s['country'] ?? '-') ?></td>
                             <td><span class="badge bg-<?= $s['device_type']==='mobile'?'success':($s['device_type']==='tablet'?'warning':'primary') ?>"><?= escape($s['device_type'] ?? '-') ?></span></td>
                             <td><?= escape($s['browser'] ?? '-') ?></td>
-                            <td><?= $s['message_count'] ?></td>
+                            <td><?= $s['real_message_count'] ?: $s['message_count'] ?></td>
                             <td><?= formatDuration($s['duration_seconds']) ?></td>
                             <td><?= date('M j, H:i', strtotime($s['started_at'])) ?></td>
                         </tr>
