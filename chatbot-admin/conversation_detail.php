@@ -55,7 +55,7 @@ $messages = $stmt->fetchAll();
                             <tr><td class="text-muted">Session ID</td><td class="text-break" style="font-size:0.8rem;"><?= escape($session['session_id']) ?></td></tr>
                             <tr><td class="text-muted">User</td><td><?= escape($session['user_name'] ?: '-') ?></td></tr>
                             <tr><td class="text-muted">Email</td><td><?= escape($session['user_email'] ?: '-') ?></td></tr>
-                            <tr><td class="text-muted">Country</td><td><?= escape($session['country'] ?? '-') ?></td></tr>
+                            <tr><td class="text-muted">Country</td><td><?= formatCountryWithFlag($session['country'] ?? '-') ?></td></tr>
                             <tr><td class="text-muted">City</td><td><?= escape($session['city'] ?? '-') ?></td></tr>
                             <tr><td class="text-muted">IP</td><td><?= escape($session['ip_address'] ?? '-') ?></td></tr>
                             <tr><td class="text-muted">Device</td><td><span class="badge bg-primary"><?= escape($session['device_type'] ?? '-') ?></span></td></tr>

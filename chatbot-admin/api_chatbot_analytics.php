@@ -194,9 +194,29 @@ function authenticate() {
 // ============================================================
 // IP GEOLOCATION (free ip-api.com, 45 req/min)
 // ============================================================
+
+// Get real client IP from request headers (handles proxies/load balancers)
+function getRealClientIP() {
+    $headers = ['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_X_CLIENT_IP', 'REMOTE_ADDR'];
+    foreach ($headers as $header) {
+        if (!empty($_SERVER[$header])) {
+            // X-Forwarded-For may contain multiple IPs, take the first
+            $ip = trim(explode(',', $_SERVER[$header])[0]);
+            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return $ip;
+            }
+        }
+    }
+    return $_SERVER['REMOTE_ADDR'] ?? null;
+}
+
 function geolocateIP($ip) {
+    // If no IP provided, try to detect from request headers
+    if (!$ip) {
+        $ip = getRealClientIP();
+    }
     if (!$ip || $ip === '127.0.0.1' || $ip === '::1') {
-        return ['country' => 'Local', 'city' => 'Local'];
+        return ['country' => 'Unknown', 'city' => 'Unknown'];
     }
     
     try {
@@ -249,8 +269,11 @@ function handleSessionStart($data) {
         return;
     }
     
-    // Geolocate IP
+    // Geolocate IP (auto-detect from request headers if not provided)
     $ip = $data['ip_address'] ?? null;
+    if (!$ip) {
+        $ip = getRealClientIP();
+    }
     $geo = geolocateIP($ip);
     
     // Prefer user-provided country (from form selection) over geolocation

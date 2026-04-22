@@ -95,7 +95,7 @@ $deviceList = $db->query("SELECT DISTINCT device_type FROM sessions WHERE device
                         <select class="form-select form-select-sm" name="country">
                             <option value="">All</option>
                             <?php foreach ($countryList as $c): ?>
-                                <option value="<?= escape($c) ?>" <?= $country === $c ? 'selected' : '' ?>><?= escape($c) ?></option>
+                                <option value="<?= escape($c) ?>" <?= $country === $c ? 'selected' : '' ?>><?= getCountryFlag($c) ?> <?= escape($c) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -144,7 +144,7 @@ $deviceList = $db->query("SELECT DISTINCT device_type FROM sessions WHERE device
                         <tr style="cursor:pointer;" onclick="location.href='conversation_detail.php?id=<?= urlencode($s['session_id']) ?>'">
                             <td class="text-truncate" style="max-width:120px;" title="<?= escape($s['session_id']) ?>"><?= escape(substr($s['session_id'], 0, 20)) ?>...</td>
                             <td><?= escape($s['user_name'] ?: ($s['user_email'] ?: '-')) ?></td>
-                            <td><?= escape($s['country'] ?? '-') ?></td>
+                            <td><?= formatCountryWithFlag($s['country'] ?? '-') ?></td>
                             <td><span class="badge bg-<?= $s['device_type']==='mobile'?'success':($s['device_type']==='tablet'?'warning':'primary') ?>"><?= escape($s['device_type'] ?? '-') ?></span></td>
                             <td><?= escape($s['browser'] ?? '-') ?></td>
                             <td><?= $s['real_message_count'] ?: $s['message_count'] ?></td>
