@@ -66,7 +66,7 @@ $messages = $stmt->fetchAll();
                             <tr><td class="text-muted">Started</td><td><?= date('M j, Y H:i:s', strtotime($session['started_at'])) ?></td></tr>
                             <tr><td class="text-muted">Ended</td><td><?= $session['ended_at'] ? date('M j, Y H:i:s', strtotime($session['ended_at'])) : '<span class="text-warning">Active</span>' ?></td></tr>
                             <tr><td class="text-muted">Duration</td><td><?= formatDuration($session['duration_seconds']) ?></td></tr>
-                            <tr><td class="text-muted">Messages</td><td><?= $session['message_count'] ?></td></tr>
+                            <tr><td class="text-muted">Messages</td><td><?= count($messages) ?: $session['message_count'] ?></td></tr>
                             <?php if ($session['referrer_url']): ?>
                             <tr><td class="text-muted">Referrer</td><td class="text-break" style="font-size:0.8rem;"><?= escape($session['referrer_url']) ?></td></tr>
                             <?php endif; ?>

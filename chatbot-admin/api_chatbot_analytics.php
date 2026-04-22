@@ -294,6 +294,13 @@ function handleLogMessage($data) {
         return;
     }
     
+    // Auto-create session if it doesn't exist (handles race condition)
+    $check = $db->prepare("SELECT id FROM sessions WHERE session_id = ?");
+    $check->execute([$sessionId]);
+    if (!$check->fetch()) {
+        $db->prepare("INSERT INTO sessions (session_id, started_at) VALUES (?, NOW())")->execute([$sessionId]);
+    }
+    
     $stmt = $db->prepare("INSERT INTO messages 
         (session_id, sender, message_text, intent, confidence, timestamp)
         VALUES (?, ?, ?, ?, ?, NOW())");

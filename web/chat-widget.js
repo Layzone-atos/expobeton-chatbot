@@ -4,6 +4,65 @@ const RASA_SERVER_URL = window.location.origin;
 
 const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
 
+// Analytics API Configuration
+const ANALYTICS_API_URL = 'https://admincb.expobetonrdc.com/api_chatbot_analytics.php';
+const ANALYTICS_API_KEY = 'ebx-rasa-2026-kAlEmIe-be96bac9f905b106ed2b941dfe536b07';
+let _analyticsSessionStarted = false;
+
+// Send analytics event (fire-and-forget)
+function sendAnalyticsEvent(action, data) {
+    try {
+        const url = `${ANALYTICS_API_URL}?action=${action}&api_key=${encodeURIComponent(ANALYTICS_API_KEY)}`;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ANALYTICS_API_KEY}`
+            },
+            body: JSON.stringify(data)
+        }).then(resp => {
+            console.log(`[ANALYTICS] ${action}: ${resp.status}`);
+        }).catch(err => {
+            console.warn(`[ANALYTICS] ${action} failed:`, err);
+        });
+    } catch (e) {
+        console.warn('[ANALYTICS] Error:', e);
+    }
+}
+
+// Ensure analytics session is started
+function ensureAnalyticsSession() {
+    if (_analyticsSessionStarted) return;
+    _analyticsSessionStarted = true;
+    sendAnalyticsEvent('session_start', {
+        session_id: chatState.sessionId,
+        ip_address: '',
+        device_type: _deviceMetadata.device_type,
+        browser: _deviceMetadata.browser,
+        os: _deviceMetadata.os,
+        screen_width: _deviceMetadata.screen_width,
+        screen_height: _deviceMetadata.screen_height,
+        language: _deviceMetadata.language,
+        referrer: _deviceMetadata.referrer,
+        user_agent: _deviceMetadata.user_agent,
+        user_name: chatState.userInfo ? chatState.userInfo.name : '',
+        user_email: chatState.userInfo ? (chatState.userInfo.email || '') : ''
+    });
+}
+
+// Log a message to analytics
+function logAnalyticsMessage(sender, text, intent, confidence) {
+    ensureAnalyticsSession();
+    const data = {
+        session_id: chatState.sessionId,
+        sender: sender,
+        message_text: (text || '').substring(0, 2000)
+    };
+    if (intent) data.intent = intent;
+    if (confidence) data.confidence = confidence;
+    sendAnalyticsEvent('log_message', data);
+}
+
 // Sound notification system using Web Audio API
 let audioContext = null;
 
@@ -195,6 +254,9 @@ async function sendGreeting() {
     // Start inactivity timer
     resetInactivityTimer();
     
+    // Log user greeting to analytics
+    logAnalyticsMessage('user', greetingMessage);
+    
     // Send to Rasa
     await sendToRasa(greetingMessage);
 }
@@ -219,6 +281,9 @@ async function sendMessage() {
     
     // Reset inactivity timer
     resetInactivityTimer();
+    
+    // Log user message to analytics
+    logAnalyticsMessage('user', message);
     
     // Send to Rasa
     await sendToRasa(message);
@@ -293,6 +358,7 @@ async function sendToRasa(message) {
                         continue;
                     }
                     await addMessage(msg.text, 'bot');
+                    logAnalyticsMessage('bot', msg.text);
                     await sleep(300);
                 }
             }
@@ -705,6 +771,9 @@ async function endConversation(isAuto = false) {
         : "👋 Merci d'avoir utilisé notre chatbot ExpoBeton RDC!\n\n📧 Un email avec le transcript de notre conversation a été envoyé à notre équipe.\n\nSi vous avez d'autres questions, n'hésitez pas à nous recontacter!\n\nÀ bientôt!";
     
     await addMessage(endMessage, 'bot');
+    
+    // Send analytics session_end
+    sendAnalyticsEvent('session_end', { session_id: chatState.sessionId });
     
     // Send conversation to backend
     await sendConversationToBackend();
