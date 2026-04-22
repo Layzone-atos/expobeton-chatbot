@@ -772,27 +772,27 @@ async function endConversation(isAuto = false) {
     
     await addMessage(endMessage, 'bot');
     
-    // Send analytics session_end
-    sendAnalyticsEvent('session_end', { session_id: chatState.sessionId });
-    
-    // Send conversation to backend
-    await sendConversationToBackend();
-    
-    // Disable input
+    // Disable input and hide button IMMEDIATELY (before async calls)
     chatInput.disabled = true;
     sendButton.disabled = true;
     chatInput.placeholder = "Conversation terminée...";
-    
-    // Hide end conversation button
     endConversationButton.style.display = 'none';
     
-    // Show restart option after 3 seconds
-    setTimeout(() => {
-        const restartDiv = document.createElement('div');
-        restartDiv.style.cssText = 'text-align: center; padding: 15px;';
-        restartDiv.innerHTML = '<button onclick="location.reload()" style="padding: 10px 20px; background: linear-gradient(135deg, #0A2A66 0%, #1e3a8a 100%); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: 600;">🔄 Nouvelle conversation</button>';
-        document.getElementById('chat-input-container').appendChild(restartDiv);
-    }, 3000);
+    // Show restart button immediately
+    const restartDiv = document.createElement('div');
+    restartDiv.style.cssText = 'text-align: center; padding: 15px;';
+    restartDiv.innerHTML = '<button onclick="location.reload()" style="padding: 10px 20px; background: linear-gradient(135deg, #0A2A66 0%, #1e3a8a 100%); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: 600;">🔄 Nouvelle conversation</button>';
+    document.getElementById('chat-input-container').appendChild(restartDiv);
+    
+    // Send analytics session_end
+    sendAnalyticsEvent('session_end', { session_id: chatState.sessionId });
+    
+    // Send conversation to backend (fire-and-forget, don't block UI)
+    try {
+        await sendConversationToBackend();
+    } catch (e) {
+        console.warn('[END] Backend send failed:', e);
+    }
 }
 
 // Send Conversation to Backend

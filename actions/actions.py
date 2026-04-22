@@ -560,6 +560,13 @@ class ActionGreetPersonalized(Action):
         # Get person entity
         person = next(tracker.get_latest_entity_values("person"), None)
         
+        # Fallback: extract name from metadata (widget form) if entity not detected
+        if not person:
+            metadata = tracker.latest_message.get('metadata', {})
+            person = metadata.get('name') or None
+            if person:
+                print(f"[GREET] Name from metadata: {person}")
+        
         # Detect language
         user_message_original = tracker.latest_message.get('text', '')
         detected_lang = detect_language(user_message_original)

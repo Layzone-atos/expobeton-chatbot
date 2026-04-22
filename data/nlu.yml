@@ -25,6 +25,16 @@ nlu:
     - bonjour, moi c'est [Marie Curie](person)
     - hello, je m'appelle [Pierre Martin](person)
     - bonjour, je suis [Sophie Dubois](person)
+    - bonjour, je m'appelle [Lima Alpha](person)
+    - bonjour, je m'appelle [Momo Sungunza](person)
+    - salut, je m'appelle [Louison Atundu](person)
+    - bonjour, je m'appelle [Patrick Lumumba](person)
+    - bonjour, je suis [Aminata Diallo](person)
+    - hello, je m'appelle [David Kabila](person)
+    - bonjour, je m'appelle [Grace Mutombo](person)
+    - salut, je suis [François Tshisekedi](person)
+    - bonjour, moi c'est [Esther Ngoy](person)
+    - bonjour, je m'appelle [Alain Kasongo](person)
 
 - intent: goodbye
   examples: |
@@ -635,6 +645,26 @@ nlu:
     - nope
     - pas du tout
     - absolument pas
+    - non merci
+    - non ca va merci
+    - non ça va merci
+    - non c'est bon merci
+    - non c'est bon
+    - ca va merci
+    - ça va merci
+    - non pas maintenant
+    - non merci ça ira
+    - non je suis bon
+    - pas pour le moment
+    - non pas pour l'instant
+    - c'est bon non merci
+    - non c'est tout
+    - non ça va aller
+    - non ca va aller
+    - non c'est tout merci
+    - merci non
+    - no thanks
+    - no thank you
 
 - intent: stop
   examples: |

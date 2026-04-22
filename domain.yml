@@ -284,6 +284,8 @@ responses:
     - text: "Bonjour ! Comment puis-je vous aider aujourd'hui ?"
   utter_goodbye:
     - text: "Au revoir ! Passez une excellente journée."
+  utter_deny:
+    - text: "D'accord, pas de souci ! N'hésitez pas si vous avez d'autres questions sur ExpoBeton RDC. Je suis là pour vous aider ! 😊"
   utter_help:
     - text: "Je suis l'assistant Expobeton. Je peux vous aider avec des informations sur nos services."
   utter_show_faqs:
@@ -387,6 +389,7 @@ actions:
   - action_answer_expobeton
   - utter_greet
   - utter_goodbye
+  - utter_deny
   - utter_help
   - utter_show_faqs
   - utter_feedback

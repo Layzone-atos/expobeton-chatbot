@@ -13,6 +13,11 @@ rules:
       - intent: goodbye
       - action: utter_goodbye
 
+  - rule: Handle polite decline
+    steps:
+      - intent: deny
+      - action: utter_deny
+
   - rule: Show help
     steps:
       - intent: help
