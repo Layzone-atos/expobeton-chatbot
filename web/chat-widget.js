@@ -46,7 +46,8 @@ function ensureAnalyticsSession() {
         referrer: _deviceMetadata.referrer,
         user_agent: _deviceMetadata.user_agent,
         user_name: chatState.userInfo ? chatState.userInfo.name : '',
-        user_email: chatState.userInfo ? (chatState.userInfo.email || '') : ''
+        user_email: chatState.userInfo ? (chatState.userInfo.email || '') : '',
+        country: chatState.userInfo ? (chatState.userInfo.country || '') : ''
     });
 }
 
@@ -229,7 +230,8 @@ async function handleUserFormSubmit(e) {
     chatState.userInfo = {
         name: formData.get('name').trim(),
         phone: formData.get('phone').trim() || null,
-        email: formData.get('email').trim() || null
+        email: formData.get('email').trim() || null,
+        country: formData.get('country') || null
     };
     
     // Hide form, show chat

@@ -355,6 +355,31 @@ body {
     box-shadow: 0 0 0 3px rgba(10, 42, 102, 0.1);
 }
 
+.country-select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: white;
+    color: #374151;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%230A2A66'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 36px;
+}
+
+.country-select:focus {
+    outline: none;
+    border-color: #0A2A66;
+    box-shadow: 0 0 0 3px rgba(10, 42, 102, 0.1);
+}
+
 .submit-button {
     width: 100%;
     padding: 14px;

@@ -253,6 +253,10 @@ function handleSessionStart($data) {
     $ip = $data['ip_address'] ?? null;
     $geo = geolocateIP($ip);
     
+    // Prefer user-provided country (from form selection) over geolocation
+    $country = !empty($data['country']) ? $data['country'] : $geo['country'];
+    $city = $geo['city'];
+    
     $stmt = $db->prepare("INSERT INTO sessions 
         (session_id, started_at, ip_address, country, city, device_type, browser, os, 
          screen_width, screen_height, language, referrer_url, user_agent, user_name, user_email)
@@ -261,8 +265,8 @@ function handleSessionStart($data) {
     $stmt->execute([
         $sessionId,
         $ip,
-        $geo['country'],
-        $geo['city'],
+        $country,
+        $city,
         $data['device_type'] ?? 'unknown',
         $data['browser'] ?? 'unknown',
         $data['os'] ?? 'unknown',
@@ -278,7 +282,7 @@ function handleSessionStart($data) {
     // Update daily stats
     updateDailyStats('session', $data['device_type'] ?? 'desktop');
     
-    echo json_encode(['success' => true, 'message' => 'Session created', 'country' => $geo['country'], 'city' => $geo['city']]);
+    echo json_encode(['success' => true, 'message' => 'Session created', 'country' => $country, 'city' => $city]);
 }
 
 function handleLogMessage($data) {
