@@ -158,6 +158,18 @@ nlu:
     - parlez-moi de momo sunguza
     - parlez-moi de jean bamanisa
     - qui est à la tête d'expobeton ?
+    - c'est qui les organisateurs ?
+    - c'est qui les organisateur ?
+    - c'est qui l'organisateur ?
+    - qui sont les organisateurs ?
+    - qui sont les organisateurs d'expobeton ?
+    - qui sont les organisateurs de expobeton ?
+    - les organisateurs d'expobeton
+    - qui dirige expobeton ?
+    - qui a fondé expobeton ?
+    - qui a créé expobeton ?
+    - c'est qui le fondateur ?
+    - qui est le fondateur d'expobeton ?
 
 - intent: ask_general_question
   examples: |
