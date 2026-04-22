@@ -95,7 +95,8 @@ $deviceList = $db->query("SELECT DISTINCT device_type FROM sessions WHERE device
                         <select class="form-select form-select-sm" name="country">
                             <option value="">All</option>
                             <?php foreach ($countryList as $c): ?>
-                                <option value="<?= escape($c) ?>" <?= $country === $c ? 'selected' : '' ?>><?= getCountryFlag($c) ?> <?= escape($c) ?></option>
+                                <?php $cc = getCountryCode($c); ?>
+                                <option value="<?= escape($c) ?>" <?= $country === $c ? 'selected' : '' ?>><?= $cc ? strtoupper($cc) : '' ?> <?= escape($c) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

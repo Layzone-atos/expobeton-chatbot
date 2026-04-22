@@ -906,66 +906,55 @@ class ActionAnswerExpoBeton(Action):
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
-        # Try to find relevant documents using OpenAI for unmatched questions
-        # TIMEOUT: 5 seconds to ensure fast response time
-        try:
-            # Create executor with timeout
-            with ThreadPoolExecutor(max_workers=1) as executor:
-                future = executor.submit(find_relevant_docs, tracker.latest_message.get('text', ''), 3)
-                try:
-                    relevant_docs = future.result(timeout=5)  # 5 seconds max for user experience
-                except FuturesTimeoutError:
-                    print(f"⏰ OpenAI search timed out after 5 seconds - returning fallback response immediately")
-                    relevant_docs = []
+        # Skip LLM for very short/vague queries (< 15 chars) — respond instantly
+        if len(user_question.strip()) < 15:
+            print(f"⚡ Query too short/vague for LLM ({len(user_question.strip())} chars) - skipping to instant fallback")
+        else:
+            # Try to find relevant documents using OpenAI for substantive questions
+            # TOTAL TIMEOUT: 8 seconds for the entire LLM pipeline (search + generation)
+            def _llm_answer():
+                docs = find_relevant_docs(tracker.latest_message.get('text', ''), 3)
+                if not docs:
+                    return None
+                # Prepare context
+                context_parts = []
+                for i, doc in enumerate(docs):
+                    content = doc['content'][:3000] if len(doc['content']) > 3000 else doc['content']
+                    context_parts.append(f"Document {i+1} ({doc['filename']}):\n{content}")
+                context = "\n\n".join(context_parts)
+                # Call GPT-4o with timeout parameter
+                resp = openai.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": "Tu es un assistant intelligent pour ExpoBeton RDC. Réponds de manière précise et concise en français, en te basant UNIQUEMENT sur les documents fournis. Si l'information n'est pas dans les documents, dis-le clairement. Utilise des emojis et une mise en forme claire (bullet points, numéros) pour rendre la réponse facile à lire."},
+                        {"role": "user", "content": f"Question: {user_message_original}\n\nDocuments de référence:\n{context}"}
+                    ],
+                    temperature=0.3,
+                    max_tokens=500,
+                    timeout=6  # 6-second hard timeout for the API call itself
+                )
+                answer = resp.choices[0].message.content.strip()
+                if len(answer) > 50 and 'ne sais pas' not in answer.lower() and 'ne peux pas' not in answer.lower():
+                    return answer
+                return None
             
-            if relevant_docs:
-                # Use OpenAI GPT-4o to generate answer from relevant documents
-                try:
-                    # Prepare context from documents
-                    context_parts = []
-                    for i, doc in enumerate(relevant_docs):
-                        # Limit each doc to 3000 chars to stay within token limits
-                        content = doc['content'][:3000] if len(doc['content']) > 3000 else doc['content']
-                        context_parts.append(f"Document {i+1} ({doc['filename']}):\n{content}")
-                    
-                    context = "\n\n".join(context_parts)
-                    
-                    # Call OpenAI GPT-4o
-                    response = openai.chat.completions.create(
-                        model="gpt-4o",
-                        messages=[
-                            {
-                                "role": "system",
-                                "content": "Tu es un assistant intelligent pour ExpoBeton RDC. Réponds de manière précise et concise en français, en te basant UNIQUEMENT sur les documents fournis. Si l'information n'est pas dans les documents, dis-le clairement. Utilise des emojis et une mise en forme claire (bullet points, numéros) pour rendre la réponse facile à lire."
-                            },
-                            {
-                                "role": "user",
-                                "content": f"Question: {user_message_original}\n\nDocuments de référence:\n{context}"
-                            }
-                        ],
-                        temperature=0.3,
-                        max_tokens=500
-                    )
-                    
-                    answer = response.choices[0].message.content.strip()
-                    
-                    # Check if answer is meaningful (not just "Je ne sais pas")
-                    if len(answer) > 50 and 'ne sais pas' not in answer.lower() and 'ne peux pas' not in answer.lower():
-                        print(f"✅ OpenAI GPT-4o generated answer: {answer[:100]}...")
-                        dispatcher.utter_message(text=answer)
-                        bot_response = answer
-                        log_conversation_message(session_id, 'bot', bot_response, metadata)
-                        return []
-                    else:
-                        print(f"⚠️ OpenAI answer not meaningful: {answer}")
-                except Exception as e:
-                    print(f"❌ Error generating OpenAI response: {e}")
-                    import traceback
-                    traceback.print_exc()
-        except Exception as e:
-            print(f"❌ Error finding relevant docs: {e}")
-            import traceback
-            traceback.print_exc()
+            try:
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    future = executor.submit(_llm_answer)
+                    try:
+                        llm_answer = future.result(timeout=8)  # 8 seconds TOTAL for search + GPT-4o
+                    except FuturesTimeoutError:
+                        print(f"⏰ LLM pipeline timed out after 8 seconds - returning fallback immediately")
+                        llm_answer = None
+                
+                if llm_answer:
+                    print(f"✅ LLM generated answer: {llm_answer[:100]}...")
+                    dispatcher.utter_message(text=llm_answer)
+                    bot_response = llm_answer
+                    log_conversation_message(session_id, 'bot', bot_response, metadata)
+                    return []
+            except Exception as e:
+                print(f"❌ LLM pipeline error: {e}")
         
         # Default: show help and log unanswered question
         if any(word in user_question for word in ['fondateur', 'créateur', 'président', 'qui est', 'qui sont', 'responsable', 'organisateur', 'dirige', 'tête']):

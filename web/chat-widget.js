@@ -9,6 +9,29 @@ const ANALYTICS_API_URL = 'https://admincb.expobetonrdc.com/api_chatbot_analytic
 const ANALYTICS_API_KEY = 'ebx-rasa-2026-kAlEmIe-be96bac9f905b106ed2b941dfe536b07';
 let _analyticsSessionStarted = false;
 
+// Auto-detect country from IP (fire-and-forget, updates session later)
+let _detectedCountry = '';
+function detectCountryFromIP() {
+    fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) })
+        .then(r => r.json())
+        .then(data => {
+            _detectedCountry = data.country_name || '';
+            console.log('[GEO] Detected country:', _detectedCountry);
+        })
+        .catch(err => {
+            console.warn('[GEO] IP detection failed, trying fallback...', err);
+            // Fallback to ip-api.com
+            fetch('http://ip-api.com/json/?fields=country', { signal: AbortSignal.timeout(5000) })
+                .then(r => r.json())
+                .then(data => {
+                    _detectedCountry = data.country || '';
+                    console.log('[GEO] Fallback country:', _detectedCountry);
+                })
+                .catch(() => console.warn('[GEO] All geolocation failed'));
+        });
+}
+detectCountryFromIP();
+
 // Send analytics event (fire-and-forget)
 function sendAnalyticsEvent(action, data) {
     try {
@@ -47,7 +70,7 @@ function ensureAnalyticsSession() {
         user_agent: _deviceMetadata.user_agent,
         user_name: chatState.userInfo ? chatState.userInfo.name : '',
         user_email: chatState.userInfo ? (chatState.userInfo.email || '') : '',
-        country: chatState.userInfo ? (chatState.userInfo.country || '') : ''
+        country: _detectedCountry || ''
     });
 }
 
@@ -230,8 +253,7 @@ async function handleUserFormSubmit(e) {
     chatState.userInfo = {
         name: formData.get('name').trim(),
         phone: formData.get('phone').trim() || null,
-        email: formData.get('email').trim() || null,
-        country: formData.get('country') || null
+        email: formData.get('email').trim() || null
     };
     
     // Hide form, show chat
