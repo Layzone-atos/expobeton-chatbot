@@ -5,8 +5,6 @@ nlu:
   examples: |
     - bonjour
     - salut
-    - bonjour, comment allez-vous ?
-    - salut, ça va ?
     - bonjour madame
     - bonjour monsieur
     - hello
@@ -35,6 +33,40 @@ nlu:
     - salut, je suis [François Tshisekedi](person)
     - bonjour, moi c'est [Esther Ngoy](person)
     - bonjour, je m'appelle [Alain Kasongo](person)
+
+- intent: ask_how_are_you
+  examples: |
+    - comment ça va ?
+    - ça va ?
+    - ca va ?
+    - comment tu vas ?
+    - comment vas-tu ?
+    - comment allez-vous ?
+    - comment vas tu
+    - comment ca va
+    - comment ça va
+    - tu vas bien ?
+    - vous allez bien ?
+    - ça va bien ?
+    - ca va bien ?
+    - comment tu te sens ?
+    - la forme ?
+    - en forme ?
+    - tout va bien ?
+    - how are you
+    - how are you doing
+    - how do you do
+    - how's it going
+    - are you doing well
+    - bonjour comment tu vas ?
+    - bonjour comment ça va ?
+    - salut ça va ?
+    - salut comment tu vas
+    - bonjour comment allez-vous
+    - salut ca va
+    - hey ça va ?
+    - coucou ça va ?
+    - bonjour tu vas bien ?
 
 - intent: goodbye
   examples: |

@@ -18,6 +18,11 @@ rules:
       - intent: deny
       - action: utter_deny
 
+  - rule: Answer how are you
+    steps:
+      - intent: ask_how_are_you
+      - action: utter_how_are_you
+
   - rule: Show help
     steps:
       - intent: help

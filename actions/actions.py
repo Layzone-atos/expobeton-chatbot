@@ -957,7 +957,7 @@ class ActionAnswerExpoBeton(Action):
                 print(f"❌ LLM pipeline error: {e}")
         
         # Default: show help and log unanswered question
-        if any(word in user_question for word in ['fondateur', 'créateur', 'président', 'qui est', 'qui sont', 'responsable', 'organisateur', 'dirige', 'tête']):
+        if any(word in user_question for word in ['fondateur', 'créateur', 'président', 'qui est', 'qui sont', 'responsable', 'organisateur', 'organise', 'dirige', 'tête', 'qui a créé', 'qui a fondé']):
             if 'jean' in user_question or 'bamanisa' in user_question or 'fondateur' in user_question or 'créateur' in user_question:
                 answer = "Jean Bamanisa Saïdi est le président, promoteur, créateur et fondateur d'ExpoBeton RDC. C'est un homme d'affaires et personnalité politique congolaise, ancien gouverneur de la province de l'Ituri. Il porte la vision stratégique de l'événement et met en avant la reconstruction, l'urbanisation et le développement durable de la RDC."
                 dispatcher.utter_message(text=answer)

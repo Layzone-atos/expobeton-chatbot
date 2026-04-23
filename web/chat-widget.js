@@ -286,16 +286,19 @@ async function sendGreeting() {
 }
 
 // Send Message
+let _isSending = false;
 async function sendMessage() {
     const message = chatInput.value.trim();
     
-    if (!message) return;
+    if (!message || _isSending) return;
+    _isSending = true;
     
     // Clear input
     chatInput.value = '';
     
     // Disable send button
     sendButton.disabled = true;
+    chatInput.disabled = true;
     
     // Add user message to UI
     addMessage(message, 'user');
@@ -310,10 +313,15 @@ async function sendMessage() {
     logAnalyticsMessage('user', message);
     
     // Send to Rasa
-    await sendToRasa(message);
-    
-    // Enable send button
-    sendButton.disabled = false;
+    try {
+        await sendToRasa(message);
+    } finally {
+        // Enable send button
+        sendButton.disabled = false;
+        chatInput.disabled = false;
+        chatInput.focus();
+        _isSending = false;
+    }
 }
 
 // Send Message to Rasa Server
