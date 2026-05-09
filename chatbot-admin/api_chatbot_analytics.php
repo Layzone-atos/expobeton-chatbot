@@ -243,12 +243,39 @@ function geolocateIP($ip) {
 
 function handleHealth() {
     $db = getDB();
+    // Auto-close stale sessions on health check (poor man's cron)
+    autoCloseStaleSessions($db);
     echo json_encode([
         'success' => true,
         'service' => 'chatbot-analytics',
         'db_connected' => true,
         'timestamp' => date('Y-m-d H:i:s')
     ]);
+}
+
+/**
+ * Auto-close sessions that have been inactive for >30 min without explicit end.
+ * Handles cases where the user closes the tab without triggering pagehide/beforeunload.
+ */
+function autoCloseStaleSessions($db) {
+    try {
+        $db->exec("
+            UPDATE sessions s
+            SET 
+                s.ended_at = COALESCE(
+                    (SELECT MAX(m.timestamp) FROM messages m WHERE m.session_id = s.session_id),
+                    s.started_at
+                ),
+                s.duration_seconds = TIMESTAMPDIFF(SECOND, s.started_at, COALESCE(
+                    (SELECT MAX(m.timestamp) FROM messages m WHERE m.session_id = s.session_id),
+                    s.started_at
+                ))
+            WHERE s.ended_at IS NULL 
+              AND s.started_at < DATE_SUB(NOW(), INTERVAL 30 MINUTE)
+        ");
+    } catch (Exception $e) {
+        // Silently ignore - best-effort cleanup
+    }
 }
 
 function handleSessionStart($data) {

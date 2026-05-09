@@ -8,6 +8,7 @@ const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
 const ANALYTICS_API_URL = 'https://admincb.expobetonrdc.com/api_chatbot_analytics.php';
 const ANALYTICS_API_KEY = 'ebx-rasa-2026-kAlEmIe-be96bac9f905b106ed2b941dfe536b07';
 let _analyticsSessionStarted = false;
+let _sessionEndSent = false;
 
 // Auto-detect country from IP (fire-and-forget, updates session later)
 let _detectedCountry = '';
@@ -225,6 +226,36 @@ function setupEventListeners() {
     // Track activity
     chatInput.addEventListener('input', resetInactivityTimer);
     chatInput.addEventListener('focus', resetInactivityTimer);
+    
+    // ============================================================
+    // CRITICAL: Send session_end when user leaves the page
+    // Uses sendBeacon() for reliable delivery during page unload
+    // ============================================================
+    function sendSessionEndBeacon() {
+        if (_sessionEndSent || !_analyticsSessionStarted) return;
+        _sessionEndSent = true;
+        const url = `${ANALYTICS_API_URL}?action=session_end&api_key=${encodeURIComponent(ANALYTICS_API_KEY)}`;
+        const payload = JSON.stringify({ session_id: chatState.sessionId });
+        // sendBeacon is the ONLY reliable way to send data during page unload
+        if (navigator.sendBeacon) {
+            const blob = new Blob([payload], { type: 'application/json' });
+            navigator.sendBeacon(url, blob);
+            console.log('[ANALYTICS] session_end beacon sent (page closing)');
+        } else {
+            // Fallback: synchronous XHR (last resort for old browsers)
+            try {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', url, false); // synchronous
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(payload);
+            } catch (e) { /* silently fail */ }
+        }
+    }
+    
+    // pagehide fires reliably on mobile + desktop (Safari, Chrome, Firefox)
+    window.addEventListener('pagehide', sendSessionEndBeacon);
+    // beforeunload as fallback for older browsers
+    window.addEventListener('beforeunload', sendSessionEndBeacon);
 }
 
 // Toggle Chat Window
@@ -817,6 +848,7 @@ async function endConversation(isAuto = false) {
     document.getElementById('chat-input-container').appendChild(restartDiv);
     
     // Send analytics session_end
+    _sessionEndSent = true; // Prevent duplicate from page unload
     sendAnalyticsEvent('session_end', { session_id: chatState.sessionId });
     
     // Send conversation to backend (fire-and-forget, don't block UI)
