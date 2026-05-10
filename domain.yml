@@ -287,7 +287,7 @@ responses:
     - text: "Au revoir ! Passez une excellente journée."
   utter_deny:
     - text: "D'accord, pas de souci ! N'hésitez pas si vous avez d'autres questions sur ExpoBeton RDC. Je suis là pour vous aider ! 😊"
-utter_how_are_you:
+  utter_how_are_you:
     - text: "Je vais très bien, merci de demander ! 😊 Et vous, comment allez-vous ? Que souhaitez-vous savoir sur ExpoBeton RDC ?"
   utter_help:
     - text: "Je suis l'assistant Expobeton. Je peux vous aider avec des informations sur nos services."
