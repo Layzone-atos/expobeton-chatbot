@@ -549,7 +549,16 @@ class ActionGreetPersonalized(Action):
         has_ou = any(w in user_message for w in [' ou ', ' ou', 'ou ', 'ou?', 'ou?'])
         has_loc_ctx = any(w in user_message for w in ['se passera', 'se passe', 'se tiendra', 'edition', 'edtion', 'editon', 'expobeton', 'salon', '2026'])
         if has_loc_kw or (has_ou and has_loc_ctx):
-            answer = "La 11eme edition d'ExpoBeton RDC se tiendra a **Kalemie**, Province du Tanganyika, RDC.\n\nKalemie est la capitale du lithium grace aux gisements de Manono (~400M tonnes de reserves) et une porte d'entree strategique vers les corridors africains via son port sur le lac Tanganyika.\n\nLa date : du **27 au 30 mai 2026**."
+            answer = (
+                "📍 **Lieu precis -- ExpoBeton RDC 2026 :**\n\n"
+                "Le salon se tiendra sur **la plage du boulevard Lumumba**, "
+                "au bord du **lac Tanganyika**, a **Kalemie**, chef-lieu de la "
+                "Province du **Tanganyika**, RDC.\n\n"
+                "🌊 Un cadre exceptionnel en front de lac, le long du boulevard "
+                "Lumumba (artere principale de Kalemie), avec ouverture "
+                "panoramique sur le lac Tanganyika.\n\n"
+                "📅 Dates : du **27 au 30 mai 2026** (4 jours)."
+            )
             dispatcher.utter_message(text=answer)
             return []
         
@@ -690,13 +699,17 @@ class ActionAnswerExpoBeton(Action):
         ])
         if has_where_word or (has_ou and has_location_context):
             answer = (
-                "La 11eme edition d'ExpoBeton RDC se tiendra a **Kalemie**, "
-                "Province du Tanganyika, RDC.\n\n"
-                "Kalemie est la capitale du lithium grace aux gisements de "
-                "Manono (~400M tonnes de reserves) et une porte d'entree "
-                "strategique vers les corridors africains via son port sur "
-                "le lac Tanganyika.\n\n"
-                "La date : du **27 au 30 mai 2026**."
+                "📍 **Lieu precis -- ExpoBeton RDC 2026 (11eme edition) :**\n\n"
+                "Le salon se tiendra sur **la plage du boulevard Lumumba**, "
+                "au bord du **lac Tanganyika**, a **Kalemie**, chef-lieu de la "
+                "Province du **Tanganyika**, RDC.\n\n"
+                "🌊 **Un cadre exceptionnel :**\n"
+                "• Site en front de lac, directement sur la plage de Kalemie\n"
+                "• Le long du boulevard Lumumba (artere principale de la ville)\n"
+                "• Ouverture panoramique sur le lac Tanganyika -- le plus long "
+                "lac d'eau douce au monde (673 km)\n"
+                "• Acces facile depuis le port et le centre-ville\n\n"
+                "📅 Dates : du **27 au 30 mai 2026** (4 jours)."
             )
             dispatcher.utter_message(text=answer)
             bot_response = answer

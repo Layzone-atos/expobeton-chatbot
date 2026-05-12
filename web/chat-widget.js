@@ -318,10 +318,21 @@ async function sendGreeting() {
 
 // Send Message
 let _isSending = false;
+let _lastSentMessage = '';
+let _lastSentAt = 0;
 async function sendMessage() {
     const message = chatInput.value.trim();
     
     if (!message || _isSending) return;
+
+    // Debounce duplicate sends: ignore if same message was sent in the last 3 seconds.
+    const now = Date.now();
+    if (message === _lastSentMessage && (now - _lastSentAt) < 3000) {
+        chatInput.value = '';
+        return;
+    }
+    _lastSentMessage = message;
+    _lastSentAt = now;
     _isSending = true;
     
     // Clear input

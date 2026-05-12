@@ -172,6 +172,32 @@ nlu:
     - où est-ce que ça se passe ?
     - expobeton se passe où ?
     - quel est le lieu de la 11ème édition ?
+    - puis-je savoir le lieu précis où se tiendra l'expo béton à kalemie ?
+    - quel est le lieu précis de l'événement ?
+    - où exactement se tiendra l'expo béton ?
+    - adresse précise du salon
+    - où exactement à kalemie ?
+    - le lieu exact de l'événement
+    - quel est le site du salon ?
+    - où est le site de l'événement à kalemie ?
+    - c'est à quel endroit de kalemie ?
+    - adresse exacte du salon à kalemie
+    - je voudrais savoir où se passe exactement l'événement à kalemie
+    - je voudrais savoir où se passe exactement l'evenement à kalemi
+    - je veux savoir le lieu exact de l'événement à kalemie
+    - dis-moi où se passe exactement le salon à kalemie
+    - dites-moi où se passe exactement l'événement à kalemi
+    - pouvez-vous me dire où se tient exactement l'événement à kalemie ?
+    - où exactement à kalemi ?
+    - où se passe exactement le salon à kalemie ?
+    - où se passe exactement l'événement à kalemi ?
+    - le lieu précis à kalemie
+    - le site exact du salon à kalemie
+    - quel est l'endroit exact à kalemie ?
+    - à quel endroit exact à kalemie ?
+    - sur quelle plage se passe expobeton ?
+    - est-ce que c'est sur une plage ?
+    - c'est sur quelle avenue ou boulevard à kalemie ?
 
 - intent: ask_event_theme
   examples: |
@@ -697,6 +723,111 @@ nlu:
     - merci non
     - no thanks
     - no thank you
+
+- intent: thank_you
+  examples: |
+    - merci
+    - merci beaucoup
+    - merci bien
+    - merci infiniment
+    - je vous remercie
+    - thanks
+    - thank you
+    - thank you so much
+    - thanks a lot
+    - cheers
+    - super merci
+    - parfait merci
+    - ok merci
+    - d'accord merci
+    - c'est parfait merci
+    - merci pour votre aide
+    - merci pour l'info
+    - merci pour les informations
+
+- intent: dont_understand
+  examples: |
+    - je comprends pas
+    - je ne comprends pas
+    - j'comprends pas
+    - c'est pas clair
+    - ce n'est pas clair
+    - pas clair
+    - expliquez-moi
+    - explique
+    - peux-tu expliquer
+    - qu'est-ce que ca veut dire
+    - qu'est-ce que ca signifie
+    - aide
+    - aidez-moi
+    - help
+    - i don't understand
+    - i do not understand
+    - not clear
+    - what do you mean
+    - confused
+    - je suis perdu
+    - je suis perdue
+    - perdu
+    - hein
+    - quoi
+    - ?
+    - ??
+    - ???
+    - comment ca
+    - comment ?
+    - re-expliquer
+    - re-explique
+
+- intent: ask_media_press
+  examples: |
+    - je suis journaliste
+    - je suis reporter
+    - je suis presse
+    - je travaille pour la presse
+    - je travaille pour un media
+    - je suis cameraman
+    - je suis camerawoman
+    - je suis videaste
+    - je suis blogueur
+    - je suis blogueuse
+    - je suis influenceur
+    - je suis influenceuse
+    - j'ai une chaine youtube
+    - je tiens une chaine youtube
+    - je gere une chaine youtube
+    - je veux couvrir l'evenement
+    - je veux couvrir l'expo
+    - couverture media
+    - accreditation presse
+    - accreditation media
+    - accreditation journaliste
+    - badge presse
+    - badge media
+    - je veux faire un reportage
+    - reportage sur expobeton
+    - interviewer les officiels
+    - i am a journalist
+    - i am a reporter
+    - press accreditation
+    - media accreditation
+
+- intent: restart_form
+  examples: |
+    - recommencer
+    - recommencer l'inscription
+    - tout recommencer
+    - je veux recommencer
+    - reprendre depuis le debut
+    - reprendre du debut
+    - annuler l'inscription
+    - abandonner l'inscription
+    - sortir de l'inscription
+    - quitter l'inscription
+    - restart
+    - restart registration
+    - start over
+    - cancel registration
 
 - intent: stop
   examples: |

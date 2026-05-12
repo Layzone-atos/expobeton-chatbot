@@ -143,7 +143,11 @@ class ExpoBetonAPI:
 # ═══════════════════════════════════════════════════════════════════════
 
 class ActionStartRegistration(Action):
-    """Greet user by name and start the registration form."""
+    """Show registration info and ASK the user for confirmation before starting the form.
+
+    Sets the ``registration_pending`` slot to ``True``; the form itself is only
+    activated by a follow-up rule once the user confirms with ``affirm``.
+    """
 
     def name(self) -> Text:
         return "action_start_registration"
@@ -151,36 +155,49 @@ class ActionStartRegistration(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> List[Dict[Text, Any]]:
-        # Always show categories info and start the form
-        # (Rasa rule handles form activation - can't conditionally skip)
+        # Skip if a registration form is already active (prevents duplicate launches
+        # caused by the user sending the same message twice).
+        if tracker.active_loop_name in ("registration_form", "registration_review_form"):
+            return []
+
         person = tracker.get_slot('person')
+        greeting = ""
         if person:
             first_name = str(person).strip().split()[0].title()
-            dispatcher.utter_message(
-                text=(
-                    f'Pour participer à **ExpoBeton RDC 2026** (27-30 mai, Kalemie), '
-                    f'vous devez vous inscrire, {first_name}.\n\n'
-                    f'📋 **3 catégories disponibles :**\n'
-                    f'1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n'
-                    f'2️⃣ 🏗️ **Exposant** (stand 3×3m, 2×4m ou 2×3m)\n'
-                    f'3️⃣ 👤 **Participant Simple** (Gratuit)\n\n'
-                    f'Commençons votre inscription étape par étape. 😊'
-                )
+            greeting = f", {first_name}"
+
+        dispatcher.utter_message(
+            text=(
+                f'Pour participer à **ExpoBeton RDC 2026** (27-30 mai, Kalemie), '
+                f'vous devez vous inscrire{greeting}.\n\n'
+                f'📋 **3 catégories disponibles :**\n'
+                f'1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n'
+                f'2️⃣ 🏗️ **Exposant** (stand 3×3m, 2×4m ou 2×3m)\n'
+                f'3️⃣ 👤 **Participant Simple** (Gratuit)\n\n'
+                f'👉 **Souhaitez-vous que je vous aide à vous inscrire maintenant ?**\n'
+                f'Répondez **« oui »** pour commencer l\'inscription étape par étape, '
+                f'ou **« non »** si vous préférez d\'abord poser d\'autres questions. 😊'
             )
-        else:
-            dispatcher.utter_message(
-                text=(
-                    'Pour participer à **ExpoBeton RDC 2026** (27-30 mai, Kalemie), '
-                    'vous devez vous inscrire.\n\n'
-                    '📋 **3 catégories disponibles :**\n'
-                    '1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n'
-                    '2️⃣ 🏗️ **Exposant** (stand 3×3m, 2×4m ou 2×3m)\n'
-                    '3️⃣ 👤 **Participant Simple** (Gratuit)\n\n'
-                    'Commençons votre inscription étape par étape. 😊'
-                )
-            )
-        # Form will be activated by Rasa rule automatically
-        return []
+        )
+        # Mark registration as pending user confirmation. The form will be
+        # activated by rule "User confirms registration" when the user affirms.
+        return [SlotSet("registration_pending", True)]
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Action: Clear the registration_pending flag
+# ═══════════════════════════════════════════════════════════════════════
+
+class ActionClearRegPending(Action):
+    """Reset the ``registration_pending`` slot (used after affirm/deny)."""
+
+    def name(self) -> Text:
+        return "action_clear_reg_pending"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
+    ) -> List[Dict[Text, Any]]:
+        return [SlotSet("registration_pending", None)]
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -343,37 +360,51 @@ class ValidateRegistrationForm(FormValidationAction):
         tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
         if slot_value and len(str(slot_value).strip()) >= 2:
-            return {"reg_company": slot_value.strip()}
-        dispatcher.utter_message(text="Veuillez fournir un nom d'entreprise ou d'organisation valide.")
-        return {"reg_company": None}
+            return {"reg_company": slot_value.strip(), "_reg_validation_fails": 0}
+        dispatcher.utter_message(text="Veuillez fournir un nom d'entreprise ou d'organisation valide (au moins 2 caractères).")
+        return _bump_fail(tracker, dispatcher, "reg_company")
 
     def validate_reg_contact_name(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
         tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
         if slot_value and len(str(slot_value).strip()) >= 2:
-            return {"reg_contact_name": slot_value.strip()}
+            return {"reg_contact_name": slot_value.strip(), "_reg_validation_fails": 0}
         dispatcher.utter_message(text="Veuillez fournir le nom complet de la personne de contact.")
-        return {"reg_contact_name": None}
+        return _bump_fail(tracker, dispatcher, "reg_contact_name")
 
     def validate_reg_email(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
         tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
         if slot_value and re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$', str(slot_value).strip()):
-            return {"reg_email": slot_value.strip().lower()}
-        dispatcher.utter_message(text="Veuillez fournir une adresse email valide.")
-        return {"reg_email": None}
+            return {"reg_email": slot_value.strip().lower(), "_reg_validation_fails": 0}
+        dispatcher.utter_message(text="Veuillez fournir une adresse email valide (exemple : nom@domaine.com).")
+        return _bump_fail(tracker, dispatcher, "reg_email")
 
     def validate_reg_phone(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
         tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
-        cleaned = re.sub(r'[\s\-\(\)]', '', str(slot_value or ''))
-        if len(cleaned) >= 6 and cleaned.replace('+', '').isdigit():
-            return {"reg_phone": cleaned}
-        dispatcher.utter_message(text="Veuillez fournir un numéro de téléphone valide (au moins 6 chiffres).")
-        return {"reg_phone": None}
+        # Accept human-friendly inputs like "whatsapp : 00971 56 123 4567"
+        # by extracting only digits and an optional leading '+'.
+        raw = str(slot_value or '')
+        digits = re.sub(r'\D', '', raw)
+        has_plus = raw.lstrip().startswith('+')
+        # International "00" prefix -> "+"
+        if digits.startswith('00'):
+            digits = digits[2:]
+            has_plus = True
+        if len(digits) >= 8:
+            normalized = ('+' + digits) if has_plus else digits
+            return {"reg_phone": normalized, "_reg_validation_fails": 0}
+        dispatcher.utter_message(
+            text=(
+                "Veuillez fournir un numéro de téléphone valide (au moins 8 chiffres). "
+                "Exemples : +243 81 234 5678 ou 00971 56 123 4567."
+            )
+        )
+        return _bump_fail(tracker, dispatcher, "reg_phone")
 
     def validate_reg_country(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
@@ -389,18 +420,38 @@ class ValidateRegistrationForm(FormValidationAction):
                 "cd": "RDC", "drc": "RDC",
             }
             normalized = country_map.get(val.lower(), val)
-            return {"reg_country": normalized}
-        dispatcher.utter_message(text="Veuillez indiquer votre pays.")
-        return {"reg_country": None}
+            return {"reg_country": normalized, "_reg_validation_fails": 0}
+        dispatcher.utter_message(text="Veuillez indiquer votre pays (exemple : RDC, France, Belgique).")
+        return _bump_fail(tracker, dispatcher, "reg_country")
 
     def validate_reg_city(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
         tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
-        if slot_value and len(str(slot_value).strip()) >= 2:
-            return {"reg_city": slot_value.strip()}
-        dispatcher.utter_message(text="Veuillez indiquer votre ville.")
-        return {"reg_city": None}
+        raw = str(slot_value or '').strip()
+        # Detect phone-shaped input in the city slot (user pasted phone again)
+        if _looks_like_phone(raw):
+            dispatcher.utter_message(
+                text=(
+                    "📞 Je vois que vous avez tapé un numéro de téléphone, mais à cette "
+                    "étape j'ai besoin de votre **ville**. \n\n🏙️ Dans quelle ville "
+                    "êtes-vous basé ? (exemple : Kinshasa, Lubumbashi, Goma)"
+                )
+            )
+            return _bump_fail(tracker, dispatcher, "reg_city")
+        # Detect multi-city input "Lubumbashi, Kinshasa" or "Lubumbashi et Kinshasa"
+        if re.search(r'\s*(,|;|\bet\b|\band\b|/|\+)\s*[A-Za-z\u00C0-\u017F]{2,}', raw):
+            dispatcher.utter_message(
+                text=(
+                    "🏙️ Vous avez mentionné plusieurs villes. Quelle est votre **ville "
+                    "principale** (siège social ou ville où vous résidez) ? Indiquez une seule ville."
+                )
+            )
+            return _bump_fail(tracker, dispatcher, "reg_city")
+        if raw and len(raw) >= 2:
+            return {"reg_city": raw, "_reg_validation_fails": 0}
+        dispatcher.utter_message(text="Veuillez indiquer votre ville (exemple : Kinshasa, Lubumbashi).")
+        return _bump_fail(tracker, dispatcher, "reg_city")
 
     def validate_reg_category(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
@@ -417,43 +468,66 @@ class ValidateRegistrationForm(FormValidationAction):
         phase = tracker.get_slot("_reg_category_phase")
 
         if slot_value:
-            val = str(slot_value).strip().lower()
+            raw = str(slot_value).strip()
+            val = raw.lower()
+
+            # Detect phone-shaped input in the category slot
+            if _looks_like_phone(raw):
+                dispatcher.utter_message(
+                    text=(
+                        "📞 Je vois que vous avez tapé un numéro de téléphone, mais ici j'ai besoin de "
+                        "votre **catégorie d'inscription**. Tapez **1** (Sponsor), **2** (Exposant) ou **3** (Participant)."
+                    )
+                )
+                return {"reg_category": None, "_reg_validation_fails": (tracker.get_slot("_reg_validation_fails") or 0) + 1}
+
+            # Detect multi-value input "2 et 3", "1, 2", "sponsor + exposant"
+            if re.search(r'\b(\d|sponsor|exposant|participant|platinum|gold|silver|bronze)\b.*?\s+(et|and|\+|,|/)\s+\b(\d|sponsor|exposant|participant|platinum|gold|silver|bronze)\b', val):
+                dispatcher.utter_message(
+                    text=(
+                        "ℹ️ Vous ne pouvez choisir **qu'une seule catégorie** par inscription. "
+                        "Si vous souhaitez plusieurs stands ou statuts, soumettez d'abord celui-ci, "
+                        "puis recommencez l'inscription.\n\n👉 Quelle catégorie principale choisissez-vous ? "
+                        "Tapez **1**, **2** ou **3**."
+                    )
+                )
+                return {"reg_category": None, "_reg_validation_fails": (tracker.get_slot("_reg_validation_fails") or 0) + 1}
 
             # ── Sponsor sub-menu active ──
             if phase == "sponsor":
                 if val in sponsor_num:
-                    return {"reg_category": sponsor_num[val], "_reg_category_phase": None}
+                    return {"reg_category": sponsor_num[val], "_reg_category_phase": None, "_reg_validation_fails": 0}
                 name_match = CATEGORY_MAP.get(val)
                 if name_match and name_match not in ("_sponsor_", "_exposant_"):
-                    return {"reg_category": name_match, "_reg_category_phase": None}
+                    return {"reg_category": name_match, "_reg_category_phase": None, "_reg_validation_fails": 0}
                 # Invalid input — keep phase, action_ask will re-show sponsor menu
-                return {"reg_category": None}
+                return _bump_fail(tracker, dispatcher, "reg_category", extra={"_reg_category_phase": phase})
 
             # ── Exposant sub-menu active ──
             if phase == "exposant":
                 if val in stand_num:
-                    return {"reg_category": stand_num[val], "_reg_category_phase": None}
+                    return {"reg_category": stand_num[val], "_reg_category_phase": None, "_reg_validation_fails": 0}
                 name_match = CATEGORY_MAP.get(val)
                 if name_match and name_match not in ("_sponsor_", "_exposant_"):
-                    return {"reg_category": name_match, "_reg_category_phase": None}
+                    return {"reg_category": name_match, "_reg_category_phase": None, "_reg_validation_fails": 0}
                 # Invalid input — keep phase, action_ask will re-show exposant menu
-                return {"reg_category": None}
+                return _bump_fail(tracker, dispatcher, "reg_category", extra={"_reg_category_phase": phase})
 
             # ── Main menu context ──
             normalized = CATEGORY_MAP.get(val)
             if normalized == "_sponsor_":
                 # Set phase so action_ask_reg_category shows sponsor sub-menu
-                return {"reg_category": None, "_reg_category_phase": "sponsor"}
+                return {"reg_category": None, "_reg_category_phase": "sponsor", "_reg_validation_fails": 0}
             if normalized == "_exposant_":
                 # Set phase so action_ask_reg_category shows exposant sub-menu
-                return {"reg_category": None, "_reg_category_phase": "exposant"}
+                return {"reg_category": None, "_reg_category_phase": "exposant", "_reg_validation_fails": 0}
             if normalized:
-                return {"reg_category": normalized, "_reg_category_phase": None}
+                return {"reg_category": normalized, "_reg_category_phase": None, "_reg_validation_fails": 0}
             if slot_value in VALID_CATEGORIES:
-                return {"reg_category": slot_value, "_reg_category_phase": None}
+                return {"reg_category": slot_value, "_reg_category_phase": None, "_reg_validation_fails": 0}
 
-        # Invalid input — reset to main menu
-        return {"reg_category": None, "_reg_category_phase": None}
+        # Invalid input — reset to main menu and bump fail counter
+        return _bump_fail(tracker, dispatcher, "reg_category", extra={"_reg_category_phase": None})
 
     def validate_reg_payment(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
@@ -490,6 +564,54 @@ class ValidateRegistrationForm(FormValidationAction):
 # Helper: build upload descriptors + Submit Registration + Review Form
 # ═══════════════════════════════════════════════════════════════════════
 
+def _display_first_name(tracker):
+    """Return the user's first name for display, preferring the registration
+    contact name over the ``person`` slot (which can be polluted by entity
+    extraction on later form answers such as city/country).
+    """
+    contact = tracker.get_slot("reg_contact_name")
+    if contact and str(contact).strip():
+        return str(contact).strip().split()[0].title()
+    person = tracker.get_slot("person")
+    if person and str(person).strip():
+        return str(person).strip().split()[0].title()
+    return None
+
+
+def _looks_like_phone(value):
+    """Heuristic: is this string most likely a phone number a user pasted in
+    the wrong slot?"""
+    if not value:
+        return False
+    raw = str(value).strip()
+    digits = re.sub(r'\D', '', raw)
+    # At least 8 digits AND the digits make up the bulk of the string (>=70%)
+    if len(digits) < 8:
+        return False
+    return (len(digits) / max(len(raw), 1)) >= 0.6
+
+
+def _bump_fail(tracker, dispatcher, slot_name, extra=None):
+    """Increment the consecutive validation-fail counter and, after 2+ fails,
+    suggest help / human handoff while keeping the slot empty so the form
+    re-asks the same question."""
+    fails = (tracker.get_slot("_reg_validation_fails") or 0) + 1
+    if fails >= 2:
+        dispatcher.utter_message(
+            text=(
+                "🤝 On dirait que cette étape pose problème. \n\nà tout moment, vous pouvez :\n"
+                "• Taper **« je comprends pas »** pour obtenir plus d'explications\n"
+                "• Taper **« recommencer »** pour annuler et repartir de zéro\n"
+                "• Taper **« contact humain »** pour qu'un membre de l'équipe vous aide\n"
+                "• Ou écrire à **info@expobetonrdc.com**"
+            )
+        )
+    out = {slot_name: None, "_reg_validation_fails": fails}
+    if extra:
+        out.update(extra)
+    return out
+
+
 def _build_upload_list(category, visa):
     """Return a list of upload descriptor dicts needed for this registration."""
     uploads = []
@@ -499,7 +621,7 @@ def _build_upload_list(category, visa):
             "accept": ".jpg,.jpeg,.png,.gif,.svg",
             "max_size_mb": 10,
             "label": "Logo de votre entreprise",
-            "description": "Votre logo sera utilise sur les supports de communication.\nFormats acceptes : JPG, PNG, SVG - Max 10 MB",
+            "description": "Votre logo sera utilisé sur les supports de communication.\nFormats acceptés : JPG, PNG, SVG - Max 10 MB",
         })
     if visa and str(visa).lower() == "oui":
         uploads.append({
@@ -507,7 +629,7 @@ def _build_upload_list(category, visa):
             "accept": ".pdf",
             "max_size_mb": 10,
             "label": "Copie de votre passeport",
-            "description": "Necessaire pour votre invitation visa.\nFormat accepte : PDF uniquement - Max 10 MB",
+            "description": "Nécessaire pour votre invitation visa.\nFormat accepté : PDF uniquement - Max 10 MB",
         })
     return uploads
 
@@ -543,8 +665,7 @@ class ActionSubmitRegistration(Action):
         visa = tracker.get_slot("reg_visa") or "non"
         uploads = _build_upload_list(category, visa)
 
-        person = tracker.get_slot("person")
-        first_name = str(person).strip().split()[0].title() if person else None
+        first_name = _display_first_name(tracker)
         name_suffix = f" {first_name}" if first_name else ""
 
         upload_base = os.getenv(
@@ -570,10 +691,10 @@ class ActionSubmitRegistration(Action):
                 }
             )
             # Fallback for non-widget channels
-            fallback = f"Documents a fournir{name_suffix} :\n\n"
+            fallback = f"Documents à fournir{name_suffix} :\n\n"
             for u in uploads:
                 fallback += f"- {u['label']}\n"
-            fallback += "\nApres avoir prepare vos documents, tapez 'ok' pour continuer."
+            fallback += "\nAprès avoir préparé vos documents, tapez « ok » pour continuer."
             dispatcher.utter_message(text=fallback)
             for u in uploads:
                 events.append(SlotSet(f"_reg_{u['type']}_file", None))
@@ -583,7 +704,7 @@ class ActionSubmitRegistration(Action):
                 json_message={"trigger_message": "/registration_review"}
             )
             dispatcher.utter_message(
-                text=f"Merci{name_suffix} ! Verification de vos informations..."
+                text=f"Merci{name_suffix} ! Vérification de vos informations..."
             )
 
         return events
@@ -602,7 +723,7 @@ class ActionAskRegConfirmed(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> List[Dict[Text, Any]]:
-        lines = ["Resume de l'inscription\n"]
+        lines = ["📋 **Résumé de votre inscription**\n"]
         for num, label, slot, _ in REG_FIELDS:
             val = tracker.get_slot(slot) or "--"
             lines.append(f"{num}. {label} : {val}")
@@ -611,13 +732,13 @@ class ActionAskRegConfirmed(Action):
         category = tracker.get_slot("reg_category")
         visa = tracker.get_slot("reg_visa") or "non"
         if category and category != "Participant Simple":
-            logo_status = "selectionne" if tracker.get_slot("_reg_logo_file") else "non fourni"
+            logo_status = "sélectionné" if tracker.get_slot("_reg_logo_file") else "non fourni"
             lines.append(f"11. Logo : {logo_status}")
         if str(visa).lower() == "oui":
-            passport_status = "selectionne" if tracker.get_slot("_reg_passport_file") else "non fourni"
+            passport_status = "sélectionné" if tracker.get_slot("_reg_passport_file") else "non fourni"
             lines.append(f"12. Passeport : {passport_status}")
 
-        lines.append("\nTapez un numero (1-12) pour modifier, ou \"ok\" pour confirmer.")
+        lines.append("\n👉 Tapez un numéro (1-12) pour modifier, ou « ok » pour confirmer.")
         dispatcher.utter_message(text="\n".join(lines))
         return [SlotSet("_reg_edit_field", None)]
 
@@ -647,7 +768,7 @@ class ValidateRegistrationReviewForm(FormValidationAction):
                     target_slot = slot
                     break
             if target_slot:
-                dispatcher.utter_message(text="Mis a jour !")
+                dispatcher.utter_message(text="✅ Mis à jour !")
                 return {
                     "_reg_confirmed": None,
                     "_reg_edit_field": None,
@@ -677,7 +798,7 @@ class ValidateRegistrationReviewForm(FormValidationAction):
                                 "accept": ".jpg,.jpeg,.png,.gif,.svg",
                                 "max_size_mb": 10,
                                 "label": "Logo de votre entreprise",
-                                "description": "Formats acceptes : JPG, PNG, SVG - Max 10 MB",
+                                "description": "Formats acceptés : JPG, PNG, SVG - Max 10 MB",
                                 "mode": "local_store",
                                 "upload_url_base": upload_base,
                                 "auth_header": f"Bearer {EXPOBETON_API_KEY}",
@@ -687,7 +808,7 @@ class ValidateRegistrationReviewForm(FormValidationAction):
                     )
                     return {"_reg_confirmed": None}
                 else:
-                    dispatcher.utter_message(text="Le logo n'est pas requis pour votre categorie.")
+                    dispatcher.utter_message(text="Le logo n'est pas requis pour votre catégorie.")
                     return {"_reg_confirmed": None}
             if num == 12:
                 visa = tracker.get_slot("reg_visa") or "non"
@@ -703,7 +824,7 @@ class ValidateRegistrationReviewForm(FormValidationAction):
                                 "accept": ".pdf",
                                 "max_size_mb": 10,
                                 "label": "Copie de votre passeport",
-                                "description": "Format accepte : PDF uniquement - Max 10 MB",
+                                "description": "Format accepté : PDF uniquement - Max 10 MB",
                                 "mode": "local_store",
                                 "upload_url_base": upload_base,
                                 "auth_header": f"Bearer {EXPOBETON_API_KEY}",
@@ -721,7 +842,7 @@ class ValidateRegistrationReviewForm(FormValidationAction):
             return {"_reg_confirmed": "confirmed"}
 
         # Unrecognised input
-        dispatcher.utter_message(text="Tapez un numero (1-12) pour modifier ou \"ok\" pour confirmer.")
+        dispatcher.utter_message(text="Tapez un numéro (1-12) pour modifier ou « ok » pour confirmer.")
         return {"_reg_confirmed": None}
 
 
@@ -756,8 +877,7 @@ class ActionConfirmRegistration(Action):
             "history":        tracker.get_slot("reg_history") or "non",
         }
 
-        person = tracker.get_slot("person")
-        first_name = str(person).strip().split()[0].title() if person else None
+        first_name = _display_first_name(tracker)
         name_suffix = f" {first_name}" if first_name else ""
 
         dispatcher.utter_message(text="Soumission de votre inscription en cours...")
@@ -769,8 +889,8 @@ class ActionConfirmRegistration(Action):
                 ref = result.get("reference", "N/A")
                 dispatcher.utter_message(
                     text=(
-                        f"Vous etes deja inscrit(e) !\n"
-                        f"Reference : {ref}\n"
+                        f"ℹ️ Vous êtes déjà inscrit(e) !\n"
+                        f"Référence : **{ref}**\n"
                         f"Statut : {result.get('status', 'en attente')}\n\n"
                         f"Contactez info@expobetonrdc.com pour toute modification."
                     )
@@ -799,11 +919,11 @@ class ActionConfirmRegistration(Action):
 
             dispatcher.utter_message(
                 text=(
-                    f"Felicitation{name_suffix} ! "
-                    f"Inscription reussie avec succes pour ExpoBeton 2026 !\n\n"
-                    f"Votre numero de reference : {ref}\n"
-                    f"Un email de confirmation a ete envoye a {data['email']}.\n\n"
-                    f"Notre equipe vous contactera dans les 48 heures.\n"
+                    f"🎉 Félicitations{name_suffix} ! "
+                    f"Votre inscription à **ExpoBeton RDC 2026** a bien été enregistrée.\n\n"
+                    f"🔖 Numéro de référence : **{ref}**\n"
+                    f"📧 Un email de confirmation a été envoyé à **{data['email']}**.\n\n"
+                    f"Notre équipe vous contactera dans les 48 heures.\n"
                     f"Pour toute question : info@expobetonrdc.com"
                 )
             )
@@ -811,7 +931,7 @@ class ActionConfirmRegistration(Action):
             errors = result.get("errors", [])
             error_msg = "\n".join(f"- {e}" for e in errors) if errors else result.get("error", "Erreur inconnue")
             dispatcher.utter_message(
-                text=f"L'inscription n'a pas pu etre completee :\n{error_msg}\n\nVeuillez reessayer ou contacter info@expobetonrdc.com"
+                text=f"L'inscription n'a pas pu être complétée :\n{error_msg}\n\nVeuillez réessayer ou contacter info@expobetonrdc.com"
             )
 
         return [AllSlotsReset()]
@@ -850,8 +970,8 @@ class ActionSubmitAmbassador(Action):
             ref = result.get("data", {}).get("reference", "N/A")
             dispatcher.utter_message(
                 text=(
-                    f"Candidature ambassadeur soumise !\n\n"
-                    f"Reference : {ref}\n"
+                    f"🎉 Candidature ambassadeur soumise !\n\n"
+                    f"🔖 Référence : **{ref}**\n"
                     f"Nous examinerons votre candidature et vous recontacterons.\n"
                     f"Contact : info@expobetonrdc.com"
                 )
@@ -860,10 +980,153 @@ class ActionSubmitAmbassador(Action):
             errors = result.get("errors", [])
             error_msg = "\n".join(f"- {e}" for e in errors) if errors else result.get("error", "Erreur inconnue")
             dispatcher.utter_message(
-                text=f"La candidature n'a pas pu etre soumise :\n{error_msg}"
+                text=f"La candidature n'a pas pu être soumise :\n{error_msg}"
             )
 
         return [AllSlotsReset()]
+
+
+# ===================================================================
+# Action: In-form contextual help (triggered by intent: dont_understand)
+# ===================================================================
+
+class ActionFormHelp(Action):
+    """Provide context-aware help based on the slot the form is currently asking."""
+
+    def name(self) -> Text:
+        return "action_form_help"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
+    ) -> List[Dict[Text, Any]]:
+        slot = tracker.get_slot("requested_slot")
+        phase = tracker.get_slot("_reg_category_phase")
+
+        helps = {
+            "reg_company": (
+                "🏢 J'ai besoin du **nom de votre entreprise ou organisation**.\n\n"
+                "Exemples : *Acme Construction SARL*, *Université de Kinshasa*, *Mairie de Lubumbashi*.\n\n"
+                "Si vous êtes un particulier, indiquez votre nom complet."
+            ),
+            "reg_contact_name": (
+                "👤 J'ai besoin du **nom et prénom** de la personne à contacter pour cette inscription.\n\n"
+                "Exemples : *Jean Mukendi*, *Marie Kabasele*."
+            ),
+            "reg_email": (
+                "📧 J'ai besoin d'une **adresse email valide** où nous pourrons vous envoyer la confirmation.\n\n"
+                "Format : *nom@domaine.com* (par exemple : jean.mukendi@gmail.com)."
+            ),
+            "reg_phone": (
+                "📞 J'ai besoin de votre **numéro de téléphone** (au moins 8 chiffres).\n\n"
+                "Exemples : *+243 81 234 5678*, *0812345678*, *+33 6 12 34 56 78*."
+            ),
+            "reg_country": (
+                "🌍 J'ai besoin de votre **pays de résidence ou de l'entreprise**.\n\n"
+                "Exemples : *RDC*, *France*, *Belgique*, *Cameroun*."
+            ),
+            "reg_city": (
+                "🏙️ J'ai besoin de votre **ville principale** (une seule).\n\n"
+                "Exemples : *Kinshasa*, *Lubumbashi*, *Goma*, *Paris*."
+            ),
+            "reg_category": (
+                "📋 Je vous demande dans quelle **catégorie** vous souhaitez participer :\n\n"
+                "• 🏆 **Sponsor** — vous soutenez l'événement (visibilité maximale, à partir de 12.000 $)\n"
+                "• 🏗️ **Exposant** — vous avez un stand pour exposer vos produits (à partir de 2.000 $)\n"
+                "• 👤 **Participant Simple** — vous assistez sans stand (gratuit)\n\n"
+                "👉 Tapez **1**, **2** ou **3** selon votre choix."
+            ),
+            "reg_payment": (
+                "💳 Je vous demande comment vous souhaitez **payer** votre inscription :\n\n"
+                "• **Chèque** — vous nous enverrez un chèque après confirmation\n"
+                "• **Veuillez Facturer** — nous vous envoyons une facture pro forma\n\n"
+                "👉 Tapez **1** pour Chèque ou **2** pour Veuillez Facturer."
+            ),
+            "reg_visa": (
+                "🛂 Je vous demande si vous avez besoin d'une **lettre d'invitation** pour obtenir un visa pour la RDC.\n\n"
+                "👉 Répondez **oui** ou **non**."
+            ),
+            "reg_history": (
+                "📊 Je vous demande si vous avez **déjà participé** à une édition précédente d'ExpoBeton.\n\n"
+                "👉 Répondez **oui** ou **non**."
+            ),
+        }
+
+        # Special-case sub-menus for category
+        if slot == "reg_category" and phase == "sponsor":
+            dispatcher.utter_message(
+                text=(
+                    "🏆 Choisissez votre **niveau de sponsoring** :\n\n"
+                    "• **Platinum** (40.000 $) — visibilité maximale, logo en tête d'affiche\n"
+                    "• **Gold** (20.000 $) — forte visibilité + stand premium\n"
+                    "• **Silver** (15.000 $) — bonne visibilité + stand standard\n"
+                    "• **Bronze** (12.000 $) — visibilité de base + stand standard\n\n"
+                    "👉 Tapez **1** (Platinum), **2** (Gold), **3** (Silver) ou **4** (Bronze)."
+                )
+            )
+        elif slot == "reg_category" and phase == "exposant":
+            dispatcher.utter_message(
+                text=(
+                    "🏗️ Choisissez votre **type de stand** :\n\n"
+                    "• **3×3m** (5.000 $) — stand grand format, recommandé pour grosse exposition\n"
+                    "• **2×4m** (3.000 $) — stand moyen, bon rapport qualité-prix\n"
+                    "• **2×3m** (2.000 $) — stand compact, idéal découverte\n\n"
+                    "👉 Tapez **1** (3×3m), **2** (2×4m) ou **3** (2×3m)."
+                )
+            )
+        elif slot in helps:
+            dispatcher.utter_message(text=helps[slot])
+        else:
+            dispatcher.utter_message(
+                text=(
+                    "Pas de souci, je vais reformuler. 😊\n\n"
+                    "À tout moment, vous pouvez taper **« recommencer »** pour annuler l'inscription, "
+                    "ou **« contact humain »** pour qu'un membre de l'équipe vous contacte."
+                )
+            )
+        return []
+
+
+# ===================================================================
+# Action: Cancel an in-progress registration form
+# ===================================================================
+
+class ActionCancelRegistration(Action):
+    """Reset all registration slots so the form can be restarted cleanly."""
+
+    def name(self) -> Text:
+        return "action_cancel_registration"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
+    ) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(
+            text=(
+                "🔄 D'accord, j'annule l'inscription en cours. Vos informations saisies sont effacées.\n\n"
+                "Tapez **« je veux m'inscrire »** quand vous serez prêt à recommencer, ou posez-moi "
+                "une autre question sur ExpoBeton RDC. 😊"
+            )
+        )
+        from rasa_sdk.events import ActiveLoop
+        # Reset all registration-related slots
+        return [
+            ActiveLoop(None),
+            SlotSet("requested_slot", None),
+            SlotSet("reg_company", None),
+            SlotSet("reg_contact_name", None),
+            SlotSet("reg_email", None),
+            SlotSet("reg_phone", None),
+            SlotSet("reg_country", None),
+            SlotSet("reg_city", None),
+            SlotSet("reg_category", None),
+            SlotSet("reg_payment", None),
+            SlotSet("reg_visa", None),
+            SlotSet("reg_history", None),
+            SlotSet("_reg_category_phase", None),
+            SlotSet("_reg_validation_fails", 0),
+            SlotSet("_reg_logo_file", None),
+            SlotSet("_reg_passport_file", None),
+            SlotSet("registration_pending", None),
+        ]
 
 
 # ===================================================================

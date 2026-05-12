@@ -36,6 +36,10 @@ intents:
   - show_categories
   - affirm
   - deny
+  - thank_you
+  - dont_understand
+  - ask_media_press
+  - restart_form
   - inform
   - provide_company
   - provide_name
@@ -70,6 +74,13 @@ slots:
     mappings:
     - type: from_entity
       entity: person
+  # Tracks whether the bot has proposed registration and is waiting for
+  # the user to confirm (affirm) or decline (deny) before activating the form.
+  registration_pending:
+    type: bool
+    influence_conversation: true
+    mappings:
+      - type: custom
   # Registration slots
   reg_company:
     type: text
@@ -169,6 +180,13 @@ slots:
   # Internal phase tracker for category sub-menus (not collected by form)
   _reg_category_phase:
     type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+  # Counts consecutive failed validations on the same slot (for handoff/help)
+  _reg_validation_fails:
+    type: float
+    initial_value: 0
     influence_conversation: false
     mappings:
       - type: custom
@@ -287,6 +305,20 @@ responses:
     - text: "Au revoir ! Passez une excellente journée."
   utter_deny:
     - text: "D'accord, pas de souci ! N'hésitez pas si vous avez d'autres questions sur ExpoBeton RDC. Je suis là pour vous aider ! 😊"
+  utter_youre_welcome:
+    - text: "Avec plaisir ! 😊 Je reste à votre disposition pour toute autre question sur ExpoBeton RDC 2026."
+    - text: "Je vous en prie ! 🙏 N'hésitez pas si vous avez besoin d'autres informations sur le salon."
+    - text: "De rien ! 😊 C'est un plaisir de vous aider. Avez-vous d'autres questions sur ExpoBeton RDC ?"
+  utter_dont_understand:
+    - text: "Pas de souci, je vais reformuler. 😊\n\n💡 Vous pouvez à tout moment :\n• Taper **« catégories »** pour revoir les options d'inscription\n• Taper **« dates »** pour les dates de l'événement\n• Taper **« recommencer »** pour reprendre depuis le début\n• Taper **« contact humain »** pour parler à notre équipe\n\nQue souhaitez-vous faire ?"
+  utter_media_press:
+    - text: "📰 Bonjour ! Pour les **journalistes, médias et créateurs de contenu**, ExpoBeton RDC propose une **accréditation presse gratuite** qui inclut :\n\n• Accès complet aux 4 jours de l'événement\n• Salle de presse dédiée\n• Interviews avec les officiels et exposants\n• Kit média (dossier de presse, visuels HD)\n\n📧 Envoyez votre demande d'accréditation à : **info@expobetonrdc.com** (objet : **Accréditation presse**)\n📋 À joindre : carte de presse ou justificatif, lien de votre chaîne/site, sujet de couverture envisagé.\n\n👉 Souhaitez-vous aussi vous inscrire comme **Participant Simple** (gratuit) en attendant ? Tapez **« oui »** ou **« je veux m'inscrire »**."
+  utter_restart_form_confirm:
+    - text: "🔄 D'accord, j'annule l'inscription en cours. Vos informations saisies sont effacées. Tapez **« je veux m'inscrire »** quand vous serez prêt à recommencer."
+  utter_handoff_offer:
+    - text: "On dirait que la question n'est pas claire pour vous. 🤝\n\n👉 Souhaitez-vous qu'un membre de notre équipe vous contacte directement par email ? Vous pouvez aussi écrire à **info@expobetonrdc.com** ou continuer en tapant votre choix."
+  utter_registration_declined:
+    - text: "Pas de souci ! 😊 Je reste à votre disposition. N'hésitez pas à me poser d'autres questions sur ExpoBeton RDC, ou tapez « je veux m'inscrire » quand vous serez prêt à commencer l'inscription."
   utter_how_are_you:
     - text: "Je vais très bien, merci de demander ! 😊 Et vous, comment allez-vous ? Que souhaitez-vous savoir sur ExpoBeton RDC ?"
   utter_help:
@@ -304,7 +336,7 @@ responses:
   utter_event_dates:
     - text: "La 11ème édition d'ExpoBeton RDC se tiendra du 27 au 30 mai 2026 (4 jours) à Kalemie, Province du Tanganyika.\n\n📅 **Programme :**\n• Jour 1 (Mer 27 mai) : Journée Portes Ouvertes, Touristique et Culturelle\n• Jour 2 (Jeu 28 mai) : Cérémonie d'ouverture officielle + Panels Habitat & Territoire\n• Jour 3 (Ven 29 mai) : Corridors transfrontaliers, ZES, Énergie\n• Jour 4 (Sam 30 mai) : Jeunesse & Innovation + Cérémonie de clôture"
   utter_event_location:
-    - text: "La 11ème édition d'ExpoBeton RDC se tiendra à Kalemie, Province du Tanganyika, RDC. Kalemie est la capitale du lithium grâce aux gisements de Manono (400 millions de tonnes de réserves) et une porte d'entrée stratégique vers les corridors africains via son port sur le lac Tanganyika."
+    - text: "📍 **Lieu précis — ExpoBeton RDC 2026 (11ème édition) :**\n\nLe salon se tiendra sur **la plage du boulevard Lumumba**, au bord du **lac Tanganyika**, à **Kalemie**, chef-lieu de la Province du **Tanganyika**, RDC.\n\n🌊 **Un cadre exceptionnel :**\n• Site en front de lac, directement sur la plage de Kalemie\n• Le long du boulevard Lumumba (artère principale de la ville)\n• Ouverture panoramique sur le lac Tanganyika — le plus long lac d'eau douce au monde (673 km)\n• Accès facile depuis le port et le centre-ville\n\n⛏️ **Pourquoi Kalemie ?** Capitale émergente du lithium (gisements de Manono, ~400 M tonnes de réserves) et porte d'entrée stratégique vers les corridors africains (Est/Sud/Ouest) via son port sur le lac Tanganyika.\n\n📅 **Dates :** du **27 au 30 mai 2026** (4 jours)."
   utter_event_theme:
     - text: "Le thème de la 11ème édition (2026) est : « Kalemie – Capital du Lithium et carrefour stratégique au cœur des corridors africains de l'Est, du Sud, de l'Ouest ». Cette édition est entièrement dédiée à la ville de Kalemie et met en lumière le potentiel stratégique du lithium, les corridors commerciaux africains et la transformation industrielle du Grand Katanga."
   utter_why_kalemie:
@@ -346,13 +378,7 @@ responses:
     - text: "🏙️ Dans quelle ville êtes-vous ?"
   # utter_ask_reg_category removed — replaced by action_ask_reg_category
   utter_ask_reg_payment:
-    - text: |
-        💳 Choisissez un mode de paiement :
-
-        1️⃣ Chèque
-        2️⃣ Veuillez Facturer
-
-        Tapez le numéro ou le nom.
+    - text: "💳 Quel mode de paiement souhaitez-vous ? Tapez **1** pour Chèque, **2** pour Veuillez Facturer (ou le nom directement)."
   utter_ask_reg_visa:
     - text: "🛂 Avez-vous besoin d'une assistance visa ? (oui/non)"
   utter_ask_reg_history:
@@ -413,10 +439,13 @@ actions:
   - utter_tourism_culture
   - action_show_categories
   - action_start_registration
+  - action_clear_reg_pending
   - action_submit_registration
   - action_submit_ambassador
   - action_check_api_health
   - action_ask_reg_category
+  - action_form_help
+  - action_cancel_registration
   - validate_registration_form
   - action_ask__reg_confirmed
   - validate_registration_review_form

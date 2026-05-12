@@ -87,6 +87,8 @@ stories:
   - action: utter_registration
   - intent: register
   - action: action_start_registration
+  - intent: affirm
+  - action: action_clear_reg_pending
   - action: registration_form
   - active_loop: registration_form
 
@@ -143,6 +145,8 @@ stories:
   steps:
     - intent: register
     - action: action_start_registration
+    - intent: affirm
+    - action: action_clear_reg_pending
     - action: registration_form
     - active_loop: registration_form
     - slot_was_set:
@@ -203,6 +207,8 @@ stories:
   steps:
     - intent: register
     - action: action_start_registration
+    - intent: affirm
+    - action: action_clear_reg_pending
     - action: registration_form
     - active_loop: registration_form
     - slot_was_set:
@@ -245,8 +251,18 @@ stories:
     - action: action_show_categories
     - intent: register
     - action: action_start_registration
+    - intent: affirm
+    - action: action_clear_reg_pending
     - action: registration_form
     - active_loop: registration_form
+
+- story: user asks registration but declines
+  steps:
+    - intent: register
+    - action: action_start_registration
+    - intent: deny
+    - action: action_clear_reg_pending
+    - action: utter_registration_declined
 
 - story: ambassador application
   steps:

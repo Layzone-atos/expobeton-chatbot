@@ -18,6 +18,43 @@ rules:
       - intent: deny
       - action: utter_deny
 
+  - rule: Handle thanks
+    steps:
+      - intent: thank_you
+      - action: utter_youre_welcome
+
+  - rule: Handle media press inquiry
+    steps:
+      - intent: ask_media_press
+      - action: utter_media_press
+
+  - rule: User asks for help inside registration form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: dont_understand
+      - action: action_form_help
+      - action: registration_form
+      - active_loop: registration_form
+
+  - rule: User asks for help outside any form
+    steps:
+      - intent: dont_understand
+      - action: utter_dont_understand
+
+  - rule: User restarts registration from inside the form
+    condition:
+      - active_loop: registration_form
+    steps:
+      - intent: restart_form
+      - action: action_cancel_registration
+      - active_loop: null
+
+  - rule: User restarts registration outside form
+    steps:
+      - intent: restart_form
+      - action: utter_restart_form_confirm
+
   - rule: Answer how are you
     steps:
       - intent: ask_how_are_you
@@ -147,12 +184,31 @@ rules:
 
   # ═══ Registration & Ambassador Rules ═══
 
-  - rule: Activate registration form
+  - rule: Ask to start registration
     steps:
       - intent: register
       - action: action_start_registration
+
+  - rule: User confirms registration
+    condition:
+      - active_loop: null
+      - slot_was_set:
+          - registration_pending: true
+    steps:
+      - intent: affirm
+      - action: action_clear_reg_pending
       - action: registration_form
       - active_loop: registration_form
+
+  - rule: User declines registration
+    condition:
+      - active_loop: null
+      - slot_was_set:
+          - registration_pending: true
+    steps:
+      - intent: deny
+      - action: action_clear_reg_pending
+      - action: utter_registration_declined
 
   - rule: Submit registration when form complete
     condition:

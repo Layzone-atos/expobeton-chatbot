@@ -13,12 +13,25 @@
             box-sizing: border-box;
         }
         
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: transparent;
             overflow: hidden;
+            /* CRITICAL: let clicks pass through the iframe to the host page */
+            pointer-events: none;
         }
-        
+
+        /* Only the chat widget itself is interactive */
+        #chat-widget,
+        #chat-widget * {
+            pointer-events: auto;
+        }
+
         /* Ensure the chat widget is always visible */
         #chat-widget {
             position: fixed;
