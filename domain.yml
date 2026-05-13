@@ -371,7 +371,7 @@ responses:
   utter_ask_reg_email:
     - text: "📧 Quelle est votre adresse email ?"
   utter_ask_reg_phone:
-    - text: "📞 Quel est votre numéro de téléphone ? (ex: +243 812345678)"
+    - text: "📞 Quel est votre numéro de téléphone ? (ex: +243 812345678)\n\n💡 *Champ optionnel — tapez **'passer'** ou **'non'** si vous préférez ne pas le donner.*"
   utter_ask_reg_country:
     - text: "🌍 De quel pays venez-vous ?"
   utter_ask_reg_city:
