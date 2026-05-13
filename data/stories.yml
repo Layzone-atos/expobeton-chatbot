@@ -256,13 +256,10 @@ stories:
     - action: registration_form
     - active_loop: registration_form
 
-- story: user asks registration but declines
-  steps:
-    - intent: register
-    - action: action_start_registration
-    - intent: deny
-    - action: action_clear_reg_pending
-    - action: utter_registration_declined
+# Note: 'user asks registration but declines' story removed -- handled
+# deterministically by rule 'User declines registration' (rules.yml) which
+# has the condition 'registration_pending: true' to disambiguate from the
+# generic 'Handle polite decline' rule.
 
 - story: ambassador application
   steps:
