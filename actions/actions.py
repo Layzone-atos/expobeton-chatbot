@@ -683,6 +683,147 @@ class ActionAnswerExpoBeton(Action):
         # be answered, not dismissed as greetings.
         # ====================================================================
         
+        # --- Concours Jeunesse Horizon 2050 (CHECK BEFORE LOCATION/DATES) ---
+        # The youth contest has its OWN dates (semaine du 11 mai 2026 for
+        # submission, 30 mai 2026 for the final) different from the general
+        # event dates, so it MUST be matched before the generic date/location
+        # handlers below.
+        concours_keywords = [
+            'concours jeunesse', 'concours jeune', 'jeunesse horizon',
+            'horizon 2050', 'youth contest', 'youth competition',
+            'concours horizon', 'concour jeunesse', 'concour jeune',
+            'concours des jeunes', 'competition jeunesse', 'compétition jeunesse'
+        ]
+        has_concours = any(kw in user_question for kw in concours_keywords)
+        # Also accept the broader pattern: ('concours' OR 'competition') + youth context
+        if not has_concours:
+            has_concours_word = any(w in user_question for w in ['concours', 'compétition', 'competition'])
+            has_youth_word = any(w in user_question for w in ['jeunesse', 'jeune', 'jeunes', 'youth', 'horizon 2050', 'horizon2050'])
+            has_concours = has_concours_word and has_youth_word
+
+        if has_concours:
+            print(f"🏆 [CONCOURS JEUNESSE] DETECTED! user_question={user_question}")
+
+            # Sub-topic routing
+            asks_categories = any(w in user_question for w in ['catégorie', 'categorie', 'category', 'categories', 'thématique', 'thematique', 'thème', 'theme', 'domaine', 'domaines'])
+            asks_eligibility = any(w in user_question for w in ['éligibilité', 'eligibilite', 'eligibility', 'qui peut', 'qui participe', 'qui participer', 'âge', 'age', 'ans', 'eligible', 'éligible', 'condition', 'conditions', 'requirement', 'requirements', 'critère', 'critere', 'criteres', 'critères'])
+            asks_dates = any(w in user_question for w in ['date', 'quand', 'when', 'délai', 'delai', 'deadline', 'calendrier', 'planning'])
+            asks_prizes = any(w in user_question for w in ['prix', 'prize', 'prizes', 'gagner', 'gagne', 'récompense', 'recompense', 'awards', 'award', 'avantage', 'avantages', 'lauréat', 'laureat', 'lauréats', 'laureats'])
+            asks_submission = any(w in user_question for w in ['soumission', 'soumettre', 'submit', 'submission', 'postuler', 'candidature', 'candidater', 'inscription', 'inscrire', 'apply', 'application', 'dossier', 'comment participer', 'how to participate', 'how to apply', 'how to register'])
+            asks_jury = any(w in user_question for w in ['jury', 'juge', 'juges', 'judge', 'judges', 'évaluateur', 'evaluateur', 'évaluation', 'evaluation'])
+
+            if asks_categories:
+                answer = (
+                    "🏆 **Concours Jeunesse Horizon 2050 — 4 catégories thématiques :**\n\n"
+                    "**1️⃣ BTP & Aménagement Durable**\n"
+                    "Matériaux locaux / low-cost, construction modulaire / antisismique, urbanisme de Kalemie, sécurisation foncière.\n\n"
+                    "**2️⃣ Transformation Minerais & Lithium**\n"
+                    "Valorisation locale, traçabilité blockchain, solutions pour les Zones Économiques Spéciales (ZES).\n\n"
+                    "**3️⃣ Infrastructures & Corridors**\n"
+                    "Logistique multimodale, énergie hydro / solaire, transport durable, infrastructures résilientes.\n\n"
+                    "**4️⃣ Agro-Logistique & Économie Verte**\n"
+                    "Chaînes de valeur corridors + BTP (entrepôts, transformation, économie verte).\n\n"
+                    "🔗 Plus d'infos : https://expobetonrdc.com/concours-jeunesse.html"
+                )
+            elif asks_eligibility:
+                answer = (
+                    "🏆 **Concours Jeunesse Horizon 2050 — Éligibilité :**\n\n"
+                    "✅ **Équipes de 2 à 5 jeunes** âgés de **18 à 35 ans**.\n"
+                    "✅ **Au moins 1 membre** doit être **originaire du Tanganyika**.\n\n"
+                    "👥 **Profils acceptés :**\n"
+                    "• Étudiants\n"
+                    "• Lycéens techniques\n"
+                    "• Jeunes du Club BTP & CMA\n"
+                    "• MVR (Mouvement des Volontaires de la Reconstruction)\n"
+                    "• Artisans\n"
+                    "• Entrepreneurs\n\n"
+                    "Chaque équipe désigne un **chef d'équipe** comme personne référente.\n\n"
+                    "🔗 S'inscrire : https://expobetonrdc.com/concours-jeunesse.html"
+                )
+            elif asks_dates:
+                answer = (
+                    "📅 **Concours Jeunesse Horizon 2050 — Dates clés :**\n\n"
+                    "• **Soumission des dossiers :** semaine du **11 mai 2026**\n"
+                    "• **Sélection :** 10 projets retenus pour pré-incubation gratuite\n"
+                    "• **Pré-incubation :** coaching, formation, appui technique (Club BTP & CMA + partenaires)\n"
+                    "• **Finale :** **30 mai 2026** (Jour 4 d'EXPOBETON RDC) — pitch 5 min + Q&R devant jury\n"
+                    "• **Remise des prix :** cérémonie de clôture officielle, **30 mai 2026**\n\n"
+                    "📍 Le concours fait partie de la 11ème édition d'EXPOBETON RDC, du **27 au 30 mai 2026 à Kalemie**.\n\n"
+                    "🔗 https://expobetonrdc.com/concours-jeunesse.html"
+                )
+            elif asks_prizes:
+                answer = (
+                    "🏆 **Concours Jeunesse Horizon 2050 — Prix et avantages :**\n\n"
+                    "**🥇 1er prix par catégorie** (4 lauréats principaux)\n"
+                    "Kit de démarrage complet : financement + accompagnement 6 mois + formation.\n\n"
+                    "**⭐ Prix spéciaux**\n"
+                    "• Meilleure innovation lithium / blockchain\n"
+                    "• Meilleure solution femme / jeune rural\n"
+                    "• Prix de l'impact social\n\n"
+                    "**🌐 Visibilité & réseau**\n"
+                    "• Stand gratuit à l'édition suivante d'EXPOBETON RDC\n"
+                    "• Mise en relation B2B / B2G avec sponsors (PPC BARNET, Great Lakes Cement, LMC...)\n\n"
+                    "**🤝 Accompagnement**\n"
+                    "• Suivi personnalisé\n"
+                    "• Accès aux centres polyvalents des jeunes\n"
+                    "• Coaching en management\n\n"
+                    "🔗 https://expobetonrdc.com/concours-jeunesse.html"
+                )
+            elif asks_submission:
+                answer = (
+                    "📝 **Concours Jeunesse Horizon 2050 — Comment participer :**\n\n"
+                    "**1️⃣ Constituer une équipe**\n"
+                    "2 à 5 jeunes (18-35 ans), avec au moins 1 membre originaire du Tanganyika.\n\n"
+                    "**2️⃣ Préparer le dossier (semaine du 11 mai 2026)**\n"
+                    "• Dossier projet : 5 à 10 pages (PDF)\n"
+                    "• Vidéo de pitch : 2 minutes (YouTube, Vimeo, Google Drive...)\n"
+                    "• Choisir 1 catégorie parmi 4 (BTP, Lithium, Corridors, Agro-Verte)\n\n"
+                    "**3️⃣ Remplir le formulaire en ligne**\n"
+                    "Titre, pitch (max 600 caractères), infos chef d'équipe, origine, équipe, engagements.\n\n"
+                    "**4️⃣ Attendre la sélection**\n"
+                    "10 projets seront retenus pour la pré-incubation, puis la finale du **30 mai 2026** à Kalemie.\n\n"
+                    "🔗 **S'inscrire :** https://expobetonrdc.com/concours-jeunesse.html"
+                )
+            elif asks_jury:
+                answer = (
+                    "⚖️ **Concours Jeunesse Horizon 2050 — Composition du jury :**\n\n"
+                    "• Le **Gouverneur** (Province du Tanganyika)\n"
+                    "• Les **Ministres** (Jeunesse, PME, Formation)\n"
+                    "• Les représentants du **Club BTP & CMA**\n"
+                    "• Les **sponsors BTP**\n"
+                    "• Les **experts UNIKAL / UNILU / UNH** (universités)\n"
+                    "• Les **partenaires techniques**\n\n"
+                    "Les finalistes présentent un pitch de 5 minutes + session Q&R le **30 mai 2026**.\n\n"
+                    "🔗 https://expobetonrdc.com/concours-jeunesse.html"
+                )
+            else:
+                # General overview
+                answer = (
+                    "🏆 **Concours Jeunesse Horizon 2050 — EXPOBETON RDC Kalemie 2026**\n\n"
+                    "\"La jeunesse congolaise ne doit plus seulement rêver le futur, elle doit désormais le construire.\" 🚧\n\n"
+                    "📍 **Lieu :** Kalemie | 📅 **Dates :** 27-30 mai 2026 (11ème édition)\n\n"
+                    "**🎯 3 objectifs :**\n"
+                    "1. Encourager l'innovation en architecture, urbanisme, BTP et mining\n"
+                    "2. Valoriser les ressources locales du Tanganyika\n"
+                    "3. Créer des emplois durables et stimuler l'entrepreneuriat jeune\n\n"
+                    "**📚 4 catégories thématiques :**\n"
+                    "1️⃣ BTP & Aménagement Durable\n"
+                    "2️⃣ Transformation Minerais & Lithium\n"
+                    "3️⃣ Infrastructures & Corridors\n"
+                    "4️⃣ Agro-Logistique & Économie Verte\n\n"
+                    "**👥 Éligibilité :** équipes de 2 à 5 jeunes (18-35 ans), dont au moins 1 originaire du Tanganyika.\n\n"
+                    "**📝 Soumission :** semaine du 11 mai 2026 (dossier 5-10 pages + vidéo 2 min)\n"
+                    "**🎤 Finale :** 30 mai 2026, pitch 5 min devant jury\n\n"
+                    "**🏆 Prix :** kit de démarrage (financement + coaching 6 mois), stand gratuit édition suivante, mise en relation B2B/B2G.\n\n"
+                    "💡 Demandez-moi : *catégories*, *éligibilité*, *dates*, *prix*, *soumission* ou *jury*.\n\n"
+                    "🔗 **S'inscrire :** https://expobetonrdc.com/concours-jeunesse.html"
+                )
+
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+
         # --- Location questions (CHECK VERY EARLY -- often combined with greeting) ---
         location_keywords = [
             'lieu', 'lieux', 'location', 'address', 'adresse',
