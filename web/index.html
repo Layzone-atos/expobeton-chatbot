@@ -69,6 +69,9 @@
                 <div class="form-content">
                     <h3>👋 Bienvenue chez ExpoBeton RDC!</h3>
                     <p>Pour mieux vous servir, veuillez remplir ces informations:</p>
+                    <p class="form-contact-note" style="font-size:12px;color:#475569;background:#f1f5f9;border-left:3px solid #0A2A66;padding:8px 10px;border-radius:6px;margin:0 0 12px 0;line-height:1.4;">
+                        📞 Vos coordonnées permettront à l'équipe ExpoBeton de vous contacter pour vous tenir informé(e) des autres aspects de l'événement.
+                    </p>
                     
                     <form id="user-form">
                         <div class="form-group">
@@ -77,8 +80,8 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="user-phone">Numéro de téléphone <span class="optional">(optionnel)</span></label>
-                            <input type="tel" id="user-phone" name="phone" placeholder="Ex: +243 XX XXX XXXX">
+                            <label for="user-phone">Numéro de téléphone <span class="required">*</span></label>
+                            <input type="tel" id="user-phone" name="phone" required pattern="[+0-9\s\-()]{6,}" placeholder="Ex: +243 XX XXX XXXX" title="Veuillez entrer un numéro de téléphone valide (au moins 6 chiffres, indicatif pays bienvenu).">
                         </div>
                         
                         <div class="form-group">

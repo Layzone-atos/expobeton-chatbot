@@ -431,16 +431,19 @@
                 
                 <div id="expobeton-user-form" class="expobeton-user-form">
                     <h4 style="margin-top: 0;">Bienvenue! 👋</h4>
-                    <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">
+                    <p style="font-size: 14px; color: #64748b; margin-bottom: 12px;">
                         Pour mieux vous servir, veuillez vous présenter:
+                    </p>
+                    <p style="font-size:12px;color:#475569;background:#f1f5f9;border-left:3px solid #0A2A66;padding:8px 10px;border-radius:6px;margin:0 0 16px 0;line-height:1.4;">
+                        📞 Vos coordonnées permettront à l'équipe ExpoBeton de vous contacter pour vous tenir informé(e) des autres aspects de l'événement.
                     </p>
                     <div class="expobeton-form-group">
                         <label>Nom complet *</label>
                         <input type="text" id="expobeton-name" placeholder="Ex: Jean Dupont" required>
                     </div>
                     <div class="expobeton-form-group">
-                        <label>Téléphone</label>
-                        <input type="tel" id="expobeton-phone" placeholder="Ex: +243 123 456 789">
+                        <label>Téléphone *</label>
+                        <input type="tel" id="expobeton-phone" placeholder="Ex: +243 123 456 789" required>
                     </div>
                     <div class="expobeton-form-group">
                         <label>Email</label>
@@ -913,15 +916,24 @@
         // Formulaire de démarrage
         document.getElementById('expobeton-start-chat').addEventListener('click', () => {
             const name = document.getElementById('expobeton-name').value.trim();
+            const phone = document.getElementById('expobeton-phone').value.trim();
             
             if (!name) {
                 alert('Veuillez entrer votre nom');
                 return;
             }
+            if (!phone) {
+                alert("Veuillez entrer votre numéro de téléphone. Vos coordonnées permettront à l'équipe ExpoBeton de vous contacter.");
+                return;
+            }
+            if (!/^[+0-9\s\-()]{6,}$/.test(phone)) {
+                alert("Veuillez entrer un numéro de téléphone valide (au moins 6 chiffres, indicatif pays bienvenu).");
+                return;
+            }
             
             chatState.userInfo = {
                 name,
-                phone: document.getElementById('expobeton-phone').value.trim(),
+                phone,
                 email: document.getElementById('expobeton-email').value.trim()
             };
             

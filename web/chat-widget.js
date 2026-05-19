@@ -281,9 +281,21 @@ async function handleUserFormSubmit(e) {
     e.preventDefault();
     
     const formData = new FormData(userForm);
+    const phoneRaw = (formData.get('phone') || '').trim();
+    
+    // Defensive validation: phone is now MANDATORY (browser already enforces via `required`)
+    if (!phoneRaw) {
+        alert('Veuillez entrer votre numéro de téléphone. Vos coordonnées permettront à l\u2019équipe ExpoBeton de vous contacter.');
+        return;
+    }
+    if (!/^[+0-9\s\-()]{6,}$/.test(phoneRaw)) {
+        alert('Veuillez entrer un numéro de téléphone valide (au moins 6 chiffres, indicatif pays bienvenu).');
+        return;
+    }
+    
     chatState.userInfo = {
         name: formData.get('name').trim(),
-        phone: formData.get('phone').trim() || null,
+        phone: phoneRaw,
         email: formData.get('email').trim() || null
     };
     
