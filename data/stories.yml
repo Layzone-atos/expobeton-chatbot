@@ -87,8 +87,10 @@ stories:
   - action: utter_registration
   - intent: register
   - action: action_start_registration
+  - slot_was_set:
+      - registration_pending: true
   - intent: affirm
-  - action: action_clear_reg_pending
+  - action: action_handle_affirm
   - action: registration_form
   - active_loop: registration_form
 
@@ -145,8 +147,10 @@ stories:
   steps:
     - intent: register
     - action: action_start_registration
+    - slot_was_set:
+        - registration_pending: true
     - intent: affirm
-    - action: action_clear_reg_pending
+    - action: action_handle_affirm
     - action: registration_form
     - active_loop: registration_form
     - slot_was_set:
@@ -207,8 +211,10 @@ stories:
   steps:
     - intent: register
     - action: action_start_registration
+    - slot_was_set:
+        - registration_pending: true
     - intent: affirm
-    - action: action_clear_reg_pending
+    - action: action_handle_affirm
     - action: registration_form
     - active_loop: registration_form
     - slot_was_set:
@@ -251,8 +257,10 @@ stories:
     - action: action_show_categories
     - intent: register
     - action: action_start_registration
+    - slot_was_set:
+        - registration_pending: true
     - intent: affirm
-    - action: action_clear_reg_pending
+    - action: action_handle_affirm
     - action: registration_form
     - active_loop: registration_form
 

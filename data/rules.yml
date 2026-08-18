@@ -92,6 +92,11 @@ rules:
       - intent: ask_event_dates
       - action: utter_event_dates
 
+  - rule: Answer capacity question
+    steps:
+      - intent: ask_capacity
+      - action: utter_capacity
+
   - rule: Answer about expobeton
     steps:
       - intent: ask_about_expobeton
@@ -189,17 +194,6 @@ rules:
       - intent: register
       - action: action_start_registration
 
-  - rule: User confirms registration
-    condition:
-      - active_loop: null
-      - slot_was_set:
-          - registration_pending: true
-    steps:
-      - intent: affirm
-      - action: action_clear_reg_pending
-      - action: registration_form
-      - active_loop: registration_form
-
   - rule: User declines registration
     condition:
       - active_loop: null
@@ -209,6 +203,36 @@ rules:
       - intent: deny
       - action: action_clear_reg_pending
       - action: utter_registration_declined
+
+  - rule: User confirms registration
+    condition:
+      - active_loop: null
+      - slot_was_set:
+          - registration_pending: true
+    steps:
+      - intent: affirm
+      - action: action_handle_affirm
+      - action: registration_form
+      - active_loop: registration_form
+
+  # ═══ Smart handlers outside forms (fixes from conversation-log audit) ═══
+  # Bare "oui/ok" and category names ("Participant simple") used to loop on
+  # the registration offer or get an apology; route them deterministically.
+
+  - rule: Affirm outside registration context (smart handling)
+    steps:
+      - intent: affirm
+      - action: action_handle_affirm
+
+  - rule: Inform outside any form (smart handling)
+    steps:
+      - intent: inform
+      - action: action_handle_inform_outside_form
+
+  - rule: Category choice outside any form
+    steps:
+      - intent: provide_category
+      - action: action_handle_inform_outside_form
 
   - rule: Submit registration when form complete
     condition:

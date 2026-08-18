@@ -140,6 +140,11 @@ nlu:
     - expobeton c'est du combien au combien ?
     - le salon dure combien de temps ?
     - dates du salon 2026
+    - when is expobeton
+    - when does the event take place
+    - when will the event happen
+    - what are the event dates
+    - when is the next edition
 
 - intent: ask_about_expobeton
   examples: |
@@ -156,6 +161,14 @@ nlu:
     - présentez-moi expobeton
     - décrivez expobeton
     - qu'est-ce que le salon de la construction ?
+    - la signification d'expo béton
+    - signification expobeton
+    - que signifie expo béton
+    - que veut dire expobeton
+    - quelle est la signification d'expobeton
+    - what is expobeton
+    - what does expobeton mean
+    - tell me about expobeton
 
 - intent: ask_event_location
   examples: |
@@ -198,6 +211,12 @@ nlu:
     - sur quelle plage se passe expobeton ?
     - est-ce que c'est sur une plage ?
     - c'est sur quelle avenue ou boulevard à kalemie ?
+    - where is the event
+    - where does the event take place
+    - where will expobeton take place
+    - where is expobeton held
+    - what is the venue
+    - event location
 
 - intent: ask_event_theme
   examples: |
@@ -396,6 +415,18 @@ nlu:
     - programme kalemie
     - qu'est-ce qui est prévu ?
     - quelles activités le jour 1 ?
+    - what is the program
+    - what is the programme
+    - what's the schedule
+    - event schedule
+    - what time will the opening ceremony start
+    - what time does the opening ceremony start
+    - when is the opening ceremony
+    - what time does the event start
+    - à quelle heure commence l'événement
+    - à quelle heure commence la cérémonie d'ouverture
+    - à quelle heure ouvre le salon
+    - horaires de l'événement
 
 - intent: ask_speakers
   examples: |
@@ -435,7 +466,6 @@ nlu:
     - est-ce qu'il faut un visa ?
     - quels documents faut-il pour participer ?
     - est-ce que la participation est gratuite ?
-    - quels sont les frais de participation ?
     - comment obtenir une invitation ?
     - les médias peuvent-ils participer ?
     - les universitaires peuvent participer ?
@@ -456,9 +486,7 @@ nlu:
     - quel est le processus d'inscription ?
     - où s'inscrire ?
     - comment devenir exposant ?
-    - comment devenir sponsor ?
     - comment exposer ?
-    - tarifs de participation
     - lien d'inscription
     - formulaire d'inscription
 
@@ -634,12 +662,12 @@ nlu:
     - inscrivez-moi
     - enregistrez-moi
     - oui je veux m'inscrire
-    - oui
-    - yes
-    - d'accord
-    - ok
-    - allons-y
-    - go ahead
+    - oui je veux bien
+    - oui commence l'inscription
+    - je veux une accréditation
+    - accréditation expobeton
+    - je veux être accrédité
+    - comment être accrédité
 
 - intent: apply_ambassador
   examples: |
@@ -676,6 +704,58 @@ nlu:
     - prix des stands
     - catégories de participation
     - niveaux de sponsoring
+    - quel est le prix
+    - les prix
+    - le prix
+    - combien coûte l'inscription
+    - combien coute l'inscription
+    - combien coute la participation
+    - combien coûte la participation d'une petite entreprise
+    - coût de l'inscription
+    - cout de participation
+    - frais de participation
+    - quels sont les frais de participation
+    - tarifs de participation
+    - grille tarifaire
+    - combien coûte un sponsor
+    - prix sponsor
+    - prix des catégories
+    - c'est combien
+    - how much is registration
+    - how much does it cost to exhibit
+    - what is the price
+    - sponsor
+    - sponsoring
+    - offre sponsor
+    - offres de sponsoring
+    - avantages sponsor
+    - packages sponsor
+    - comment devenir sponsor
+    - comment être sponsor
+    - how to become a sponsor
+
+- intent: ask_capacity
+  examples: |
+    - les places sont-elles limitées
+    - est-ce que les places sont limitées
+    - les places sont limitées
+    - y a-t-il un nombre de places limité
+    - nombre de places limité
+    - combien de places sont disponibles
+    - combien de places disponibles
+    - il reste des places
+    - est-ce qu'il reste des places
+    - quelle est la capacité du site
+    - capacité d'accueil
+    - capacité du lieu
+    - combien de participants attendus
+    - combien de personnes peuvent assister
+    - combien de visiteurs attendus
+    - is seating limited
+    - are there limited seats
+    - how many seats are available
+    - what is the venue capacity
+    - how many participants are expected
 
 - intent: affirm
   examples: |
@@ -687,11 +767,29 @@ nlu:
     - absolutely
     - d'accord
     - ok
+    - okay
+    - oki
     - yep
     - yeah
+    - yes please
     - bien sûr
+    - oui bien sûr
     - exactement
     - tout à fait
+    - volontiers
+    - oui volontiers
+    - avec plaisir
+    - oui avec plaisir
+    - pourquoi pas
+    - vas-y
+    - allez-y
+    - oui allez-y
+    - allons-y
+    - go ahead
+    - ça marche
+    - ok ça marche
+    - d'accord allez-y
+    - oui s'il vous plaît
 
 - intent: deny
   examples: |
@@ -744,6 +842,11 @@ nlu:
     - merci pour votre aide
     - merci pour l'info
     - merci pour les informations
+    - le plaisir est partagé
+    - plaisir partagé
+    - merci à vous
+    - c'est moi qui vous remercie
+    - the pleasure is mine
 
 - intent: dont_understand
   examples: |
@@ -866,6 +969,11 @@ nlu:
     - [femme](gender)
     - [developpement_villes](think_tank_choice)
     - [finance_investissement](think_tank_choice)
+    - participant simple
+    - je choisis participant simple
+    - je prends participant simple
+    - je veux participant simple
+    - participant simple s'il vous plaît
 
 - intent: provide_company
   examples: |

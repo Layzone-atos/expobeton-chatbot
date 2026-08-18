@@ -299,6 +299,166 @@ CATEGORY_MAP = {
 
 
 # ═══════════════════════════════════════════════════════════════════════
+# Helpers shared by the smart handlers (affirm / inform outside forms)
+# ═══════════════════════════════════════════════════════════════════════
+
+def _last_bot_message(tracker: Tracker) -> str:
+    """Return the lowercased text of the last bot message, or '' if none."""
+    for event in reversed(tracker.applied_events()):
+        if event.get("event") == "bot":
+            return str(event.get("text") or "").lower()
+    return ""
+
+
+def match_category(text: str) -> Optional[str]:
+    """Match free-form user text against CATEGORY_MAP.
+
+    Returns a VALID_CATEGORIES value, "_sponsor_"/"_exposant_" for the
+    sub-menu families, or None when no category can be detected.
+    """
+    if not text:
+        return None
+    cleaned = re.sub(r"[^0-9a-zà-ÿ .,\-+]", " ", str(text).lower())
+    cleaned = cleaned.replace("\u00d7", "x")  # multiplication sign -> x
+    cleaned = re.sub(r"\s+", " ", cleaned).strip(" .,")
+    if not cleaned:
+        return None
+    # Exact match first (handles "1", "2", "3", "participant simple"…)
+    if cleaned in CATEGORY_MAP:
+        return CATEGORY_MAP[cleaned]
+    # Then longest-key substring match ("je veux participant simple"…)
+    for key in sorted(CATEGORY_MAP.keys(), key=len, reverse=True):
+        if len(key) >= 3 and re.search(
+            r"(?<![0-9a-z])" + re.escape(key) + r"(?![0-9a-z])", cleaned
+        ):
+            return CATEGORY_MAP[key]
+    return None
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Action: Smart affirm — bare "oui/ok" outside the pending rule
+# ═══════════════════════════════════════════════════════════════════════
+
+class ActionHandleAffirm(Action):
+    """Handle a bare « oui / ok / d'accord » when the pending rule did not fire.
+
+    The bot itself instructs users to answer « oui » in several places
+    (registration offer, press accreditation offer). If the last bot message
+    proposed registration, start the form directly; otherwise show the menu.
+    """
+
+    def name(self) -> Text:
+        return "action_handle_affirm"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
+    ) -> List[Dict[Text, Any]]:
+        # Never interfere while a form is active (form rules handle affirm).
+        if tracker.active_loop_name:
+            return []
+
+        # Pending flag set (e.g. right after action_start_registration).
+        if tracker.get_slot("registration_pending"):
+            dispatcher.utter_message(
+                text="Parfait ! Je lance votre inscription étape par étape. 🚀"
+            )
+            return [
+                SlotSet("registration_pending", None),
+                FollowupAction("registration_form"),
+            ]
+
+        # The bot just proposed registration ("Répondez « oui »…" etc.).
+        last_bot = _last_bot_message(tracker)
+        offer_markers = (
+            "souhaitez-vous",
+            "« oui »",
+            "vous inscrire maintenant",
+            "commencer l'inscription",
+        )
+        if any(marker in last_bot for marker in offer_markers):
+            dispatcher.utter_message(
+                text="Parfait ! Je lance votre inscription étape par étape. 🚀"
+            )
+            return [
+                SlotSet("registration_pending", None),
+                FollowupAction("registration_form"),
+            ]
+
+        # Unrelated affirm — guide the user with the main menu.
+        dispatcher.utter_message(
+            text=(
+                "Très bien ! 😊 Que souhaitez-vous faire ?\n\n"
+                "• Tapez **« dates »** pour les dates de l'événement\n"
+                "• Tapez **« catégories »** pour les options d'inscription\n"
+                "• Tapez **« je veux m'inscrire »** pour commencer l'inscription\n"
+                "• Ou posez directement votre question sur ExpoBeton RDC."
+            )
+        )
+        return []
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Action: Inform outside any form (e.g. "Participant simple" after the offer)
+# ═══════════════════════════════════════════════════════════════════════
+
+class ActionHandleInformOutsideForm(Action):
+    """When the user names a category outside the form, start registration
+    with that category pre-filled. Anything else is routed to the answer
+    engine (action_answer_expobeton)."""
+
+    def name(self) -> Text:
+        return "action_handle_inform_outside_form"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
+    ) -> List[Dict[Text, Any]]:
+        if tracker.active_loop_name:
+            return []
+
+        text = tracker.latest_message.get("text", "")
+        matched = match_category(text)
+
+        if not matched:
+            # Not a category — let the keyword answer engine try.
+            return [FollowupAction("action_answer_expobeton")]
+
+        events = [
+            SlotSet("registration_pending", None),
+            SlotSet("_reg_category_phase", None),
+        ]
+
+        if matched == "_sponsor_":
+            dispatcher.utter_message(
+                text=(
+                    "Excellent ! 🏆 Je démarre votre inscription **Sponsor** — "
+                    "je vous demanderai votre niveau (Platinum / Gold / Silver / Bronze) "
+                    "pendant le formulaire. 🚀"
+                )
+            )
+            events.append(SlotSet("_reg_category_phase", "sponsor"))
+        elif matched == "_exposant_":
+            dispatcher.utter_message(
+                text=(
+                    "Excellent ! 🏗️ Je démarre votre inscription **Exposant** — "
+                    "je vous demanderai votre type de stand pendant le formulaire. 🚀"
+                )
+            )
+            events.append(SlotSet("_reg_category_phase", "exposant"))
+        else:
+            dispatcher.utter_message(
+                text="Excellent choix ! 🚀 Je démarre votre inscription en catégorie **%s**." % matched
+            )
+            events.append(SlotSet("reg_category", matched))
+            if matched == "Participant Simple":
+                # Free category — skip the payment question.
+                events.append(SlotSet("reg_payment", "N/A"))
+
+        events.append(FollowupAction("registration_form"))
+        return events
+
+
+
+# ═══════════════════════════════════════════════════════════════════════
 # Custom ask action for reg_category (replaces utter_ask_reg_category)
 # ═══════════════════════════════════════════════════════════════════════
 

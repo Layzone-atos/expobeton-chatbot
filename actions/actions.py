@@ -15,6 +15,14 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+from rasa_sdk.events import SlotSet, FollowupAction
+
+# Smart category matching shared with actions_expobeton (used by the
+# registration category shortcut in ActionAnswerExpoBeton).
+try:
+    from actions_expobeton import match_category as _match_category_shared
+except ImportError:  # loaded as a package by the Rasa action server
+    from .actions_expobeton import match_category as _match_category_shared
 
 # CRITICAL: Log file load timestamp
 print("="*80)
@@ -178,13 +186,11 @@ def log_conversation_message(session_id: str, sender: str, text: str, user_info:
     CONVERSATION_LOGS[session_id]['last_activity'] = datetime.now()
     CONVERSATION_LOGS[session_id]['user_info'] = user_info or CONVERSATION_LOGS[session_id]['user_info']
     
-    # --- Analytics: log bot messages (user messages are logged in the action) ---
-    if sender == 'bot' and text:
-        send_analytics_event('log_message', {
-            'session_id': session_id,
-            'sender': 'bot',
-            'message_text': text[:2000]  # truncate very long responses
-        })
+    # --- Analytics ---
+    # Bot messages are NOT logged here: the chat widget already logs every
+    # bubble displayed to the user, and double-logging produced duplicated
+    # and fragmented transcripts in the admin panel. User messages are
+    # logged with their NLU intent in ActionAnswerExpoBeton.
     
     # --- Analytics: update session with user info if email provided ---
     if user_info and (user_info.get('email') or user_info.get('name')):
@@ -519,14 +525,14 @@ class ActionGreetPersonalized(Action):
         for variant in lubumbashi_variants:
             if variant in user_message:
                 print(f"🔥🔥🔥 [GREET DEBUG] LUBUMBASHI DETECTED (variant={variant})! user_message={user_message}")
-                answer = "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
+                answer = "ℹ️ La **12ème édition d'ExpoBeton RDC (07-10 octobre 2026)** se tiendra à **Kinshasa**, à La Grande Résidence — Galerie La Fontaine (Ngaliema).\n\n**Lubumbashi** a accueilli la **11ème édition** (avril 2026, volet Grand Katanga), avec des étapes satellites à Kalemie et Kolwezi : cette édition s'est concentrée sur le Grand Katanga comme carrefour stratégique des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en infrastructures grâce aux réserves de cuivre, cobalt et lithium de la région."
                 dispatcher.utter_message(text=answer)
                 return []
         
         # History of ExpoBeton
         if any(word in user_message for word in ['histoire', 'history', 'historique']):
             print(f"🎯🎯🎯 [GREET DEBUG] HISTOIRE CHECK MATCHED IN GREET! user_message={user_message}")
-            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• 2026: Lubumbashi (carrefour stratégique africain)\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
+            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• Avril 2026 (11e): Grand Katanga — Lubumbashi (+ étapes Kalemie et Kolwezi)\n• Octobre 2026 (12e): Kinshasa, du 07 au 10 octobre\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
             dispatcher.utter_message(text=answer)
             return []
         
@@ -595,6 +601,25 @@ class ActionGreetPersonalized(Action):
                 message = message.replace("Bonjour!", "Bonjour! 😊")
             elif detected_lang == 'en':
                 message = message.replace("Hello!", "Hello! 😊")
+
+        # Drop-off fix (conversation logs): many users left right after the
+        # open greeting question. Offer a guided menu immediately.
+        if detected_lang == 'en':
+            message += (
+                "\n\n💡 I can help you with:\n"
+                "• 📅 the **dates** and **location** of the event\n"
+                "• 📋 the **program**\n"
+                "• 🏷️ the **categories** and pricing\n"
+                "• 📝 registration — type **« je veux m'inscrire »**"
+            )
+        else:
+            message += (
+                "\n\n💡 Je peux vous renseigner sur :\n"
+                "• 📅 Les **dates** et le **lieu** de l'événement\n"
+                "• 📋 Le **programme**\n"
+                "• 🏷️ Les **catégories** et tarifs\n"
+                "• 📝 L'**inscription** — tapez **« je veux m'inscrire »**"
+            )
         
         dispatcher.utter_message(text=message)
         return []
@@ -683,6 +708,42 @@ class ActionAnswerExpoBeton(Action):
         # be answered, not dismissed as greetings.
         # ====================================================================
         
+        # --- Registration category shortcut (conversation-log fix) ---
+        # Users often answer the categories menu with "1"/"2"/"3" or a bare
+        # category name that NLU classifies as nlu_fallback. When the bot
+        # just displayed the categories or proposed registration, launch the
+        # form with the matching category instead of apologizing.
+        _last_bot_text = ""
+        for _evt in reversed(tracker.applied_events()):
+            if _evt.get("event") == "bot":
+                _last_bot_text = str(_evt.get("text") or "").lower()
+                break
+        _cat_ctx = any(
+            _m in _last_bot_text
+            for _m in ("quelle catégorie", "catégorie vous intéresse",
+                       "catégories disponibles", "« oui »", "souhaitez-vous")
+        )
+        if _cat_ctx and len(user_message_original.strip()) <= 40:
+            _matched_cat = _match_category_shared(user_message_original)
+            if _matched_cat:
+                _cat_events = [
+                    SlotSet("registration_pending", None),
+                    SlotSet("_reg_category_phase", None),
+                ]
+                if _matched_cat == "_sponsor_":
+                    dispatcher.utter_message(text="Excellent ! 🏆 Je démarre votre inscription **Sponsor** — je vous demanderai votre niveau (Platinum / Gold / Silver / Bronze) pendant le formulaire. 🚀")
+                    _cat_events.append(SlotSet("_reg_category_phase", "sponsor"))
+                elif _matched_cat == "_exposant_":
+                    dispatcher.utter_message(text="Excellent ! 🏗️ Je démarre votre inscription **Exposant** — je vous demanderai votre type de stand pendant le formulaire. 🚀")
+                    _cat_events.append(SlotSet("_reg_category_phase", "exposant"))
+                else:
+                    dispatcher.utter_message(text="Excellent choix ! 🚀 Je démarre votre inscription en catégorie **%s**." % _matched_cat)
+                    _cat_events.append(SlotSet("reg_category", _matched_cat))
+                    if _matched_cat == "Participant Simple":
+                        _cat_events.append(SlotSet("reg_payment", "N/A"))
+                _cat_events.append(FollowupAction("registration_form"))
+                return _cat_events
+
         # --- Concours Jeunesse Horizon 2050 (CHECK BEFORE LOCATION/DATES) ---
         # The youth contest has its OWN dates (semaine du 14 septembre 2026 for
         # submission, 10 octobre 2026 for the final) different from the general
@@ -892,7 +953,7 @@ class ActionAnswerExpoBeton(Action):
         # History of ExpoBeton - CHECK BEFORE "HI" TO AVOID "HISTOIRE" COLLISION!
         if any(word in user_question for word in ['histoire', 'history', 'historique']):
             print(f"✅✅✅ [DEBUG] HISTOIRE CHECK MATCHED! user_question={user_question}")
-            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• 2026: Lubumbashi (carrefour stratégique africain)\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
+            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• Avril 2026 (11e): Grand Katanga — Lubumbashi (+ étapes Kalemie et Kolwezi)\n• Octobre 2026 (12e): Kinshasa, du 07 au 10 octobre\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
             dispatcher.utter_message(text=answer)
             bot_response = answer
             log_conversation_message(session_id, 'bot', bot_response, metadata)
@@ -902,7 +963,7 @@ class ActionAnswerExpoBeton(Action):
         if any(word in user_question for word in ['édition', 'edition', 'edtion', 'editon', 'ediiton', 'ediition']):
             # "how many editions" pattern - check first (more specific)
             if any(word in user_question for word in ['combien', 'how many', 'nombre']):
-                answer = "**10 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016 :\n\n1. 2016 : 1ere edition - Kinshasa\n2. 2017 : 2eme edition - Kinshasa\n3. 2018 : 3eme edition - Kinshasa\n4. 2019 : 4eme edition - Kinshasa\n5. 2021 : 5eme edition - Kinshasa\n6. 2022 : 6eme edition - Kinshasa\n7. 2023 : 7eme edition - Kolwezi (Lualaba)\n8. 2024 : 8eme edition - Kinshasa + Matadi\n9. 2025 : 9eme edition - Kinshasa\n10. 2025 : 10eme edition - Kinshasa\n\n11. 2026 : 11eme edition - Grand Katanga (Lubumbashi, satellites Kalemie & Kolwezi)\n\nLa **12eme edition** aura lieu du **07 au 10 octobre 2026 a Kinshasa**."
+                answer = "**11 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016 :\n\n1. 2016 : 1ere edition - Kinshasa\n2. 2017 : 2eme edition - Kinshasa\n3. 2018 : 3eme edition - Kinshasa\n4. 2019 : 4eme edition - Kinshasa\n5. 2021 : 5eme edition - Kinshasa\n6. 2022 : 6eme edition - Kinshasa\n7. 2023 : 7eme edition - Kolwezi (Lualaba)\n8. 2024 : 8eme edition - Kinshasa + Matadi\n9. 2025 : 9eme edition - Kinshasa\n10. 2025 : 10eme edition - Kinshasa\n\n11. 2026 : 11eme edition - Grand Katanga (Lubumbashi, satellites Kalemie & Kolwezi)\n\nLa **12eme edition** aura lieu du **07 au 10 octobre 2026 a Kinshasa**."
                 dispatcher.utter_message(text=answer)
                 bot_response = answer
                 log_conversation_message(session_id, 'bot', bot_response, metadata)
@@ -1016,7 +1077,7 @@ class ActionAnswerExpoBeton(Action):
         # History of ExpoBeton - CHECK FIRST TO AVOID "WHAT IS" COLLISION
         if any(word in user_question for word in ['histoire', 'history', 'historique']):
             print(f"\u2705\u2705\u2705 [DEBUG] HISTOIRE CHECK MATCHED! user_question={user_question}")
-            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• 2026: Lubumbashi (carrefour stratégique africain)\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
+            answer = "📜 **Histoire d'ExpoBeton RDC**\n\n🚀 **Création:** 2016 par Jean Bamanisa Saïdi\n\n🎯 **Mission:** Promouvoir les infrastructures, la construction et le développement urbain en RDC\n\n🏆 **Évolution:**\n• 2016-2022: Éditions à Kinshasa (focus capital)\n• 2023: Expansion vers Kolwezi (mines, Grand Katanga)\n• 2024: Double phase Kinshasa + Matadi (corridor ouest)\n• Avril 2026 (11e): Grand Katanga — Lubumbashi (+ étapes Kalemie et Kolwezi)\n• Octobre 2026 (12e): Kinshasa, du 07 au 10 octobre\n\n💡 **Impact:**\n• Création du Ministère de la Politique de la Ville (2024)\n• Recommandations adoptées par le gouvernement\n• Plateforme B2B, B2G majeure en RDC\n• Think tanks thématiques annuels\n\n👥 **Fondateurs:** Jean Bamanisa Saïdi (Président) + Momo Sungunza (Vice-Président)"
             dispatcher.utter_message(text=answer)
             bot_response = answer
             log_conversation_message(session_id, 'bot', bot_response, metadata)
@@ -1033,7 +1094,7 @@ class ActionAnswerExpoBeton(Action):
         for variant in lubumbashi_variants:
             if variant in user_question:
                 print(f"🔥🔥🔥 [DEBUG LUBUMBASHI] DETECTED (variant={variant})! user_question={user_question}")
-                answer = "ExpoBeton 2026 se tiendra à Lubumbashi car cette édition se concentre sur le Grand Katanga comme carrefour stratégique. Lubumbashi, capitale du Haut-Katanga, est au cœur des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en matière d'infrastructures et de développement économique grâce aux réserves massives de cobalt et cuivre de la région."
+                answer = "ℹ️ La **12ème édition d'ExpoBeton RDC (07-10 octobre 2026)** se tiendra à **Kinshasa**, à La Grande Résidence — Galerie La Fontaine (Ngaliema).\n\n**Lubumbashi** a accueilli la **11ème édition** (avril 2026, volet Grand Katanga), avec des étapes satellites à Kalemie et Kolwezi : cette édition s'est concentrée sur le Grand Katanga comme carrefour stratégique des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en infrastructures grâce aux réserves de cuivre, cobalt et lithium de la région."
                 dispatcher.utter_message(text=answer)
                 bot_response = answer
                 log_conversation_message(session_id, 'bot', bot_response, metadata)

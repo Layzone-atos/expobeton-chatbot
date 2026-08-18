@@ -478,6 +478,31 @@ function handleLogMessage($data) {
     $stmt = $db->prepare("INSERT INTO messages 
         (session_id, sender, message_text, intent, confidence, timestamp)
         VALUES (?, ?, ?, ?, ?, NOW())");
+
+    // ── Deduplication ─────────────────────────────────────────────────
+    // The chat widget and the Rasa server can both log the same message
+    // (user messages arrive twice; the server copy carries the NLU intent).
+    // When an identical message already arrived for this session within the
+    // last 5 minutes, merge instead of inserting a duplicate row.
+    try {
+        $dup = $db->prepare("SELECT id, intent FROM messages
+                             WHERE session_id = ? AND sender = ? AND message_text = ?
+                               AND timestamp >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+                             ORDER BY id DESC LIMIT 1");
+        $dup->execute([$sessionId, $sender, $text]);
+        $existing = $dup->fetch();
+        if ($existing) {
+            $newIntent = $data['intent'] ?? null;
+            if ($newIntent && empty($existing['intent'])) {
+                $db->prepare("UPDATE messages SET intent = ?, confidence = ? WHERE id = ?")
+                   ->execute([$newIntent, $data['confidence'] ?? null, $existing['id']]);
+            }
+            echo json_encode(['success' => true, 'deduplicated' => true]);
+            return;
+        }
+    } catch (Exception $e) {
+        // Fall through to normal insert on any dedup error
+    }
     
     $stmt->execute([
         $sessionId,

@@ -31,6 +31,7 @@ intents:
   - ask_objectives
   - ask_partners
   - ask_tourism_culture
+  - ask_capacity
   - register
   - apply_ambassador
   - show_categories
@@ -332,7 +333,7 @@ responses:
   utter_end_conversation:
     - text: "Merci pour notre conversation. N'hésitez pas à revenir si vous avez d'autres questions."
   utter_about_expobeton:
-    - text: "ExpoBeton RDC est le salon international de la construction, des infrastructures, du développement des villes, des corridors et des zones économiques spéciales en RDC. Créé en 2016, c'est un forum annuel de référence. La **12ème édition** se tiendra du **07 au 10 octobre 2026 à Kinshasa**, à La Grande Résidence — Galerie La Fontaine, sous le thème « Kinshasa, Locomotive de la Transformation des Villes de la RDC ». (La 11ème édition s'est tenue dans le Grand Katanga — Lubumbashi, avec des étapes satellites à Kalemie et Kolwezi.)"
+    - text: "ExpoBeton RDC est le salon international de la construction, des infrastructures, du développement des villes, des corridors et des zones économiques spéciales en RDC. Créé en 2016, c'est un forum annuel de référence. La **12ème édition** se tiendra du **07 au 10 octobre 2026 à Kinshasa**, à La Grande Résidence — Galerie La Fontaine, sous le thème « Kinshasa, Locomotive de la Transformation des Villes de la RDC ». (La 11ème édition s'est tenue dans le Grand Katanga — Lubumbashi, avec des étapes satellites à Kalemie et Kolwezi.)\n\n💡 Le nom « ExpoBeton » symbolise le rendez-vous de référence des acteurs du béton, de la construction, des infrastructures et du développement urbain en RDC."
   utter_event_dates:
     - text: "La **12ème édition** d'ExpoBeton RDC se tiendra du **07 au 10 octobre 2026** (4 jours) à **Kinshasa**, à La Grande Résidence — Galerie La Fontaine (Ngaliema).\n\n📅 **Programme :**\n• Jour 1 (Mer 07 oct) : Journée Portes Ouvertes, Touristique et Culturelle\n• Jour 2 (Jeu 08 oct) : Cérémonie d'ouverture officielle + Panels Habitat & Territoire\n• Jour 3 (Ven 09 oct) : Corridors transfrontaliers, ZES, Énergie\n• Jour 4 (Sam 10 oct) : Jeunesse & Innovation + Cérémonie de clôture"
   utter_event_location:
@@ -349,6 +350,8 @@ responses:
     - text: "📅 **Programme ExpoBeton RDC 2026 – 12ème Édition (07-10 octobre, Kinshasa)**\n\n**Jour 1 – Mer 07 oct** : Journée Portes Ouvertes, Touristique et Culturelle\n• 10h-17h : Visites expositions, danses traditionnelles, concerts, pêche lacustre\n• 17h : Cocktail d'accueil\n\n**Jour 2 – Jeu 08 oct** : Ouverture officielle & Transformation urbaine\n• 09h : Ouverture officielle (Président de la République)\n• Panels : Habitat, Aménagement du Territoire, Loi Foncière\n• 16h-19h : Networking B2B/B2G\n\n**Jour 3 – Ven 09 oct** : Corridors, ZES & Énergie\n• Panels : CIRGL, ZES, Corridor Central, Agriculture, Énergie\n• 18h30 : Dîner networking B2B\n\n**Jour 4 – Sam 10 oct** : Jeunesse & Innovation\n• Formation, entrepreneuriat, pitchs innovations\n• 15h : Clôture par la Première Ministre Judith Suminwa"
   utter_speakers:
     - text: "🎤 **Principaux intervenants ExpoBeton 2026 :**\n\n🏛️ **Ouverture :** SE M. le Président de la République\n🏛️ **Clôture :** SE Mme Judith Suminwa, Première Ministre\n\n**Ministres :** VPM Économie Daniel Mukoko Samba, Min. des Mines, Min. Intégration Régionale, Min. Urbanisme, Min. Aménagement du Territoire, Min. Commerce Extérieur, Min. Agriculture, Min. Ressources Hydrauliques, Justin Kalumba Mwanangongo (PME/Industrie)\n\n**Autres :** Gouverneur de Kinshasa, DG KoBold Metals, DG GECAMINES, DG SNEL, DG FPI, DGA Manono Lithium (Rex Basile Muyey), DG ARE (Mme Soraya AZIZ), CIRGL, BAD, Ambassadeurs de France, Belgique, USA\n\n**Modérateur :** Danny KAMBO"
+  utter_capacity:
+    - text: "🎟️ **Places et capacité — ExpoBeton RDC 2026 :**\n\nLe site de **La Grande Résidence — Galerie La Fontaine** (Ngaliema, Kinshasa) offre des espaces d'exposition et des salles de conférences dimensionnés pour un salon international. À titre de repère, la 10ème édition (2025, Kinshasa) a réuni **plus de 5 000 participants** sur 4 jours.\n\n⚠️ Les places des **salles de conférences**, des **sessions B2B/B2G** et du **dîner networking** sont **limitées** et attribuées selon l'ordre des inscriptions.\n\n👉 Nous vous recommandons de vous inscrire tôt pour garantir votre place. Tapez **« je veux m'inscrire »** pour commencer."
   utter_registration:
     - text: "📝 **Inscription à ExpoBeton RDC 2026 :**\n\n**Qui peut participer ?** Professionnels, investisseurs, entreprises, étudiants, médias, universitaires, décideurs politiques.\n\n🛂 **Visa :** Une invitation officielle est fournie pour faciliter l'obtention de votre visa.\n📧 **Contact :** info@expobetonrdc.com\n💰 **Finances :** finance@expobetonrdc.com\n🕐 **Horaires :** Lundi-Vendredi, 08h-16h\n\n💬 **Souhaitez-vous vous inscrire maintenant ?** Je peux vous guider à travers le formulaire d'inscription directement ici ! Tapez simplement « je veux m'inscrire » pour commencer."
   utter_corridors:
@@ -440,6 +443,8 @@ actions:
   - action_show_categories
   - action_start_registration
   - action_clear_reg_pending
+  - action_handle_affirm
+  - action_handle_inform_outside_form
   - action_submit_registration
   - action_submit_ambassador
   - action_check_api_health
