@@ -10,6 +10,7 @@ $country = trim($_GET['country'] ?? '');
 $device = trim($_GET['device'] ?? '');
 $dateFrom = trim($_GET['date_from'] ?? '');
 $dateTo = trim($_GET['date_to'] ?? '');
+$unresolvedOnly = !empty($_GET['unresolved']);
 
 $where = [];
 $params = [];
@@ -36,6 +37,9 @@ if ($dateTo) {
     $where[] = "DATE(s.started_at) <= ?";
     $params[] = $dateTo;
 }
+if ($unresolvedOnly) {
+    $where[] = "s.is_unresolved = 1 AND s.resolved_at IS NULL";
+}
 
 $whereSQL = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
@@ -54,6 +58,9 @@ $sessions = $stmt->fetchAll();
 // Get distinct countries and devices for filter dropdowns
 $countryList = $db->query("SELECT DISTINCT country FROM sessions WHERE country IS NOT NULL AND country != '' ORDER BY country")->fetchAll(PDO::FETCH_COLUMN);
 $deviceList = $db->query("SELECT DISTINCT device_type FROM sessions WHERE device_type IS NOT NULL ORDER BY device_type")->fetchAll(PDO::FETCH_COLUMN);
+
+// Count unresolved (for header badge)
+$unresolvedCount = (int)$db->query("SELECT COUNT(*) FROM sessions WHERE is_unresolved = 1 AND resolved_at IS NULL")->fetchColumn();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -66,21 +73,18 @@ $deviceList = $db->query("SELECT DISTINCT device_type FROM sessions WHERE device
     <link href="assets/style.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #0A2A66;">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="dashboard.php">ExpoBeton Analytics</a>
-            <div class="navbar-nav ms-auto d-flex flex-row gap-2">
-                <a class="nav-link" href="dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                <a class="nav-link active" href="conversations.php"><i class="bi bi-chat-dots"></i> Conversations</a>
-                <a class="nav-link" href="analytics.php"><i class="bi bi-bar-chart"></i> Analytics</a>
-                <a class="nav-link" href="users.php"><i class="bi bi-people"></i> Users</a>
-                <a class="nav-link text-warning" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
-            </div>
-        </div>
-    </nav>
+    <?php renderNavbar('conversations'); ?>
 
     <div class="container-fluid mt-4">
-        <h4 class="mb-3">Conversations <span class="text-muted fs-6">(<?= number_format($total) ?> total)</span></h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Conversations <span class="text-muted fs-6">(<?= number_format($total) ?> total)</span></h4>
+            <?php if ($unresolvedCount > 0): ?>
+                <a href="?unresolved=1" class="btn btn-sm <?= $unresolvedOnly ? 'btn-warning' : 'btn-outline-warning' ?>">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <?= $unresolvedCount ?> unresolved
+                </a>
+            <?php endif; ?>
+        </div>
         
         <!-- Filters -->
         <form class="card border-0 shadow-sm mb-4" method="GET">
@@ -121,7 +125,47 @@ $deviceList = $db->query("SELECT DISTINCT device_type FROM sessions WHERE device
                         <button type="submit" class="btn btn-sm btn-primary w-100" style="background:#0A2A66; border-color:#0A2A66;">Filter</button>
                     </div>
                 </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="unresolved" id="flt_unresolved" value="1" <?= $unresolvedOnly ? 'checked' : '' ?>>
+                            <label class="form-check-label small" for="flt_unresolved">
+                                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                                Show only <strong>unresolved</strong> conversations (user left without a satisfactory answer)
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </form>
+
+        <!-- Bulk export bar -->
+        <form id="bulkExportForm" method="POST" action="export_conversations.php" target="_blank" class="card border-0 shadow-sm mb-3">
+            <div class="card-body py-2 d-flex flex-wrap align-items-center gap-2">
+                <span class="small text-muted me-2">
+                    <i class="bi bi-download"></i>
+                    <span id="selectedCountLabel">0</span> selected
+                </span>
+                <div class="vr d-none d-md-block"></div>
+                <label class="small text-muted mb-0 me-1">Format:</label>
+                <select name="format" class="form-select form-select-sm" style="width:auto;" id="exportFormat">
+                    <option value="csv">CSV (Excel)</option>
+                    <option value="json">JSON</option>
+                    <option value="pdf">PDF (print)</option>
+                </select>
+                <button type="submit" id="exportSelectedBtn" class="btn btn-sm btn-primary" style="background:#0A2A66;border-color:#0A2A66;" disabled>
+                    <i class="bi bi-download"></i> Export selected
+                </button>
+                <button type="button" id="exportAllPageBtn" class="btn btn-sm btn-outline-primary" title="Select every conversation visible on this page and export them">
+                    <i class="bi bi-collection"></i> Select all on page &amp; export
+                </button>
+                <span class="ms-auto text-muted small">
+                    <i class="bi bi-info-circle"></i>
+                    PDF opens a print-friendly page — choose <em>Save as PDF</em> in the browser dialog.
+                </span>
+            </div>
+            <!-- Hidden ids[] are injected by JS on submit -->
+            <div id="exportIdsContainer"></div>
         </form>
 
         <!-- Table -->
@@ -130,6 +174,10 @@ $deviceList = $db->query("SELECT DISTINCT device_type FROM sessions WHERE device
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
+                            <th style="width:36px;">
+                                <input class="form-check-input" type="checkbox" id="selectAllRows" title="Select all on this page">
+                            </th>
+                            <th>Status</th>
                             <th>Session</th>
                             <th>User</th>
                             <th>Country</th>
@@ -138,23 +186,53 @@ $deviceList = $db->query("SELECT DISTINCT device_type FROM sessions WHERE device
                             <th>Messages</th>
                             <th>Duration</th>
                             <th>Date</th>
+                            <th style="width:64px;"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($sessions as $s): ?>
-                        <tr style="cursor:pointer;" onclick="location.href='conversation_detail.php?id=<?= urlencode($s['session_id']) ?>'">
-                            <td class="text-truncate" style="max-width:120px;" title="<?= escape($s['session_id']) ?>"><?= escape(substr($s['session_id'], 0, 20)) ?>...</td>
-                            <td><?= escape($s['user_name'] ?: ($s['user_email'] ?: '-')) ?></td>
-                            <td><?= formatCountryWithFlag($s['country'] ?? '-') ?></td>
-                            <td><span class="badge bg-<?= $s['device_type']==='mobile'?'success':($s['device_type']==='tablet'?'warning':'primary') ?>"><?= escape($s['device_type'] ?? '-') ?></span></td>
-                            <td><?= escape($s['browser'] ?? '-') ?></td>
-                            <td><?= $s['real_message_count'] ?: $s['message_count'] ?></td>
-                            <td><?= formatDuration($s['duration_seconds']) ?></td>
-                            <td><?= date('M j, H:i', strtotime($s['started_at'])) ?></td>
+                        <?php
+                            $isUnresolved = !empty($s['is_unresolved']) && empty($s['resolved_at']);
+                            $isResolved = !empty($s['resolved_at']);
+                            $rowStyle = $isUnresolved ? 'background-color:#fff7e6;' : '';
+                        ?>
+                        <tr class="conv-row" data-session-id="<?= escape($s['session_id']) ?>" style="<?= $rowStyle ?>">
+                            <td onclick="event.stopPropagation();">
+                                <input class="form-check-input row-check" type="checkbox" value="<?= escape($s['session_id']) ?>" aria-label="Select conversation">
+                            </td>
+                            <td>
+                                <?php if ($isUnresolved): ?>
+                                    <span class="badge bg-warning text-dark" title="User left without satisfactory answer"><i class="bi bi-exclamation-triangle-fill"></i> Unresolved</span>
+                                <?php elseif ($isResolved): ?>
+                                    <span class="badge bg-success" title="Admin replied by email"><i class="bi bi-envelope-check"></i> Replied</span>
+                                <?php else: ?>
+                                    <span class="badge bg-light text-muted">OK</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-truncate" style="max-width:120px;cursor:pointer;" title="<?= escape($s['session_id']) ?>" onclick="window.location.href='conversation_detail.php?id=<?= urlencode($s['session_id']) ?>'"><?= escape(substr($s['session_id'], 0, 20)) ?>...</td>
+                            <td style="cursor:pointer;" onclick="window.location.href='conversation_detail.php?id=<?= urlencode($s['session_id']) ?>'"><?= escape($s['user_name'] ?: ($s['user_email'] ?: '-')) ?></td>
+                            <td style="cursor:pointer;" onclick="window.location.href='conversation_detail.php?id=<?= urlencode($s['session_id']) ?>'"><?= formatCountryWithFlag($s['country'] ?? '-') ?></td>
+                            <td style="cursor:pointer;" onclick="window.location.href='conversation_detail.php?id=<?= urlencode($s['session_id']) ?>'"><span class="badge bg-<?= $s['device_type']==='mobile'?'success':($s['device_type']==='tablet'?'warning':'primary') ?>"><?= escape($s['device_type'] ?? '-') ?></span></td>
+                            <td style="cursor:pointer;" onclick="window.location.href='conversation_detail.php?id=<?= urlencode($s['session_id']) ?>'"><?= escape($s['browser'] ?? '-') ?></td>
+                            <td style="cursor:pointer;" onclick="window.location.href='conversation_detail.php?id=<?= urlencode($s['session_id']) ?>'"><?= $s['real_message_count'] ?: $s['message_count'] ?></td>
+                            <td style="cursor:pointer;" onclick="window.location.href='conversation_detail.php?id=<?= urlencode($s['session_id']) ?>'"><?= formatDuration($s['duration_seconds']) ?></td>
+                            <td style="cursor:pointer;" onclick="window.location.href='conversation_detail.php?id=<?= urlencode($s['session_id']) ?>'"><?= date('M j, H:i', strtotime($s['started_at'])) ?></td>
+                            <td class="text-end" onclick="event.stopPropagation();">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" title="Export this conversation">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item small" target="_blank" href="export_conversations.php?format=csv&amp;id=<?= urlencode($s['session_id']) ?>"><i class="bi bi-filetype-csv"></i> CSV</a></li>
+                                        <li><a class="dropdown-item small" target="_blank" href="export_conversations.php?format=json&amp;id=<?= urlencode($s['session_id']) ?>"><i class="bi bi-filetype-json"></i> JSON</a></li>
+                                        <li><a class="dropdown-item small" target="_blank" href="export_conversations.php?format=pdf&amp;id=<?= urlencode($s['session_id']) ?>"><i class="bi bi-filetype-pdf"></i> PDF</a></li>
+                                    </ul>
+                                </div>
+                            </td>
                         </tr>
                         <?php endforeach; ?>
                         <?php if (empty($sessions)): ?>
-                        <tr><td colspan="8" class="text-center text-muted py-4">No conversations found</td></tr>
+                        <tr><td colspan="11" class="text-center text-muted py-4">No conversations found</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -174,5 +252,90 @@ $deviceList = $db->query("SELECT DISTINCT device_type FROM sessions WHERE device
         </nav>
         <?php endif; ?>
     </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ----- Bulk export wiring -----
+    (function () {
+        const form           = document.getElementById('bulkExportForm');
+        const idsContainer   = document.getElementById('exportIdsContainer');
+        const exportBtn      = document.getElementById('exportSelectedBtn');
+        const exportAllBtn   = document.getElementById('exportAllPageBtn');
+        const formatSel      = document.getElementById('exportFormat');
+        const selectAll      = document.getElementById('selectAllRows');
+        const selectedLabel  = document.getElementById('selectedCountLabel');
+        const checks         = () => Array.from(document.querySelectorAll('.row-check'));
+
+        function selectedIds() {
+            return checks().filter(c => c.checked).map(c => c.value);
+        }
+
+        function refreshState() {
+            const sel = selectedIds();
+            selectedLabel.textContent = sel.length;
+            exportBtn.disabled = sel.length === 0;
+
+            const all = checks();
+            if (all.length === 0) {
+                selectAll.indeterminate = false;
+                selectAll.checked = false;
+            } else if (sel.length === all.length) {
+                selectAll.indeterminate = false;
+                selectAll.checked = true;
+            } else if (sel.length === 0) {
+                selectAll.indeterminate = false;
+                selectAll.checked = false;
+            } else {
+                selectAll.indeterminate = true;
+            }
+        }
+
+        function injectIds(ids) {
+            idsContainer.innerHTML = '';
+            ids.forEach(id => {
+                const i = document.createElement('input');
+                i.type = 'hidden';
+                i.name = 'ids[]';
+                i.value = id;
+                idsContainer.appendChild(i);
+            });
+        }
+
+        // Per-row checkbox change
+        checks().forEach(c => c.addEventListener('change', refreshState));
+
+        // Select-all header checkbox
+        selectAll.addEventListener('change', function () {
+            const v = this.checked;
+            checks().forEach(c => { c.checked = v; });
+            refreshState();
+        });
+
+        // Submit bulk export
+        form.addEventListener('submit', function (e) {
+            const ids = selectedIds();
+            if (ids.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one conversation to export.');
+                return;
+            }
+            injectIds(ids);
+        });
+
+        // "Select all on page & export" shortcut
+        exportAllBtn.addEventListener('click', function () {
+            const all = checks();
+            if (all.length === 0) {
+                alert('There are no conversations on this page to export.');
+                return;
+            }
+            all.forEach(c => { c.checked = true; });
+            refreshState();
+            // Trigger the form submission programmatically so hidden fields get injected
+            form.requestSubmit ? form.requestSubmit() : form.submit();
+        });
+
+        refreshState();
+    })();
+</script>
 </body>
 </html>

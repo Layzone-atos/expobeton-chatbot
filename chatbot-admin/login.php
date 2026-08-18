@@ -17,16 +17,20 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
-    
-    if (loginUser($username, $password)) {
+
+    $result = loginUser($username, $password);
+    if ($result === true) {
         header('Location: dashboard.php');
         exit;
+    } elseif ($result === 'disabled') {
+        $error = 'This account has been deactivated. Contact the super admin.';
     } else {
         $error = 'Invalid username or password.';
     }
 }
 
-$timeout = isset($_GET['timeout']);
+$timeout  = isset($_GET['timeout']);
+$disabled = isset($_GET['disabled']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,6 +55,10 @@ $timeout = isset($_GET['timeout']);
             
             <?php if ($timeout): ?>
                 <div class="alert alert-warning">Session expired. Please log in again.</div>
+            <?php endif; ?>
+
+            <?php if ($disabled): ?>
+                <div class="alert alert-warning">Your account has been deactivated by the super admin.</div>
             <?php endif; ?>
             
             <form method="POST">

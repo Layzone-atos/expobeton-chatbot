@@ -4,8 +4,8 @@ responses:
     - text: |
         Bienvenue ! Je suis {agent_name} 👋, votre assistant virtuel pour l'Expo Béton RDC 2026. Je suis ici pour vous accompagner dans votre découverte du Salon International de la Construction, des Infrastructures et des Zones Économiques Spéciales.
 
-        **La 11ème Édition se tiendra du 27 au 30 Mai 2026 à Kalemie**
-        *Thème : « Kalemie – Capital du Lithium et carrefour stratégique au cœur des corridors africains »*
+        **La 12ème Édition se tiendra du 07 au 10 octobre 2026 à Kinshasa**
+        *Thème : « Kinshasa, Locomotive de la Transformation des Villes de la RDC »*
 
         Voici quelques exemples de questions que vous pouvez me poser :
         {example_questions}

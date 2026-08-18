@@ -40,20 +40,15 @@ $recent = $db->query("SELECT session_id, user_name, user_email, country, device_
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #0A2A66;">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="dashboard.php">ExpoBeton Analytics</a>
-            <div class="navbar-nav ms-auto d-flex flex-row gap-2">
-                <a class="nav-link" href="dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                <a class="nav-link" href="conversations.php"><i class="bi bi-chat-dots"></i> Conversations</a>
-                <a class="nav-link" href="analytics.php"><i class="bi bi-bar-chart"></i> Analytics</a>
-                <a class="nav-link" href="users.php"><i class="bi bi-people"></i> Users</a>
-                <a class="nav-link text-warning" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
-            </div>
-        </div>
-    </nav>
+    <?php renderNavbar('dashboard'); ?>
     
     <div class="container-fluid mt-4">
+        <?php if (isset($_GET['denied'])): ?>
+            <div class="alert alert-warning alert-dismissible fade show">
+                <i class="bi bi-shield-exclamation"></i> You do not have permission to access that page.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
         <!-- KPI Cards -->
         <div class="row g-3 mb-4">
             <div class="col-md col-6">

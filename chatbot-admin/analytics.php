@@ -82,18 +82,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     <link href="assets/style.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #0A2A66;">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="dashboard.php">ExpoBeton Analytics</a>
-            <div class="navbar-nav ms-auto d-flex flex-row gap-2">
-                <a class="nav-link" href="dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                <a class="nav-link" href="conversations.php"><i class="bi bi-chat-dots"></i> Conversations</a>
-                <a class="nav-link active" href="analytics.php"><i class="bi bi-bar-chart"></i> Analytics</a>
-                <a class="nav-link" href="users.php"><i class="bi bi-people"></i> Users</a>
-                <a class="nav-link text-warning" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
-            </div>
-        </div>
-    </nav>
+    <?php renderNavbar('analytics'); ?>
 
     <div class="container-fluid mt-4">
         <div class="d-flex justify-content-between align-items-center mb-3">

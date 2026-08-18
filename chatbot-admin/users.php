@@ -36,21 +36,11 @@ $users = $stmt->fetchAll();
     <link href="assets/style.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #0A2A66;">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="dashboard.php">ExpoBeton Analytics</a>
-            <div class="navbar-nav ms-auto d-flex flex-row gap-2">
-                <a class="nav-link" href="dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                <a class="nav-link" href="conversations.php"><i class="bi bi-chat-dots"></i> Conversations</a>
-                <a class="nav-link" href="analytics.php"><i class="bi bi-bar-chart"></i> Analytics</a>
-                <a class="nav-link active" href="users.php"><i class="bi bi-people"></i> Users</a>
-                <a class="nav-link text-warning" href="logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
-            </div>
-        </div>
-    </nav>
+    <?php renderNavbar('users'); ?>
 
     <div class="container-fluid mt-4">
-        <h4 class="mb-3">Users <span class="text-muted fs-6">(<?= number_format($totalCount) ?> total)</span></h4>
+        <h4 class="mb-3">Visitors <span class="text-muted fs-6">(<?= number_format($totalCount) ?> total)</span></h4>
+        <p class="text-muted small">Everyone who has opened a chat session. For users who filled the registration form, see <a href="registrations.php">Registrations</a>.</p>
         
         <form class="card border-0 shadow-sm mb-4" method="GET">
             <div class="card-body">

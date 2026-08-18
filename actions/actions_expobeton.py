@@ -168,7 +168,7 @@ class ActionStartRegistration(Action):
 
         dispatcher.utter_message(
             text=(
-                f'Pour participer à **ExpoBeton RDC 2026** (27-30 mai, Kalemie), '
+                f'Pour participer à **ExpoBeton RDC 2026** (07-10 octobre, Kinshasa), '
                 f'vous devez vous inscrire{greeting}.\n\n'
                 f'📋 **3 catégories disponibles :**\n'
                 f'1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n'
@@ -875,6 +875,7 @@ class ActionConfirmRegistration(Action):
     ) -> List[Dict[Text, Any]]:
         data = {
             "company":        tracker.get_slot("reg_company"),
+            "edition":        12,  # current edition (Kinshasa 2026)
             "contact_name":   tracker.get_slot("reg_contact_name"),
             "email":          tracker.get_slot("reg_email"),
             "phone":          tracker.get_slot("reg_phone"),

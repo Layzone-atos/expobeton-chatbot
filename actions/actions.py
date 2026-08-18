@@ -378,16 +378,16 @@ MULTILINGUAL_CONTENT = {
         'ar': "ExpoBeton RDC هو المعرض الدولي للبناء والبنية التحتية والتنمية الحضرية في جمهورية الكونغو الديمقراطية. إنه منتدى سنوي يخلق مساحة للتفكير والشراكة لإعادة بناء المدن الكونغولية ودعم النمو الاقتصادي."
     },
     'dates': {
-        'fr': "La prochaine édition (11ème) d'ExpoBeton RDC aura lieu du 15 au 18 avril 2026 à Kalemie, Province du Tanganyika. Cette édition est entièrement dédiée à Kalemie en tant que capitale du lithium et carrefour stratégique des corridors africains.",
-        'en': "The next edition (11th) of ExpoBeton RDC will take place from April 15 to 18, 2026 in Kalemie, Tanganyika Province. This edition is entirely dedicated to Kalemie as the lithium capital and strategic hub of African corridors.",
+        'fr': "La prochaine édition (12ème) d'ExpoBeton RDC aura lieu du 07 au 10 octobre 2026 à Kinshasa, à La Grande Résidence — Galerie La Fontaine. Cette édition est consacrée au thème « Kinshasa, Locomotive de la Transformation des Villes de la RDC ». (La 11ème édition s'est tenue dans le Grand Katanga — Lubumbashi.)",
+        'en': "The next edition (12th) of ExpoBeton RDC will take place from October 7 to 10, 2026 in Kinshasa, at La Grande Residence - Galerie La Fontaine. This edition focuses on the theme 'Kinshasa, Locomotive of the Transformation of DRC Cities'. (The 11th edition was held in the Grand Katanga - Lubumbashi.)",
         'zh': "ExpoBeton RDC下一届（第11届）将于2026年4月15日至18日在坦噶尼喀省卡莱米举行。本届将完全致力于卡莱米，它是锋都和非洲走廊的战略枢纽。",
         'ru': "Следующее издание (11-е) ExpoBeton RDC состоится с 15 по 18 апреля 2026 года в Калеми, провинция Танганьика. Это издание полностью посвящено Калеми как литиевой столице и стратегическому узлу африканских корридоров.",
         'es': "La próxima edición (11ª) de ExpoBeton RDC tendrá lugar del 15 al 18 de abril de 2026 en Kalemie, Provincia de Tanganyika. Esta edición está completamente dedicada a Kalemie como capital del litio y centro estratégico de los corredores africanos.",
         'ar': "ستقام النسخة القادمة (الحادية عشرة) من ExpoBeton RDC من 15 إلى 18 أبريل 2026 في كاليمي، مقاطعة تنجانيقا. هذه النسخة مخصصة بالكامل لكاليمي باعتبارها عاصمة الليثيوم ومركز استراتيجي للممرات الأفريقية."
     },
     'location': {
-        'fr': "La prochaine édition d'ExpoBeton RDC se tiendra à Kalemie, Province du Tanganyika. Kalemie est la capitale du lithium pour la RDC et une porte d'entrée stratégique vers les corridors africains.",
-        'en': "The next edition of ExpoBeton RDC will be held in Kalemie, Tanganyika Province. Kalemie is the lithium capital for the DRC and a strategic gateway to African corridors.",
+        'fr': "La prochaine édition d'ExpoBeton RDC se tiendra à Kinshasa, à La Grande Résidence — Galerie La Fontaine (07 Avenue de l'OUA, Ngaliema). Kinshasa est la locomotive économique de la RDC.",
+        'en': "The next edition of ExpoBeton RDC will be held in Kinshasa, at La Grande Residence - Galerie La Fontaine (07 Avenue de l'OUA, Ngaliema). Kinshasa is the economic engine of the DRC.",
         'zh': "ExpoBeton RDC下一届将在坦噶尼喀省卡莱米举行。卡莱米是刚果民主共和国的锋都，也是通往非洲走廊的战略门户。",
         'ru': "Следующее издание ExpoBeton RDC будет проходить в Калеми, провинция Танганьика. Калеми является литиевой столицей ДРК и стратегическим шлюзом к африканским корридорам.",
         'es': "La próxima edición de ExpoBeton RDC se celebrará en Kalemie, Provincia de Tanganyika. Kalemie es la capital del litio para la RDC y una puerta de entrada estratégica a los corredores africanos.",
@@ -533,11 +533,11 @@ class ActionGreetPersonalized(Action):
         # Which edition / how many editions (with typo support)
         if any(word in user_message for word in ['edition', 'édition', 'edtion', 'editon', 'ediiton', 'ediition']):
             if any(kw in user_message for kw in ['combien', 'how many', 'nombre']):
-                answer = "**10 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016. La **11eme edition** aura lieu du **27 au 30 mai 2026 a Kalemie**."
+                answer = "**11 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016. La **12eme edition** aura lieu du **07 au 10 octobre 2026 a Kinshasa**."
                 dispatcher.utter_message(text=answer)
                 return []
             # Default: assume user is asking which edition (most common question)
-            answer = "Nous sommes a la **11eme edition** d'ExpoBeton RDC ! Elle se tiendra du **27 au 30 mai 2026** a **Kalemie**, Province du Tanganyika.\n\nLe theme : **Kalemie - Capital du Lithium et carrefour strategique au coeur des corridors africains de l'Est, du Sud, de l'Ouest.**\n\nC'est la toute premiere edition organisee a Kalemie !"
+            answer = "Nous sommes a la **12eme edition** d'ExpoBeton RDC ! Elle se tiendra du **07 au 10 octobre 2026** a **Kinshasa**, a La Grande Residence - Galerie La Fontaine.\n\nLe theme : **Kinshasa, Locomotive de la Transformation des Villes de la RDC.**\n\n(La 11eme edition s'est tenue dans le Grand Katanga - Lubumbashi, avec etapes satellites a Kalemie et Kolwezi.)"
             dispatcher.utter_message(text=answer)
             return []
 
@@ -551,13 +551,13 @@ class ActionGreetPersonalized(Action):
         if has_loc_kw or (has_ou and has_loc_ctx):
             answer = (
                 "📍 **Lieu precis -- ExpoBeton RDC 2026 :**\n\n"
-                "Le salon se tiendra sur **la plage du boulevard Lumumba**, "
-                "au bord du **lac Tanganyika**, a **Kalemie**, chef-lieu de la "
-                "Province du **Tanganyika**, RDC.\n\n"
-                "🌊 Un cadre exceptionnel en front de lac, le long du boulevard "
-                "Lumumba (artere principale de Kalemie), avec ouverture "
-                "panoramique sur le lac Tanganyika.\n\n"
-                "📅 Dates : du **27 au 30 mai 2026** (4 jours)."
+                "Le salon se tiendra a **La Grande Residence - Galerie La Fontaine**, "
+                "au **07 Avenue de l'OUA, commune de Ngaliema**, a "
+                "**Kinshasa**, capitale de la RDC.\n\n"
+                "🏙️ Un cadre prestigieux au coeur de Ngaliema, quartier "
+                "residentiel et diplomatique, avec des espaces "
+                "d'exposition modernes et equipes.\n\n"
+                "📅 Dates : du **07 au 10 octobre 2026** (4 jours)."
             )
             dispatcher.utter_message(text=answer)
             return []
@@ -684,8 +684,8 @@ class ActionAnswerExpoBeton(Action):
         # ====================================================================
         
         # --- Concours Jeunesse Horizon 2050 (CHECK BEFORE LOCATION/DATES) ---
-        # The youth contest has its OWN dates (semaine du 11 mai 2026 for
-        # submission, 30 mai 2026 for the final) different from the general
+        # The youth contest has its OWN dates (semaine du 14 septembre 2026 for
+        # submission, 10 octobre 2026 for the final) different from the general
         # event dates, so it MUST be matched before the generic date/location
         # handlers below.
         concours_keywords = [
@@ -729,7 +729,7 @@ class ActionAnswerExpoBeton(Action):
                 answer = (
                     "🏆 **Concours Jeunesse Horizon 2050 — Éligibilité :**\n\n"
                     "✅ **Équipes de 2 à 5 jeunes** âgés de **18 à 35 ans**.\n"
-                    "✅ **Au moins 1 membre** doit être **originaire du Tanganyika**.\n\n"
+                    "✅ **Au moins 1 membre** doit être **résidant en RDC**.\n\n"
                     "👥 **Profils acceptés :**\n"
                     "• Étudiants\n"
                     "• Lycéens techniques\n"
@@ -743,12 +743,12 @@ class ActionAnswerExpoBeton(Action):
             elif asks_dates:
                 answer = (
                     "📅 **Concours Jeunesse Horizon 2050 — Dates clés :**\n\n"
-                    "• **Soumission des dossiers :** semaine du **11 mai 2026**\n"
+                    "• **Soumission des dossiers :** semaine du **14 septembre 2026**\n"
                     "• **Sélection :** 10 projets retenus pour pré-incubation gratuite\n"
                     "• **Pré-incubation :** coaching, formation, appui technique (Club BTP & CMA + partenaires)\n"
-                    "• **Finale :** **30 mai 2026** (Jour 4 d'EXPOBETON RDC) — pitch 5 min + Q&R devant jury\n"
-                    "• **Remise des prix :** cérémonie de clôture officielle, **30 mai 2026**\n\n"
-                    "📍 Le concours fait partie de la 11ème édition d'EXPOBETON RDC, du **27 au 30 mai 2026 à Kalemie**.\n\n"
+                    "• **Finale :** **10 octobre 2026** (Jour 4 d'EXPOBETON RDC) — pitch 5 min + Q&R devant jury\n"
+                    "• **Remise des prix :** cérémonie de clôture officielle, **10 octobre 2026**\n\n"
+                    "📍 Le concours fait partie de la 12ème édition d'EXPOBETON RDC, du **07 au 10 octobre 2026 à Kinshasa**.\n\n"
                     "🔗 https://expobetonrdc.com/concours-jeunesse.html"
                 )
             elif asks_prizes:
@@ -773,47 +773,47 @@ class ActionAnswerExpoBeton(Action):
                 answer = (
                     "📝 **Concours Jeunesse Horizon 2050 — Comment participer :**\n\n"
                     "**1️⃣ Constituer une équipe**\n"
-                    "2 à 5 jeunes (18-35 ans), avec au moins 1 membre originaire du Tanganyika.\n\n"
-                    "**2️⃣ Préparer le dossier (semaine du 11 mai 2026)**\n"
+                    "2 à 5 jeunes (18-35 ans), avec au moins 1 membre résidant en RDC.\n\n"
+                    "**2️⃣ Préparer le dossier (semaine du 14 septembre 2026)**\n"
                     "• Dossier projet : 5 à 10 pages (PDF)\n"
                     "• Vidéo de pitch : 2 minutes (YouTube, Vimeo, Google Drive...)\n"
                     "• Choisir 1 catégorie parmi 4 (BTP, Lithium, Corridors, Agro-Verte)\n\n"
                     "**3️⃣ Remplir le formulaire en ligne**\n"
                     "Titre, pitch (max 600 caractères), infos chef d'équipe, origine, équipe, engagements.\n\n"
                     "**4️⃣ Attendre la sélection**\n"
-                    "10 projets seront retenus pour la pré-incubation, puis la finale du **30 mai 2026** à Kalemie.\n\n"
+                    "10 projets seront retenus pour la pré-incubation, puis la finale du **10 octobre 2026** à Kinshasa.\n\n"
                     "🔗 **S'inscrire :** https://expobetonrdc.com/concours-jeunesse.html"
                 )
             elif asks_jury:
                 answer = (
                     "⚖️ **Concours Jeunesse Horizon 2050 — Composition du jury :**\n\n"
-                    "• Le **Gouverneur** (Province du Tanganyika)\n"
+                    "• Le **Gouverneur** (Ville de Kinshasa)\n"
                     "• Les **Ministres** (Jeunesse, PME, Formation)\n"
                     "• Les représentants du **Club BTP & CMA**\n"
                     "• Les **sponsors BTP**\n"
-                    "• Les **experts UNIKAL / UNILU / UNH** (universités)\n"
+                    "• Les **experts universitaires** (universités partenaires)\n"
                     "• Les **partenaires techniques**\n\n"
-                    "Les finalistes présentent un pitch de 5 minutes + session Q&R le **30 mai 2026**.\n\n"
+                    "Les finalistes présentent un pitch de 5 minutes + session Q&R le **10 octobre 2026**.\n\n"
                     "🔗 https://expobetonrdc.com/concours-jeunesse.html"
                 )
             else:
                 # General overview
                 answer = (
-                    "🏆 **Concours Jeunesse Horizon 2050 — EXPOBETON RDC Kalemie 2026**\n\n"
+                    "🏆 **Concours Jeunesse Horizon 2050 — EXPOBETON RDC Kinshasa 2026**\n\n"
                     "\"La jeunesse congolaise ne doit plus seulement rêver le futur, elle doit désormais le construire.\" 🚧\n\n"
-                    "📍 **Lieu :** Kalemie | 📅 **Dates :** 27-30 mai 2026 (11ème édition)\n\n"
+                    "📍 **Lieu :** Kinshasa | 📅 **Dates :** 07-10 octobre 2026 (12ème édition)\n\n"
                     "**🎯 3 objectifs :**\n"
                     "1. Encourager l'innovation en architecture, urbanisme, BTP et mining\n"
-                    "2. Valoriser les ressources locales du Tanganyika\n"
+                    "2. Valoriser les ressources locales de la RDC\n"
                     "3. Créer des emplois durables et stimuler l'entrepreneuriat jeune\n\n"
                     "**📚 4 catégories thématiques :**\n"
                     "1️⃣ BTP & Aménagement Durable\n"
                     "2️⃣ Transformation Minerais & Lithium\n"
                     "3️⃣ Infrastructures & Corridors\n"
                     "4️⃣ Agro-Logistique & Économie Verte\n\n"
-                    "**👥 Éligibilité :** équipes de 2 à 5 jeunes (18-35 ans), dont au moins 1 originaire du Tanganyika.\n\n"
-                    "**📝 Soumission :** semaine du 11 mai 2026 (dossier 5-10 pages + vidéo 2 min)\n"
-                    "**🎤 Finale :** 30 mai 2026, pitch 5 min devant jury\n\n"
+                    "**👥 Éligibilité :** équipes de 2 à 5 jeunes (18-35 ans), dont au moins 1 résidant en RDC.\n\n"
+                    "**📝 Soumission :** semaine du 14 septembre 2026 (dossier 5-10 pages + vidéo 2 min)\n"
+                    "**🎤 Finale :** 10 octobre 2026, pitch 5 min devant jury\n\n"
                     "**🏆 Prix :** kit de démarrage (financement + coaching 6 mois), stand gratuit édition suivante, mise en relation B2B/B2G.\n\n"
                     "💡 Demandez-moi : *catégories*, *éligibilité*, *dates*, *prix*, *soumission* ou *jury*.\n\n"
                     "🔗 **S'inscrire :** https://expobetonrdc.com/concours-jeunesse.html"
@@ -840,17 +840,17 @@ class ActionAnswerExpoBeton(Action):
         ])
         if has_where_word or (has_ou and has_location_context):
             answer = (
-                "📍 **Lieu precis -- ExpoBeton RDC 2026 (11eme edition) :**\n\n"
-                "Le salon se tiendra sur **la plage du boulevard Lumumba**, "
-                "au bord du **lac Tanganyika**, a **Kalemie**, chef-lieu de la "
-                "Province du **Tanganyika**, RDC.\n\n"
+                "📍 **Lieu precis -- ExpoBeton RDC 2026 (12eme edition) :**\n\n"
+                "Le salon se tiendra a **La Grande Residence - Galerie La Fontaine**, "
+                "au **07 Avenue de l'OUA, commune de Ngaliema**, a "
+                "**Kinshasa**, capitale de la RDC.\n\n"
                 "🌊 **Un cadre exceptionnel :**\n"
-                "• Site en front de lac, directement sur la plage de Kalemie\n"
-                "• Le long du boulevard Lumumba (artere principale de la ville)\n"
-                "• Ouverture panoramique sur le lac Tanganyika -- le plus long "
-                "lac d'eau douce au monde (673 km)\n"
-                "• Acces facile depuis le port et le centre-ville\n\n"
-                "📅 Dates : du **27 au 30 mai 2026** (4 jours)."
+                "• Site d'exception au coeur de Ngaliema, quartier residentiel\n"
+                "• Espaces d'exposition modernes et salles equipees\n"
+                "• Acces facile depuis le centre-ville et les grands axes"
+                "\n"
+                "• Capacite adaptee a un salon international\n\n"
+                "📅 Dates : du **07 au 10 octobre 2026** (4 jours)."
             )
             dispatcher.utter_message(text=answer)
             bot_response = answer
@@ -861,13 +861,13 @@ class ActionAnswerExpoBeton(Action):
         if any(kw in user_question for kw in ['date', 'quand', 'when', 'calendrier', 'duree', 'combien de jours', 'period']):
             if any(w in user_question for w in ['expobeton', 'salon', 'edition', 'edtion', 'editon', 'evenement', '2026']):
                 answer = (
-                    "La 11eme edition d'ExpoBeton RDC se tiendra du **27 au 30 mai 2026** "
-                    "(4 jours) a **Kalemie**, Province du Tanganyika.\n\n"
+                    "La 12eme edition d'ExpoBeton RDC se tiendra du **07 au 10 octobre 2026** "
+                    "(4 jours) a **Kinshasa**, a La Grande Residence - Galerie La Fontaine.\n\n"
                     "Programme resume :\n"
-                    "• Mer 27 mai : Journee Portes Ouvertes, Touristique et Culturelle\n"
-                    "• Jeu 28 mai : Ouverture officielle + Panels Habitat & Territoire\n"
-                    "• Ven 29 mai : Corridors transfrontaliers, ZES, Energie\n"
-                    "• Sam 30 mai : Jeunesse & Innovation + CLOTURE"
+                    "• Mer 07 oct : Journee Portes Ouvertes, Touristique et Culturelle\n"
+                    "• Jeu 08 oct : Ouverture officielle + Panels Habitat & Territoire\n"
+                    "• Ven 09 oct : Corridors transfrontaliers, ZES, Energie\n"
+                    "• Sam 10 oct : Jeunesse & Innovation + CLOTURE"
                 )
                 dispatcher.utter_message(text=answer)
                 bot_response = answer
@@ -878,11 +878,11 @@ class ActionAnswerExpoBeton(Action):
         if any(kw in user_question for kw in ['theme', 'sujet', 'topic', 'tema']):
             if any(w in user_question for w in ['edition', 'edtion', 'editon', '2026', 'expobeton', 'salon']):
                 answer = (
-                    "Le theme de la 11eme edition (2026) est : "
-                    "**Kalemie - Capital du Lithium et carrefour strategique au coeur "
-                    "des corridors africains de l'Est, du Sud, de l'Ouest.**\n\n"
-                    "Cette edition est entierement dediee a Kalemie et met en lumiere "
-                    "le potentiel strategique du lithium."
+                    "Le theme de la 12eme edition (2026) est : "
+                    "**Kinshasa, Locomotive de la Transformation des Villes "
+                    "de la RDC.**\n\n"
+                    "Cette edition est consacree au role moteur de Kinshasa et met en lumiere "
+                    "la transformation urbaine et les infrastructures."
                 )
                 dispatcher.utter_message(text=answer)
                 bot_response = answer
@@ -902,13 +902,13 @@ class ActionAnswerExpoBeton(Action):
         if any(word in user_question for word in ['édition', 'edition', 'edtion', 'editon', 'ediiton', 'ediition']):
             # "how many editions" pattern - check first (more specific)
             if any(word in user_question for word in ['combien', 'how many', 'nombre']):
-                answer = "**10 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016 :\n\n1. 2016 : 1ere edition - Kinshasa\n2. 2017 : 2eme edition - Kinshasa\n3. 2018 : 3eme edition - Kinshasa\n4. 2019 : 4eme edition - Kinshasa\n5. 2021 : 5eme edition - Kinshasa\n6. 2022 : 6eme edition - Kinshasa\n7. 2023 : 7eme edition - Kolwezi (Lualaba)\n8. 2024 : 8eme edition - Kinshasa + Matadi\n9. 2025 : 9eme edition - Kinshasa\n10. 2025 : 10eme edition - Kinshasa\n\nLa **11eme edition** aura lieu du **27 au 30 mai 2026 a Kalemie**."
+                answer = "**10 editions** d'ExpoBeton RDC ont deja ete organisees depuis 2016 :\n\n1. 2016 : 1ere edition - Kinshasa\n2. 2017 : 2eme edition - Kinshasa\n3. 2018 : 3eme edition - Kinshasa\n4. 2019 : 4eme edition - Kinshasa\n5. 2021 : 5eme edition - Kinshasa\n6. 2022 : 6eme edition - Kinshasa\n7. 2023 : 7eme edition - Kolwezi (Lualaba)\n8. 2024 : 8eme edition - Kinshasa + Matadi\n9. 2025 : 9eme edition - Kinshasa\n10. 2025 : 10eme edition - Kinshasa\n\n11. 2026 : 11eme edition - Grand Katanga (Lubumbashi, satellites Kalemie & Kolwezi)\n\nLa **12eme edition** aura lieu du **07 au 10 octobre 2026 a Kinshasa**."
                 dispatcher.utter_message(text=answer)
                 bot_response = answer
                 log_conversation_message(session_id, 'bot', bot_response, metadata)
                 return []
             # Default: assume user is asking which edition (most common question)
-            answer = "Nous sommes a la **11eme edition** d'ExpoBeton RDC ! Elle se tiendra du **27 au 30 mai 2026** a **Kalemie**, Province du Tanganyika.\n\nLe theme : **Kalemie - Capital du Lithium et carrefour strategique au coeur des corridors africains de l'Est, du Sud, de l'Ouest.**\n\nC'est la toute premiere edition organisee a Kalemie !"
+            answer = "Nous sommes a la **12eme edition** d'ExpoBeton RDC ! Elle se tiendra du **07 au 10 octobre 2026** a **Kinshasa**, a La Grande Residence - Galerie La Fontaine.\n\nLe theme : **Kinshasa, Locomotive de la Transformation des Villes de la RDC.**\n\n(La 11eme edition s'est tenue dans le Grand Katanga - Lubumbashi, avec etapes satellites a Kalemie et Kolwezi.)"
             dispatcher.utter_message(text=answer)
             bot_response = answer
             log_conversation_message(session_id, 'bot', bot_response, metadata)

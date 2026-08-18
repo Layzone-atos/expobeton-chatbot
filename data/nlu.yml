@@ -129,7 +129,7 @@ nlu:
     - quand est la prochaine édition ?
     - dates de la prochaine édition
     - quand aura lieu la prochaine édition ?
-    - c'est quand la 11ème édition ?
+    - c'est quand la 12ème édition ?
     - quand commence expobeton 2026 ?
     - quand se termine expobeton ?
     - combien de jours dure l'événement ?
@@ -171,7 +171,7 @@ nlu:
     - dans quelle province ?
     - où est-ce que ça se passe ?
     - expobeton se passe où ?
-    - quel est le lieu de la 11ème édition ?
+    - quel est le lieu de la 12ème édition ?
     - puis-je savoir le lieu précis où se tiendra l'expo béton à kalemie ?
     - quel est le lieu précis de l'événement ?
     - où exactement se tiendra l'expo béton ?
@@ -207,7 +207,7 @@ nlu:
     - quel thème pour expobeton ?
     - de quoi parle l'événement ?
     - quel est le thème 2026 ?
-    - c'est quoi le thème de la 11ème édition ?
+    - c'est quoi le thème de la 12ème édition ?
     - quel est le sujet principal ?
     - de quoi traite expobeton cette année ?
     - quel est le thème du salon ?
@@ -372,7 +372,7 @@ nlu:
     - quel est le programme ?
     - programme de l'événement
     - programme détaillé
-    - quel est le programme de la 11ème édition ?
+    - quel est le programme de la 12ème édition ?
     - programme jour par jour
     - quelles sont les activités prévues ?
     - que se passe-t-il le premier jour ?
@@ -530,7 +530,7 @@ nlu:
   examples: |
     - quels sont les objectifs ?
     - objectifs de l'événement
-    - objectifs de la 11ème édition
+    - objectifs de la 12ème édition
     - pourquoi organiser cet événement ?
     - quel est le but d'expobeton ?
     - quels sont les résultats attendus ?

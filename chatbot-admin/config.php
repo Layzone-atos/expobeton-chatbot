@@ -37,6 +37,32 @@ define('SESSION_TIMEOUT', 3600); // 1 hour in seconds
 date_default_timezone_set('Africa/Lubumbashi');
 
 // ============================================================
+// EMAIL CONFIGURATION (for admin replies to offline users)
+// ============================================================
+define('EMAIL_FROM_ADDRESS', 'info@expobetonrdc.com');
+define('EMAIL_FROM_NAME', 'ExpoBeton RDC');
+define('EMAIL_REPLY_TO', 'info@expobetonrdc.com');
+define('EMAIL_SIGNATURE_HTML', '<p style="margin-top:24px;color:#666;font-size:13px;">—<br>Équipe ExpoBeton RDC<br><a href="https://www.expobetonrdc.com">www.expobetonrdc.com</a> • info@expobetonrdc.com</p>');
+
+// ============================================================
+// UNRESOLVED CONVERSATION DETECTION PATTERNS
+// ============================================================
+// Case-insensitive substrings found in bot messages when it can't answer.
+// A session is marked as unresolved if any of its last bot messages contains these.
+$GLOBALS['UNRESOLVED_BOT_PATTERNS'] = [
+    'je ne peux pas vous fournir',
+    'i cannot provide an answer',
+    "don't have the specific information",
+    "don\u2019t have the specific information",
+    "je n'ai pas d'information",
+    "je n\u2019ai pas d\u2019information",
+    'je suis désolé',
+    "i'm sorry, i don't have",
+    'reformulez votre question',
+    'could you rephrase',
+];
+
+// ============================================================
 // COUNTRY FLAG HELPER (uses flagcdn.com images for Windows compatibility)
 // ============================================================
 // Maps country names to ISO 3166-1 alpha-2 codes for flag images

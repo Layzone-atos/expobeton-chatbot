@@ -89,3 +89,108 @@ body {
 .page-link {
     color: #0A2A66;
 }
+
+/* ============================================================
+   RBAC - role badges (admin_accounts.php & navbar)
+   ============================================================ */
+.role-badge {
+    font-size: 0.7rem;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    padding: 0.25em 0.55em;
+    border-radius: 6px;
+    font-weight: 600;
+}
+.role-badge.role-super_admin { background: linear-gradient(135deg,#c0392b,#e74c3c); color:#fff; }
+.role-badge.role-admin       { background: linear-gradient(135deg,#0A2A66,#1e4aa8); color:#fff; }
+.role-badge.role-viewer      { background: #e9ecef; color:#495057; }
+
+/* ============================================================
+   KPI tiles (admin_accounts.php & registrations.php)
+   ============================================================ */
+.kpi-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(10,42,102,0.06);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+    transition: box-shadow .2s, transform .2s;
+}
+.kpi-card:hover {
+    box-shadow: 0 6px 20px rgba(10,42,102,0.10);
+    transform: translateY(-1px);
+}
+.kpi-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+.bg-primary-soft { background: rgba(10,42,102,0.10); color:#0A2A66; }
+.bg-success-soft { background: rgba(40,167,69,0.12);  color:#1d7a3a; }
+.bg-warning-soft { background: rgba(241,196,15,0.15); color:#a37a00; }
+.bg-danger-soft  { background: rgba(231,76,60,0.12);  color:#b23a2c; }
+.bg-info-soft    { background: rgba(52,152,219,0.12); color:#1d6aa5; }
+.kpi-value { font-size: 1.6rem; font-weight: 700; color:#0A2A66; line-height: 1.1; }
+.kpi-label { font-size: 0.8rem; color:#6c757d; margin-top: 2px; }
+
+/* ============================================================
+   Registration cards (registrations.php)
+   ============================================================ */
+.reg-card {
+    border-radius: 14px;
+    transition: transform .2s ease, box-shadow .2s ease;
+    border: 1px solid #eef1f6;
+}
+.reg-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(10,42,102,0.12) !important;
+    border-color: #dde3ee;
+}
+.reg-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#0A2A66,#1e4aa8);
+    color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1rem;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(10,42,102,0.25);
+}
+.reg-avatar-sm {
+    width: 32px; height: 32px; font-size: 0.8rem;
+    box-shadow: none;
+}
+
+/* Category pill (tier-coloured) */
+.reg-category-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 0.25em 0.6em;
+    border-radius: 999px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+.reg-category-badge.cat-platinum    { background: linear-gradient(135deg,#bdc3c7,#e5e7ea); color:#2c3e50; border-color:#c4c4c4; }
+.reg-category-badge.cat-gold        { background: #fff4cf; color:#7a5b00; border-color:#f1c40f; }
+.reg-category-badge.cat-silver      { background: #edf0f2; color:#4a5860; border-color:#bdc3c7; }
+.reg-category-badge.cat-bronze      { background: #f4e0cd; color:#6b3f1d; border-color:#cd7f32; }
+.reg-category-badge.cat-participant { background: #eef1f4; color:#4a5864; border-color:#cfd6de; }
+.reg-category-badge.cat-exposant    { background: #d7e8f7; color:#155a8a; border-color:#3498db; }
+.reg-category-badge.cat-default     { background: #e9ecef; color:#495057; border-color:#dee2e6; }
+
+/* Filter toolbar: stack on mobile */
+@media (max-width: 767.98px) {
+    .kpi-card { padding: 0.75rem 1rem; gap: 0.75rem; }
+    .kpi-icon { width: 40px; height: 40px; font-size: 1.1rem; }
+    .kpi-value { font-size: 1.3rem; }
+    .reg-avatar { width: 42px; height: 42px; font-size: 0.9rem; }
+}
