@@ -1,6 +1,7 @@
 FROM python:3.10-slim
 
-# Force rebuild - 2026-04-17 19:45 - Use committed model for instant startup
+# Force rebuild - 2026-08-19 - conversation-log audit fixes (Oui loop, NLU gaps, drop-off menu)
+ARG BUILD_STAMP=2026-08-19-audit-fixes
 # Model expobeton-railway.tar.gz is committed to git (85.5% accuracy)
 # Set working directory
 WORKDIR /app
