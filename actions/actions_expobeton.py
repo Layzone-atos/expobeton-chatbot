@@ -547,18 +547,9 @@ class ValidateRegistrationForm(FormValidationAction):
         self, slot_value: Any, dispatcher: CollectingDispatcher,
         tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
-        # Phone is OPTIONAL: user can skip with 'non', 'passer', 'skip',
-        # 'ignorer', 'aucun', '-', '.', 'no', 'none', etc.
+        # Phone is MANDATORY: a valid number (>= 8 digits) is required to
+        # proceed — skipping is no longer allowed.
         raw = str(slot_value or '').strip()
-        skip_kw = {'non', 'no', 'none', 'pas', 'passer', 'skip', 'ignorer',
-                   'aucun', 'aucune', 'sans', '-', '.', 'n/a', 'na',
-                   'pas de telephone', 'pas de téléphone', 'pas de tel',
-                   'je ne veux pas', 'je prefere pas', 'je préfère pas'}
-        if raw.lower() in skip_kw or raw == '':
-            dispatcher.utter_message(
-                text="👍 Pas de problème, je passe le numéro de téléphone (champ optionnel)."
-            )
-            return {"reg_phone": "Non fourni", "_reg_validation_fails": 0}
         # Accept human-friendly inputs like "whatsapp : 00971 56 123 4567"
         # by extracting only digits and an optional leading '+'.
         digits = re.sub(r'\D', '', raw)
@@ -572,9 +563,10 @@ class ValidateRegistrationForm(FormValidationAction):
             return {"reg_phone": normalized, "_reg_validation_fails": 0}
         dispatcher.utter_message(
             text=(
-                "Veuillez fournir un numéro de téléphone valide (au moins 8 chiffres). "
-                "Exemples : +243 81 234 5678 ou 00971 56 123 4567.\n"
-                "💡 Ce champ est optionnel : tapez **'passer'** ou **'non'** si vous préférez ne pas le donner."
+                "⚠️ Le numéro de téléphone est **obligatoire** pour finaliser "
+                "votre inscription. Veuillez fournir un numéro valide "
+                "(au moins 8 chiffres).\n\n"
+                "Exemples : +243 81 234 5678 ou 00971 56 123 4567."
             )
         )
         return _bump_fail(tracker, dispatcher, "reg_phone")

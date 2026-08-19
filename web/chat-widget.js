@@ -596,6 +596,13 @@ function renderUploadCard(uploadReq) {
 
         const card = document.createElement('div');
         card.className = 'upload-card';
+        // The "upload via website" link only exists once a server-side reference
+        // is available. In local_store (pre-confirmation) flows upload_url is null
+        // and rendering the anchor would produce a broken href="null" link (404).
+        const siteUploadLink = uploadReq.upload_url
+            ? `<a href="${uploadReq.upload_url}" target="_blank" class="upload-skip-link">Uploadez via le site web</a>
+                <span class="upload-skip-sep">|</span>`
+            : '';
         card.innerHTML = `
             <div class="upload-card-header">
                 <span class="upload-card-label">${uploadReq.label}</span>
@@ -619,8 +626,7 @@ function renderUploadCard(uploadReq) {
             </div>
             <div class="upload-result" id="upload-result-${uploadReq.type}" style="display:none"></div>
             <div class="upload-card-footer">
-                <a href="${uploadReq.upload_url}" target="_blank" class="upload-skip-link">Uploadez via le site web</a>
-                <span class="upload-skip-sep">|</span>
+                ${siteUploadLink}
                 <a href="#" class="upload-skip-link" id="skip-btn-${uploadReq.type}">Passer cette étape</a>
             </div>
         `;
