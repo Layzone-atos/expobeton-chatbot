@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 import os
 EXPOBETON_API_URL = os.getenv("EXPOBETON_API_URL", "https://expobetonrdc.com/api_chatbot_register.php")
 EXPOBETON_API_KEY = os.getenv("EXPOBETON_API_KEY", "ebx-rasa-2026-kAlEmIe-be96bac9f905b106ed2b941dfe536b07")
+ADMINCB_ANALYTICS_URL = os.getenv("ADMINCB_ANALYTICS_URL", "https://admincb.expobetonrdc.com/api_chatbot_analytics.php")
 
 
 def api_headers() -> dict:
@@ -1071,6 +1072,28 @@ class ActionConfirmRegistration(Action):
                 return [AllSlotsReset()]
 
             ref = result.get("data", {}).get("reference", "N/A")
+
+            # Mirror the registration (session id + phone included) into the
+            # admincb dashboard registrations table (fire-and-forget).
+            try:
+                requests.post(
+                    f"{ADMINCB_ANALYTICS_URL}?action=registration&api_key={EXPOBETON_API_KEY}",
+                    json={
+                        "session_id":       tracker.sender_id,
+                        "reference_number": ref,
+                        "category":         data["category"],
+                        "company":          data["company"],
+                        "contact_name":     data["contact_name"],
+                        "email":            data["email"],
+                        "phone":            data["phone"],
+                        "country":          data["country"],
+                    },
+                    headers={"Accept": "application/json", "User-Agent": "RasaChatbot/1.0 ExpoBeton"},
+                    timeout=10,
+                )
+            except Exception as e:
+                logger.error(f"AdminCB registration sync failed: {e}")
+
             upload_base = os.getenv(
                 "EXPOBETON_UPLOAD_URL",
                 "https://expobetonrdc.com/upload_documents.php"

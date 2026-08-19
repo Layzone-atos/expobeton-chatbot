@@ -66,6 +66,7 @@ function ensureTables() {
         duration_seconds INT NULL,
         user_email VARCHAR(255) NULL,
         user_name VARCHAR(255) NULL,
+        user_phone VARCHAR(50) NULL,
         ip_address VARCHAR(45) NULL,
         country VARCHAR(100) NULL,
         city VARCHAR(100) NULL,
@@ -159,6 +160,7 @@ function ensureTables() {
     try { $db->exec("ALTER TABLE sessions ADD COLUMN is_unresolved TINYINT(1) NOT NULL DEFAULT 0"); } catch (Exception $e) {}
     try { $db->exec("ALTER TABLE sessions ADD COLUMN resolved_at DATETIME NULL"); } catch (Exception $e) {}
     try { $db->exec("ALTER TABLE sessions ADD COLUMN resolved_by VARCHAR(64) NULL"); } catch (Exception $e) {}
+    try { $db->exec("ALTER TABLE sessions ADD COLUMN user_phone VARCHAR(50) NULL"); } catch (Exception $e) {}
     try { $db->exec("ALTER TABLE sessions ADD INDEX idx_unresolved (is_unresolved)"); } catch (Exception $e) {}
 }
 
@@ -387,7 +389,8 @@ function handleSessionStart($data) {
             referrer_url  = COALESCE(NULLIF(referrer_url,''),  ?),
             user_agent    = COALESCE(NULLIF(user_agent,''),    ?),
             user_name     = COALESCE(NULLIF(user_name,''),     ?),
-            user_email    = COALESCE(NULLIF(user_email,''),    ?)
+            user_email    = COALESCE(NULLIF(user_email,''),    ?),
+            user_phone    = COALESCE(NULLIF(user_phone,''),    ?)
             WHERE session_id = ?");
         $upd->execute([
             $ip, $country, $city,
@@ -401,6 +404,7 @@ function handleSessionStart($data) {
             $data['user_agent']     ?? null,
             $data['user_name']      ?? null,
             $data['user_email']     ?? null,
+            $data['user_phone']     ?? null,
             $sessionId,
         ]);
         echo json_encode(['success' => true, 'message' => 'Session enriched', 'country' => $country, 'city' => $city]);
@@ -420,8 +424,8 @@ function handleSessionStart($data) {
     
     $stmt = $db->prepare("INSERT INTO sessions 
         (session_id, started_at, ip_address, country, city, device_type, browser, os, 
-         screen_width, screen_height, language, referrer_url, user_agent, user_name, user_email)
-        VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+         screen_width, screen_height, language, referrer_url, user_agent, user_name, user_email, user_phone)
+        VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
     $stmt->execute([
         $sessionId,
@@ -437,7 +441,8 @@ function handleSessionStart($data) {
         $data['referrer'] ?? null,
         $data['user_agent'] ?? null,
         $data['user_name'] ?? null,
-        $data['user_email'] ?? null
+        $data['user_email'] ?? null,
+        $data['user_phone'] ?? null
     ]);
     
     // Update daily stats
@@ -572,6 +577,10 @@ function handleUpdateSession($data) {
     if (!empty($data['user_name'])) {
         $updates[] = "user_name = ?";
         $params[] = $data['user_name'];
+    }
+    if (!empty($data['user_phone'])) {
+        $updates[] = "user_phone = ?";
+        $params[] = $data['user_phone'];
     }
     
     if (!empty($updates)) {
@@ -741,13 +750,13 @@ function handleListSessions() {
     if ($status === 'resolved')   $where[] = "s.resolved_at IS NOT NULL";
 
     if ($search !== '') {
-        $where[] = "(s.session_id LIKE ? OR s.user_email LIKE ? OR s.user_name LIKE ?)";
-        $params[] = "%$search%"; $params[] = "%$search%"; $params[] = "%$search%";
+        $where[] = "(s.session_id LIKE ? OR s.user_email LIKE ? OR s.user_name LIKE ? OR s.user_phone LIKE ?)";
+        $params[] = "%$search%"; $params[] = "%$search%"; $params[] = "%$search%"; $params[] = "%$search%";
     }
 
     $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
     $sql = "SELECT s.session_id, s.started_at, s.ended_at, s.duration_seconds,
-                   s.user_name, s.user_email, s.country, s.city, s.device_type,
+                   s.user_name, s.user_email, s.user_phone, s.country, s.city, s.device_type,
                    s.message_count, s.is_unresolved, s.resolved_at, s.resolved_by
             FROM sessions s
             $whereSql

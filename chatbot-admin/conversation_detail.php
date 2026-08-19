@@ -390,13 +390,20 @@ $userEmail    = $session['user_email'] ?? '';
                             <tr><td class="text-muted">Email</td><td><?= escape($session['user_email'] ?: '-') ?></td></tr>
                             <tr><td class="text-muted">Phone</td><td>
                               <?php
-                                // Phone comes from the registration form (registrations table).
-                                // Falls back to '-' when no registration or user skipped the optional field.
+                                // Phone comes from the registration form (registrations table),
+                                // falling back to the phone collected by the chat widget entry form
+                                // (sessions.user_phone). '-' when neither is available.
                                 $phoneVal = '';
                                 if ($registration && !empty($registration['phone']) && strtolower(trim($registration['phone'])) !== 'non fourni') {
                                     $phoneVal = $registration['phone'];
+                                } elseif (!empty($session['user_phone'])) {
+                                    $phoneVal = $session['user_phone'];
                                 }
-                                echo $phoneVal !== '' ? escape($phoneVal) : '<span class="text-muted">-</span>';
+                                if ($phoneVal !== '') {
+                                    echo '<a href="tel:' . escape(preg_replace('/\s+/', '', $phoneVal)) . '">' . escape($phoneVal) . '</a>';
+                                } else {
+                                    echo '<span class="text-muted">-</span>';
+                                }
                               ?>
                             </td></tr>
                             <tr><td class="text-muted">Country</td><td><?= formatCountryWithFlag($session['country'] ?? '-') ?></td></tr>

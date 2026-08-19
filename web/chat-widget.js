@@ -70,6 +70,7 @@ function ensureAnalyticsSession() {
         referrer: _deviceMetadata.referrer,
         user_agent: _deviceMetadata.user_agent,
         user_name: chatState.userInfo ? chatState.userInfo.name : '',
+        user_phone: chatState.userInfo ? (chatState.userInfo.phone || '') : '',
         user_email: chatState.userInfo ? (chatState.userInfo.email || '') : '',
         country: _detectedCountry || ''
     });
