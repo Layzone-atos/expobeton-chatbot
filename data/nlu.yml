@@ -1018,6 +1018,21 @@ nlu:
 
 - intent: provide_category
   examples: |
+    - 1
+    - 2
+    - 3
+    - choix 1
+    - choix 2
+    - choix 3
+    - option 1
+    - option 2
+    - option 3
+    - Sponsor
+    - je choisis sponsor
+    - Exposant
+    - je suis exposant
+    - Participant Simple
+    - participant gratuit
     - je veux [Platinum](sponsor_level)
     - catégorie [Gold](sponsor_level)
     - [Silver](sponsor_level) s'il vous plaît
