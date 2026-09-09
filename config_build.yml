@@ -15,8 +15,23 @@ pipeline:
   - name: ResponseSelector
     epochs: 30
   - name: FallbackClassifier
-    threshold: 0.1
-    ambiguity_threshold: 0.05
+    # Seuil aligné sur config.yml (0.4 / 0.1). C'est CE fichier que le Dockerfile
+    # utilise (« rasa train --config config_build.yml »), donc c'est lui qui fixe
+    # le comportement en production — pas config.yml.
+    # À 0.1, nlu_fallback ne se déclenchait pratiquement jamais : DIET renvoie une
+    # confiance softmax presque toujours > 0.1, même pour une question sans aucun
+    # rapport. Constaté en production : « quelle est la meilleure recette de
+    # gâteau au chocolat sans four ? » était classé ask_event_location et recevait
+    # l'adresse du salon, sans aucun signe d'incertitude.
+    # La cause aggravante est le motif « quelle est… », très présent dans les
+    # exemples de ask_event_location (« quelle est l'adresse du salon ? ») et sur
+    # lequel les features creuses de CountVectorsFeaturizer s'accrochent.
+    # Le repli est sûr : la règle « Handle nlu_fallback » route vers
+    # action_answer_expobeton, la même action que ask_general_question — une
+    # question légitime légèrement sous le seuil reçoit donc toujours une réponse
+    # RAG, jamais un silence.
+    threshold: 0.4
+    ambiguity_threshold: 0.1
 
 policies:
   - name: MemoizationPolicy

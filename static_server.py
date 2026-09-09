@@ -8,12 +8,36 @@ import sys
 import json
 import urllib.request
 import urllib.error
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 # Get port from environment variable
 PORT = int(os.environ.get('PORT', 5005))
 
+# Delai (secondes) laisse a Rasa pour repondre. Sans lui, urlopen() attendait
+# indefiniment : comme le serveur etait mono-thread, UNE requete lente gelait
+# alors TOUT le chatbot pour tous les visiteurs, sans jamais se liberer.
+# Mesure en production : ~25 % des requetes n'aboutissaient pas dans les 30 s.
+RASA_PROXY_TIMEOUT = 60
+
+# Racine des fichiers statiques. Fixee UNE fois au demarrage au lieu d'etre
+# changee a chaque requete : os.chdir() est global au processus, pas au thread.
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+# ThreadingHTTPServer (au lieu de HTTPServer) traite chaque requete dans son
+# propre thread. C'est aussi lui qui fixe daemon_threads = True, donc les
+# requetes en cours n'empechent pas l'arret du conteneur quand Railway envoie
+# SIGTERM. HTTPServer etait mono-thread : une seule requete lente mettait en
+# attente toutes les suivantes, y compris celles des autres visiteurs.
 class StaticFileHandler(SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        # directory= est le pendant thread-safe du chdir par requete : chaque
+        # instance connait sa racine sans toucher a l'etat global du processus.
+        # Sans lui, deux GET simultanés auraient pu lire le fichier d'un autre
+        # repertoire, ou tomber sur un chdir deja restaure.
+        kwargs['directory'] = PROJECT_DIR
+        super().__init__(*args, **kwargs)
+
     def do_GET(self):
         # Serve static files for web interface
         if self.path == '/' or self.path == '/index.html':
@@ -39,13 +63,12 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
                 # No file extension, serve index.html (for SPA routing)
                 self.path = '/web/index.html'
         
-        # Set the correct working directory
-        original_cwd = os.getcwd()
-        try:
-            os.chdir(os.path.dirname(os.path.abspath(__file__)))
-            return SimpleHTTPRequestHandler.do_GET(self)
-        finally:
-            os.chdir(original_cwd)
+        # La racine statique est deja fixee par __init__ (directory=PROJECT_DIR) :
+        # plus besoin de chdir ici. L'ancien try/os.chdir/finally etait sans effet
+        # tant que le serveur etait mono-thread (start_server() a deja fait le
+        # meme chdir au demarrage), mais il serait devenu une course entre threads
+        # avec ThreadingHTTPServer, puisque os.chdir() modifie tout le processus.
+        return SimpleHTTPRequestHandler.do_GET(self)
     
     def do_POST(self):
         # Forward webhook requests to Rasa server
@@ -83,8 +106,12 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
                     method='POST'
                 )
                 
-                # Forward the request to Rasa server
-                with urllib.request.urlopen(req) as response:
+                # Forward the request to Rasa server.
+                # Le timeout est indispensable : sans lui, un Rasa muet bloquait
+                # ce thread pour toujours. Avec ThreadingHTTPServer les autres
+                # visiteurs ne sont plus affectes, et celui-ci recoit un 504
+                # explicite au lieu d'attendre indefiniment.
+                with urllib.request.urlopen(req, timeout=RASA_PROXY_TIMEOUT) as response:
                     response_data = response.read()
                     self.send_response(response.getcode())
                     # Forward all headers from Rasa response
@@ -106,32 +133,67 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
                     
             except urllib.error.URLError as e:
                 # Handle URL errors (connection issues)
+                # Le corps est serialize AVANT d'ecrire les en-tetes, afin de
+                # pouvoir annoncer Content-Length : sinon le client attend la
+                # fermeture du socket pour connaitre la fin du corps.
                 print(f"URL Error connecting to Rasa server: {e.reason}")
-                self.send_response(503)  # Service Unavailable
-                self.send_header('Content-Type', 'application/json')
-                self.end_headers()
-                error_response = {
+                error_response = json.dumps({
                     "error": "Service Unavailable",
                     "message": "Unable to connect to Rasa server. Please check that the server is running."
-                }
-                self.wfile.write(json.dumps(error_response).encode('utf-8'))
+                }).encode('utf-8')
+                self.send_response(503)  # Service Unavailable
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Content-Length', str(len(error_response)))
+                self.end_headers()
+                self.wfile.write(error_response)
                 
+            except TimeoutError as e:
+                # Un delai de lecture leve TimeoutError (et non URLError) : sans
+                # cette branche il tombait dans le « except Exception » et
+                # renvoyait 500, ce qui laissait croire a un bug du proxy alors
+                # que c'est Rasa qui n'a pas repondu a temps. 504 est le code
+                # exact pour une passerelle dont l'amont ne repond pas.
+                # TimeoutError seulement : un OSError plus large avalerait les
+                # BrokenPipeError (client deja parti), pour lesquels ecrire une
+                # reponse n'a aucun sens.
+                print(f"Rasa server timed out after {RASA_PROXY_TIMEOUT}s: {e}")
+                self.send_response(504)
+                self.send_header('Content-Type', 'application/json')
+                error_response = json.dumps({
+                    "error": "Gateway Timeout",
+                    "message": "The chatbot engine did not answer in time. Please try again."
+                }).encode('utf-8')
+                self.send_header('Content-Length', str(len(error_response)))
+                self.end_headers()
+                self.wfile.write(error_response)
+
             except Exception as e:
-                # Handle other errors
-                print(f"Unexpected error: {e}")
+                # Handle other errors.
+                # Le detail de l'exception part dans les journaux du conteneur,
+                # PAS dans la reponse : ce serveur est le point d'entree public,
+                # et str(e) peut reveler des chemins internes, des noms d'hotes ou
+                # des extraits de configuration. Un attaquant n'a pas a les lire.
+                print(f"Unexpected error: {type(e).__name__}: {e}")
+                error_response = json.dumps({
+                    "error": "Internal Server Error",
+                    "message": "An unexpected error occurred. Please try again."
+                }).encode('utf-8')
                 self.send_response(500)
                 self.send_header('Content-Type', 'application/json')
+                self.send_header('Content-Length', str(len(error_response)))
                 self.end_headers()
-                error_response = {
-                    "error": "Internal Server Error",
-                    "message": str(e)
-                }
-                self.wfile.write(json.dumps(error_response).encode('utf-8'))
+                self.wfile.write(error_response)
         else:
             # Handle other POST requests by sending a 404
+            # Content-Length obligatoire : sans lui le client ne sait pas ou
+            # s'arrete le corps et attend la fermeture du socket. Constate sur
+            # POST /model/parse, ou la lecture du corps d'un 404 a bloque 60 s.
+            body_404 = b'Not Found'
             self.send_response(404)
+            self.send_header('Content-Type', 'text/plain')
+            self.send_header('Content-Length', str(len(body_404)))
             self.end_headers()
-            self.wfile.write(b'Not Found')
+            self.wfile.write(body_404)
 
     def do_OPTIONS(self):
         # Handle CORS preflight requests
@@ -143,11 +205,11 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
 
 def start_server():
     # Change to the project directory
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(PROJECT_DIR)
     
     # Start the HTTP server
     server_address = ('', PORT)
-    httpd = HTTPServer(server_address, StaticFileHandler)
+    httpd = ThreadingHTTPServer(server_address, StaticFileHandler)
     print(f"Starting static file server on port {PORT}")
     print(f"Access the chat interface at: http://localhost:{PORT}/")
     httpd.serve_forever()

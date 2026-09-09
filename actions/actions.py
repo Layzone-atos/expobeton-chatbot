@@ -694,12 +694,12 @@ MULTILINGUAL_CONTENT = {
         'ar': "فيما يتعلق بهذا السؤال، لا يمكنني تقديم إجابة في الوقت الحالي. أقترح عليك الاتصال بفريقنا عبر البريد الإلكتروني info@expobetonrdc.com.\n\n💡 إليك ما يمكنني مساعدتك به:\n• حدث ExpoBeton\n• التواريخ والموقع\n• الموضوع\n• المؤسسون\n• كيفية المشاركة\n• أن تصبح سفيراً"
     },
     'registration': {
-        'fr': "Pour participer à ExpoBeton RDC 2026, vous devez vous inscrire.\n\n📋 **3 catégories disponibles :**\n1️⃣ 🏆 Sponsor (Platinum/Gold/Bronze/Silver — de 10.000 $ à 40.000 $)\n2️⃣ 🏗️ Exposant (stand 3×3m à 5.000 $ ou 2×3m à 3.500 $)\n3️⃣ 👤 Participant Simple (Gratuit)\n\n💬 Souhaitez-vous que je vous guide dans l'inscription ? Tapez « oui » ou « je veux m'inscrire » pour commencer.\n\n💡 Vous pourriez aussi demander :\n• Quelles sont les dates ?\n• Comment devenir ambassadeur ?\n• Quel est le thème ?",
-        'en': "To participate in ExpoBeton RDC 2026, you need to register.\n\n📋 **3 categories available:**\n1️⃣ 🏆 Sponsor (Platinum/Gold/Bronze/Silver — from $10,000 to $40,000)\n2️⃣ 🏗️ Exhibitor (3×3m stand at $5,000 or 2×3m stand at $3,500)\n3️⃣ 👤 Simple Participant (Free)\n\n💬 Would you like me to guide you through the registration? Type 'yes' or 'I want to register' to begin.\n\n💡 You might also ask:\n• What are the dates?\n• How to become an ambassador?\n• What is the theme?",
-        'zh': '要参加ExpoBeton RDC 2026，您需要注册。\n\n📋 **3个类别可选：**\n1️⃣ 🏆 赞助商（白金/金/铜/银 — 10,000至40,000美元）\n2️⃣ 🏗️ 参展商（3×3米展位5,000美元 或 2×3米展位3,500美元）\n3️⃣ 👤 普通参与者（免费）\n\n💬 您想让我引导您完成注册吗？输入「是」开始。',
-        'ru': "Чтобы принять участие в ExpoBeton RDC 2026, зарегистрируйтесь онлайн на https://expobetonrdc.com/#tg_register.\n\n📋 **3 категории:** спонсор (Platinum/Gold/Bronze/Silver — от 10 000 $ до 40 000 $), экспонент (стенд 3×3 м — 5 000 $ или 2×3 м — 3 500 $), простой участник (бесплатно).\n\n💡 Вы также можете спросить:\n• Какие даты?\n• Как стать послом?\n• Какая тема?",
-        'es': "Para participar en ExpoBeton RDC 2026, regístrese en línea en https://expobetonrdc.com/#tg_register.\n\n📋 **3 categorías:** patrocinador (Platinum/Gold/Bronze/Silver — de 10.000 $ a 40.000 $), expositor (stand 3×3m a 5.000 $ o 2×3m a 3.500 $), participante simple (gratuito).\n\n💡 También podría preguntar:\n• ¿Cuáles son las fechas?\n• ¿Cómo convertirse en embajador?\n• ¿Cuál es el tema?",
-        'ar': "للمشاركة في ExpoBeton RDC 2026، سجل عبر الإنترنت على https://expobetonrdc.com/#tg_register.\n\n📋 **3 فئات:** راعي (Platinum/Gold/Bronze/Silver — من 10,000 إلى 40,000 دولار)، عارض (جناح 3×3م بـ 5,000 دولار أو 2×3م بـ 3,500 دولار)، مشارك عادي (مجاني).\n\n💡 قد تسأل أيضاً:\n• ما هي التواريخ؟\n• كيف تصبح سفيراً؟\n• ما هو الموضوع؟"
+        'fr': "Pour participer à ExpoBeton RDC 2026, vous devez vous inscrire.\n\n📋 **4 offres disponibles :**\n1️⃣ 🏆 Sponsor (Platinum/Gold/Bronze/Silver — de 10.000 $ à 40.000 $)\n2️⃣ 🏗️ Exposant (stand 3×3m à 5.000 $ ou 2×3m à 3.500 $)\n3️⃣ 👤 Participant Simple (Gratuit)\n\n🌟 **Participant VIP** (300 $ par jour, journées au choix) — souscription payante **séparée**, hors de ce chat.\n\n🔗 Le **Participant VIP** se souscrit sur https://expobetonrdc.com/sponsor/souscription-vip.php — le montant est calculé selon le nombre de jours cochés.\n\n💬 Souhaitez-vous que je vous guide dans l'inscription ? Tapez « oui » ou « je veux m'inscrire » pour commencer.\n\n💡 Vous pourriez aussi demander :\n• Quelles sont les dates ?\n• Comment devenir ambassadeur ?\n• Quel est le thème ?",
+        'en': "To participate in ExpoBeton RDC 2026, you need to register.\n\n📋 **4 offers available:**\n1️⃣ 🏆 Sponsor (Platinum/Gold/Bronze/Silver — from $10,000 to $40,000)\n2️⃣ 🏗️ Exhibitor (3×3m stand at $5,000 or 2×3m stand at $3,500)\n3️⃣ 👤 Simple Participant (Free)\n\n🌟 **VIP Participant** ($300 per day, days of your choice) — a **separate** paid subscription, outside this chat.\n\n🔗 The **VIP Participant** pass is booked at https://expobetonrdc.com/sponsor/souscription-vip.php — the amount is calculated from the number of days selected.\n\n💬 Would you like me to guide you through the registration? Type 'yes' or 'I want to register' to begin.\n\n💡 You might also ask:\n• What are the dates?\n• How to become an ambassador?\n• What is the theme?",
+        'zh': '要参加ExpoBeton RDC 2026，您需要注册。\n\n📋 **4种可选方案：**\n1️⃣ 🏆 赞助商（白金/金/铜/银 — 10,000至40,000美元）\n2️⃣ 🏗️ 参展商（3×3米展位5,000美元 或 2×3米展位3,500美元）\n3️⃣ 👤 普通参与者（免费）\n\n🌟 **VIP参与者**（每天300美元，可自选日期）— 独立的付费订阅，不在本聊天中办理。\n\n🔗 VIP参与者请通过 https://expobetonrdc.com/sponsor/souscription-vip.php 订阅。\n\n💬 您想让我引导您完成注册吗？输入「是」开始。',
+        'ru': "Чтобы принять участие в ExpoBeton RDC 2026, зарегистрируйтесь онлайн на https://expobetonrdc.com/#tg_register.\n\n📋 **4 категории:** спонсор (Platinum/Gold/Bronze/Silver — от 10 000 $ до 40 000 $), экспонент (стенд 3×3 м — 5 000 $ или 2×3 м — 3 500 $), VIP-участник (300 $ в день, дни по выбору) и простой участник (бесплатно).\n\n🔗 VIP-участие оформляется на https://expobetonrdc.com/sponsor/souscription-vip.php.\n\n💡 Вы также можете спросить:\n• Какие даты?\n• Как стать послом?\n• Какая тема?",
+        'es': "Para participar en ExpoBeton RDC 2026, regístrese en línea en https://expobetonrdc.com/#tg_register.\n\n📋 **4 categorías:** patrocinador (Platinum/Gold/Bronze/Silver — de 10.000 $ a 40.000 $), expositor (stand 3×3m a 5.000 $ o 2×3m a 3.500 $), participante VIP (300 $ por día, días a elección) y participante simple (gratuito).\n\n🔗 El pase VIP se reserva en https://expobetonrdc.com/sponsor/souscription-vip.php.\n\n💡 También podría preguntar:\n• ¿Cuáles son las fechas?\n• ¿Cómo convertirse en embajador?\n• ¿Cuál es el tema?",
+        'ar': "للمشاركة في ExpoBeton RDC 2026، سجل عبر الإنترنت على https://expobetonrdc.com/#tg_register.\n\n📋 **4 فئات:** راعي (Platinum/Gold/Bronze/Silver — من 10,000 إلى 40,000 دولار)، عارض (جناح 3×3م بـ 5,000 دولار أو 2×3م بـ 3,500 دولار)، مشارك VIP (300 دولار في اليوم، مع اختيار الأيام) ومشارك عادي (مجاني).\n\n🔗 تُحجز بطاقة VIP عبر https://expobetonrdc.com/sponsor/souscription-vip.php.\n\n💡 قد تسأل أيضاً:\n• ما هي التواريخ؟\n• كيف تصبح سفيراً؟\n• ما هو الموضوع؟"
     }
 }
 
@@ -825,14 +825,20 @@ class ActionGreetPersonalized(Action):
         has_ou = any(w in user_message for w in [' ou ', ' ou', 'ou ', 'ou?', 'ou?'])
         has_loc_ctx = any(w in user_message for w in ['se passera', 'se passe', 'se tiendra', 'edition', 'edtion', 'editon', 'expobeton', 'salon', '2026'])
         if has_loc_kw or (has_ou and has_loc_ctx):
+            # Lieu reel verifie sur index.php (ligne 275) : « The Grand Residence —
+            # Galerie La Fontaine, croisement des avenues des Cliniques et Batetela,
+            # Kinshasa Gombe ». Le 07, avenue de l'OUA (Ngaliema) est l'adresse du
+            # secretariat de l'ASBL, pas le lieu du salon. Cette copie codee en dur
+            # les confondait — le meme defaut que celui corrige dans domain.yml
+            # (M7), mais dans l'action de salutation, donc sur un autre chemin.
             answer = (
-                "📍 **Lieu precis -- ExpoBeton RDC 2026 :**\n\n"
-                "Le salon se tiendra a **La Grande Residence - Galerie La Fontaine**, "
-                "au **07 Avenue de l'OUA, commune de Ngaliema**, a "
-                "**Kinshasa**, capitale de la RDC.\n\n"
-                "🏙️ Un cadre prestigieux au coeur de Ngaliema, quartier "
-                "residentiel et diplomatique, avec des espaces "
-                "d'exposition modernes et equipes.\n\n"
+                "📍 **Lieu précis — ExpoBeton RDC 2026 (12ème édition) :**\n\n"
+                "Le salon se tient à **The Grand Residence — Galerie La Fontaine**, "
+                "au **croisement des avenues des Cliniques et Batetela**, commune de "
+                "la **Gombe**, à **Kinshasa**, capitale de la RDC.\n\n"
+                "🏢 **Secrétariat / adresse administrative** d'EXPO BÉTON ASBL : "
+                "**07, avenue de l'OUA, commune de Ngaliema**, Kinshasa.\n"
+                "⚠️ Attention : le secrétariat n'est **pas** le lieu du salon.\n\n"
                 "📅 Dates : du **07 au 10 octobre 2026** (4 jours)."
             )
             dispatcher.utter_message(text=answer)
@@ -1170,17 +1176,24 @@ class ActionAnswerExpoBeton(Action):
             'expobeton', 'salon', 'evenement', '2026', 'prochain'
         ])
         if has_where_word or (has_ou and has_location_context):
+            # Meme correction que dans l'action de salutation : cette seconde copie
+            # codee en dur situait le salon au 07, avenue de l'OUA (Ngaliema), qui
+            # est le secretariat de l'ASBL. Le lieu reel est a la Gombe (index.php,
+            # ligne 275). Deux exemplaires de la meme reponse existaient donc, dont
+            # un seul avait ete corrige : la verification en production ne suffit
+            # pas, il faut balayer le contenu, pas seulement un chemin d'entree.
             answer = (
-                "📍 **Lieu precis -- ExpoBeton RDC 2026 (12eme edition) :**\n\n"
-                "Le salon se tiendra a **La Grande Residence - Galerie La Fontaine**, "
-                "au **07 Avenue de l'OUA, commune de Ngaliema**, a "
-                "**Kinshasa**, capitale de la RDC.\n\n"
-                "🌊 **Un cadre exceptionnel :**\n"
-                "• Site d'exception au coeur de Ngaliema, quartier residentiel\n"
-                "• Espaces d'exposition modernes et salles equipees\n"
-                "• Acces facile depuis le centre-ville et les grands axes"
-                "\n"
-                "• Capacite adaptee a un salon international\n\n"
+                "📍 **Lieu précis — ExpoBeton RDC 2026 (12ème édition) :**\n\n"
+                "Le salon se tient à **The Grand Residence — Galerie La Fontaine**, "
+                "au **croisement des avenues des Cliniques et Batetela**, commune de "
+                "la **Gombe**, à **Kinshasa**, capitale de la RDC.\n\n"
+                "🏛️ C'est là que se déroulent l'exposition, les conférences, les "
+                "panels, les rendez-vous B2B/B2G et les cérémonies d'ouverture et "
+                "de clôture.\n\n"
+                "🏢 **Secrétariat / adresse administrative** d'EXPO BÉTON ASBL : "
+                "**07, avenue de l'OUA, commune de Ngaliema**, Kinshasa.\n"
+                "⚠️ Attention : le secrétariat n'est **pas** le lieu du salon.\n\n"
+                "🕘 **Horaires sur le site :** 09h00 – 15h30.\n\n"
                 "📅 Dates : du **07 au 10 octobre 2026** (4 jours)."
             )
             dispatcher.utter_message(text=answer)
@@ -1587,8 +1600,32 @@ class ActionAnswerExpoBeton(Action):
             return []
         
         # Types of stands
+        # Cette reponse inventait trois paliers (« Stand Premium 12m² minimum »,
+        # « Stand Standard 6m²-9m² », « Stand Startup/PME 3m²-6m² ») qui n'existent
+        # nulle part sur le site et ne donnaient AUCUN prix. Elle se declenchait sur
+        # tout message contenant « stand » ou « types » — y compris « Stand 2×3m »,
+        # qui devait pourtant resoudre la categorie directement. Remplacee par le
+        # catalogue reel (actions_expobeton.py, show_categories) : deux formats
+        # exposant seulement, le 2×4m etant retire, plus les stands inclus dans les
+        # paliers de sponsoring.
         if any(word in user_question for word in ['stand', 'stands', 'types']) and not any(word in user_question for word in ['meilleur', 'best']):
-            answer = "🎪 **Types de stands ExpoBeton RDC:**\n\n🥇 **Stand Premium (Grand format):**\n• Surface: 12m² minimum\n• Visibilité maximale\n• Emplacement stratégique\n\n🥈 **Stand Standard:**\n• Surface: 6m² - 9m²\n• Bonne visibilité\n• Équipements de base\n\n🥉 **Stand Startup/PME:**\n• Surface: 3m² - 6m²\n• Tarif préférentiel\n• Support jeunes entrepreneurs\n\n💼 **Services inclus:**\n• Mobilier (table, chaises)\n• Éclairage\n• Connexion internet\n• Badges participants\n\n📞 **Réservation:** Contactez info@expobetonrdc.com ou consultez https://expobetonrdc.com/"
+            answer = (
+                "🎪 **Stands ExpoBeton RDC 2026 — catalogue réel**\n\n"
+                "🏗️ **Exposant (stands du site principal) :**\n"
+                "   • Stand 3×3m — 9 m² — **5.000 $** (2 pass délégués, 30 places)\n"
+                "   • Stand 2×3m — 6 m² — **3.500 $** (1 pass délégué, 5 places)\n"
+                "ℹ️ Le **stand 2×4m n'est plus proposé** pour l'édition 2026.\n\n"
+                "🏆 **Sponsor (stand inclus dans le palier) :**\n"
+                "   • Platinum — 40.000 $ (stand 45 m², 5 pass)\n"
+                "   • Gold — 20.000 $ (stand 20 m², 3 pass)\n"
+                "   • Bronze — 15.000 $ (stand 15 m², 2 pass)\n"
+                "   • Silver — 10.000 $ (stand 12 m², 2 pass)\n\n"
+                "💼 **Inclus :** mobilier (table, chaises), éclairage, connexion "
+                "internet et badges participants.\n"
+                "💰 Montants en USD hors TVA (EXPO BÉTON ASBL, non assujettie à la TVA).\n\n"
+                "📞 **Réservation :** info@expobetonrdc.com ou "
+                "https://expobetonrdc.com/#tg_register"
+            )
             dispatcher.utter_message(text=answer)
             bot_response = answer
             log_conversation_message(session_id, 'bot', bot_response, metadata)

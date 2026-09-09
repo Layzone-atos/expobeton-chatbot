@@ -1012,6 +1012,23 @@ nlu:
     - [Platinum](sponsor_level) sponsor
     - [3x3m](stand_type) stand
     - stand [2x3m](stand_type)
+    # Retrait du 2×4m : sans ces exemples, « je veux un stand 2x4m » partait en
+    # intent « registration » et renvoyait une invitation generique a s'inscrire,
+    # au lieu d'atteindre la notice de retrait deja presente dans
+    # action_handle_inform_outside_form. Les deux graphies (x ASCII et × typ.)
+    # sont couvertes, car les visiteurs tapent indifferemment l'une ou l'autre.
+    - stand [2x4m](stand_type)
+    - je veux un stand [2x4m](stand_type)
+    - [2×4m](stand_type)
+    - je voudrais le stand [2x4m](stand_type)
+    # Participant VIP : meme defaut. Le gestionnaire existe cote action (il
+    # explique la souscription en ligne a 300 $ / jour) mais aucun exemple ne
+    # menait a lui, donc « participant vip » declenchait l'inscription gratuite.
+    - [Participant VIP](category)
+    - participant vip
+    - je veux un participant vip
+    - je veux participant vip
+    - inscription participant vip
     - [Mobile Money](payment_method)
     - pay by [Cash](payment_method)
     - [Participant Simple](category)

@@ -213,6 +213,16 @@ class ActionShowCategories(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> List[Dict[Text, Any]]:
 
+        # 4e offre ajoutée : le Participant VIP (300 $ / jour, journées au choix)
+        # existe bien sur le site — sponsor/souscription-vip.php — mais était
+        # absent de ce catalogue, alors que les prix des trois autres avaient déjà
+        # été corrigés. Un visiteur demandant « les catégories » ne pouvait donc
+        # pas découvrir l'offre payante intermédiaire.
+        # Il est volontairement HORS de la liste numérotée 1/2/3 : CATEGORY_MAP
+        # associe « 3 » à Participant Simple, et le validateur du formulaire
+        # invite à taper « 1, 2 ou 3 ». Numéroter le VIP en 3 aurait fait arriver
+        # « 3 » sur Participant Simple — exactement l'inverse du choix affiché.
+        # Le VIP n'est pas non plus dans VALID_CATEGORIES : il se règle en ligne.
         msg = (
             "📋 **ExpoBeton RDC 2026 — Catégories d'inscription**\n\n"
             "1️⃣ **🏆 Sponsor** (paliers de partenariat)\n"
@@ -224,8 +234,13 @@ class ActionShowCategories(Action):
             "   • Stand 3×3m — 9 m² — 5.000 $ (2 pass délégués, 30 places)\n"
             "   • Stand 2×3m — 6 m² — 3.500 $ (1 pass délégué, 5 places)\n\n"
             "3️⃣ **👤 Participant Simple** (Gratuit)\n\n"
+            "🌟 **Participant VIP** — 300 $ par jour (journées au choix), avec "
+            "accès privilégiés et branding dédié.\n"
+            "   ⚠️ Souscription **en ligne uniquement**, hors de ce chat :\n"
+            "   👉 https://expobetonrdc.com/sponsor/souscription-vip.php\n\n"
             "💰 Montants en USD hors TVA (EXPO BÉTON ASBL, non assujettie à la TVA).\n"
-            "Quelle catégorie vous intéresse ?"
+            "ℹ️ Le **stand 2×4m n'est plus proposé** pour l'édition 2026.\n\n"
+            "Quelle catégorie vous intéresse ? Tapez **1**, **2** ou **3**."
         )
         dispatcher.utter_message(text=msg)
         return []
