@@ -42,7 +42,70 @@ except ImportError:
 
 # Initialize OpenAI client
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+
+# ── Délais OpenAI ─────────────────────────────────────────────────────────────
+# Le client openai>=1.0 utilise par défaut timeout=600 s et max_retries=2. Un
+# appel sans argument `timeout` peut donc immobiliser un worker jusqu'à
+# 30 minutes si l'egress du conteneur est filtré ou lent — et ce déploiement a
+# déjà un egress filtré (le port 587 sortant tombe sur Errno 101).
+# Ces appels sont DANS le chemin de réponse : find_relevant_docs() est invoqué
+# pour toute question d'au moins 15 caractères. Sans plafond explicite, le bot
+# se serait mis à geler dès que OPENAI_API_KEY serait renseigné — c'est-à-dire
+# au moment précis où l'on demande à l'exploitation de l'ajouter.
+# max_retries=0 : en cas d'échec on préfère répondre tout de suite par le repli
+# lexical plutôt que de faire patienter l'utilisateur pendant des relances.
+OPENAI_TIMEOUT = float(os.getenv('OPENAI_TIMEOUT', '6'))
+# L'indexation de démarrage envoie ~48 documents en UN seul lot : 6 s seraient
+# insuffisants et feraient échouer la construction de l'index — donc retomber
+# définitivement sur le repli lexical, au moment précis où la clé vient d'être
+# ajoutée. Ce lot n'a lieu qu'une fois au démarrage et son résultat est mis en
+# cache, il peut donc se permettre un délai bien plus long.
+OPENAI_BULK_TIMEOUT = float(os.getenv('OPENAI_BULK_TIMEOUT', '90'))
+OPENAI_MAX_RETRIES = 0
+
+# Budget total (recherche documentaire + génération) pour le chemin LLM, en
+# secondes. Au-delà, l'utilisateur reçoit la réponse déterministe au lieu
+# d'attendre.
+LLM_TOTAL_TIMEOUT = float(os.getenv('LLM_TOTAL_TIMEOUT', '8'))
+
+# File d'exécution PARTAGÉE, et non un ThreadPoolExecutor créé par requête.
+# Deux raisons :
+#  1. `with ThreadPoolExecutor(...)` appelle shutdown(wait=True) à la sortie du
+#     bloc, donc le `future.result(timeout=LLM_TOTAL_TIMEOUT)` devenait
+#     décoratif : on attendait quand même la fin de l'appel qui venait
+#     d'expirer. Sans bloc `with`, plus rien n'attend.
+#  2. Créer un exécuteur par message aurait fait croître le nombre de threads
+#     sans limite si plusieurs appels ralentissaient en même temps.
+# Deux workers suffisent : au-delà, les tâches excédentaires expirent à
+# LLM_TOTAL_TIMEOUT et retombent sur la réponse déterministe, ce qui est la
+# dégradation voulue.
+_LLM_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix='llm')
+
+_OPENAI_CLIENT = None
+
+
+def _openai_client():
+    """Client OpenAI à délais courts, construit à la demande.
+
+    Paresseux volontairement : construire le client à l'import ferait échouer le
+    chargement du module d'actions — donc tomber tout le serveur d'actions — si
+    la clé est absente ou invalide. Ici l'échec reste confiné à la requête en
+    cours, qui retombe sur le repli par mots-clés.
+    """
+    global _OPENAI_CLIENT
+    if _OPENAI_CLIENT is None:
+        if not OPENAI_API_KEY:
+            raise RuntimeError("OPENAI_API_KEY absent")
+        _OPENAI_CLIENT = openai.OpenAI(
+            api_key=OPENAI_API_KEY,
+            timeout=OPENAI_TIMEOUT,
+            max_retries=OPENAI_MAX_RETRIES,
+        )
+    return _OPENAI_CLIENT
+
+
 if OPENAI_API_KEY:
+    # Conservé pour compatibilité : d'autres modules lisent openai.api_key.
     openai.api_key = OPENAI_API_KEY
 else:
     print("⚠️ WARNING: OPENAI_API_KEY not set! Using default from environment.")
@@ -497,9 +560,10 @@ def load_and_embed_docs():
     # Create embeddings with OpenAI (batch processing)
     texts = [doc['content'] for doc in documents]
     try:
-        response = openai.embeddings.create(
+        response = _openai_client().embeddings.create(
             input=texts,
-            model="text-embedding-3-small"  # Fast, multilingual, cost-effective
+            model="text-embedding-3-small",  # Fast, multilingual, cost-effective
+            timeout=OPENAI_BULK_TIMEOUT
         )
         embeddings = [item.embedding for item in response.data]
         
@@ -595,9 +659,14 @@ def find_relevant_docs(query: str, top_k: int = 3):
     
     try:
         # Create embedding for query with OpenAI
-        query_response = openai.embeddings.create(
+        # Délai court et sans relance : cet appel est dans le chemin de réponse
+        # (une fois par question d'au moins 15 caractères). Le défaut du client
+        # est 600 s × 3 tentatives, ce qui immobiliserait un worker du serveur
+        # d'actions pendant plusieurs minutes.
+        query_response = _openai_client().embeddings.create(
             input=[query],
-            model="text-embedding-3-small"
+            model="text-embedding-3-small",
+            timeout=OPENAI_TIMEOUT
         )
         query_embedding = np.array(query_response.data[0].embedding)
         
@@ -1424,7 +1493,7 @@ class ActionAnswerExpoBeton(Action):
                     context_parts.append(f"Document {i+1} ({doc['filename']}):\n{content}")
                 context = "\n\n".join(context_parts)
                 # Call GPT-4o with timeout parameter
-                resp = openai.chat.completions.create(
+                resp = _openai_client().chat.completions.create(
                     model="gpt-4o",
                     messages=[
                         {"role": "system", "content": "Tu es un assistant intelligent pour ExpoBeton RDC. Réponds de manière précise et concise en français, en te basant UNIQUEMENT sur les documents fournis. Si l'information n'est pas dans les documents, dis-le clairement. Utilise des emojis et une mise en forme claire (bullet points, numéros) pour rendre la réponse facile à lire."},
@@ -1432,7 +1501,7 @@ class ActionAnswerExpoBeton(Action):
                     ],
                     temperature=0.3,
                     max_tokens=500,
-                    timeout=6  # 6-second hard timeout for the API call itself
+                    timeout=OPENAI_TIMEOUT
                 )
                 answer = resp.choices[0].message.content.strip()
                 if len(answer) > 50 and 'ne sais pas' not in answer.lower() and 'ne peux pas' not in answer.lower():
@@ -1440,13 +1509,25 @@ class ActionAnswerExpoBeton(Action):
                 return None
             
             try:
-                with ThreadPoolExecutor(max_workers=1) as executor:
-                    future = executor.submit(_llm_answer)
-                    try:
-                        llm_answer = future.result(timeout=8)  # 8 seconds TOTAL for search + GPT-4o
-                    except FuturesTimeoutError:
-                        print(f"⏰ LLM pipeline timed out after 8 seconds - returning fallback immediately")
-                        llm_answer = None
+                # _LLM_EXECUTOR est partagé au niveau du module (voir sa
+                # définition). L'ancien code utilisait
+                # `with ThreadPoolExecutor(max_workers=1) as executor:` :
+                # la sortie du bloc appelait shutdown(wait=True), qui attend la
+                # fin du thread, donc le future.result(timeout=8) était
+                # purement décoratif. À l'expiration du délai on affichait
+                # « returning fallback immediately », puis on bloquait quand
+                # même sur l'appel qui venait d'expirer — jusqu'à son propre
+                # délai réseau, qui était le défaut du client OpenAI (600 s).
+                # Il n'y a plus de bloc `with`, donc plus rien n'attend : le
+                # budget est réellement opposable, et la tâche abandonnée reste
+                # bornée par OPENAI_TIMEOUT côté client.
+                future = _LLM_EXECUTOR.submit(_llm_answer)
+                try:
+                    llm_answer = future.result(timeout=LLM_TOTAL_TIMEOUT)
+                except FuturesTimeoutError:
+                    print(f"⏰ LLM pipeline timed out after {LLM_TOTAL_TIMEOUT:.0f} seconds - returning fallback immediately")
+                    future.cancel()
+                    llm_answer = None
                 
                 if llm_answer:
                     print(f"✅ LLM generated answer: {llm_answer[:100]}...")

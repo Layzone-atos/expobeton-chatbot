@@ -68,6 +68,23 @@ nlu:
     - coucou ça va ?
     - bonjour tu vas bien ?
 
+# ─── Intents de conversation enrichis (2026-09-10) ────────────────────────────
+# Le seuil FallbackClassifier de config_build.yml est passé de 0.1 à 0.4 : à 0.1
+# le repli ne se déclenchait jamais et une question sans rapport recevait une
+# réponse de domaine confiante et fausse. Mais 0.4 révèle les intents dont le
+# corpus est trop mince pour que DIET atteigne cette confiance.
+# Constaté EN PRODUCTION après déploiement : « je veux terminer la conversation »
+# — alors que l'intent end_conversation existe et qu'une règle le route vers
+# action_end_conversation — partait en nlu_fallback et l'utilisateur recevait
+# « je ne peux pas vous fournir de réponse » au lieu de l'accusé de fin de
+# session. Cause : end_conversation n'avait que 4 exemples, tous sans préfixe.
+# audit_intent_coverage.py recensait 13 intents sous 8 exemples, dont 7 pilotés
+# par une règle active. Les sept sont enrichis ci-dessous.
+# Chaque intent reste sémantiquement distinct de ses voisins pour ne pas faire
+# monter l'ambiguïté (goodbye = salutation d'adieu, end_conversation = demande
+# explicite de clôture, help = assistance du bot, human_handoff = personne
+# réelle, feedback = donner un avis, show_faqs = consulter la FAQ).
+
 - intent: goodbye
   examples: |
     - au revoir
@@ -76,6 +93,15 @@ nlu:
     - à plus tard
     - bye
     - goodbye
+    - salut, à bientôt
+    - merci, au revoir
+    - bonne soirée
+    - bonne continuation
+    - à demain
+    - ciao
+    - au revoir et merci pour tout
+    - bye bye
+    - à la prochaine
 
 - intent: help
   examples: |
@@ -85,6 +111,16 @@ nlu:
     - assistance
     - help
     - que pouvez-vous faire ?
+    - aide
+    - peux-tu m'aider ?
+    - je ne comprends pas
+    - comment ça marche ?
+    - tu peux faire quoi ?
+    - quelles sont tes fonctionnalités ?
+    - que sais-tu faire ?
+    - je suis perdu
+    - explique-moi ce que tu fais
+    - peux-tu me renseigner ?
 
 - intent: show_faqs
   examples: |
@@ -92,6 +128,15 @@ nlu:
     - faq
     - montrez-moi les questions fréquentes
     - quelles sont les questions fréquentes ?
+    - la foire aux questions
+    - voir la faq
+    - as-tu une faq ?
+    - questions les plus posées
+    - afficher les faq
+    - je veux voir les questions fréquentes
+    - y a-t-il une foire aux questions ?
+    - faq s'il vous plaît
+    - montre-moi la foire aux questions
 
 - intent: feedback
   examples: |
@@ -99,6 +144,15 @@ nlu:
     - feedback
     - j'ai un commentaire
     - avis
+    - je souhaite laisser un commentaire
+    - donner mon avis sur l'événement
+    - j'ai une remarque
+    - je veux faire une suggestion
+    - laissez-moi donner mon avis
+    - mon avis sur le chatbot
+    - je voudrais laisser un feedback
+    - faire une réclamation
+    - j'ai une suggestion à proposer
 
 - intent: human_handoff
   examples: |
@@ -106,6 +160,15 @@ nlu:
     - agent humain
     - transfert vers un opérateur
     - parler à un conseiller
+    - je voudrais parler à une personne réelle
+    - passez-moi un humain
+    - un responsable s'il vous plaît
+    - je veux contacter l'équipe directement
+    - parler à quelqu'un de l'organisation
+    - peux-tu me mettre en relation avec un organisateur ?
+    - je préfère parler à un humain
+    - contact humain
+    - mets-moi en contact avec une personne
 
 - intent: end_conversation
   examples: |
@@ -113,6 +176,22 @@ nlu:
     - mettre fin à la discussion
     - fin de discussion
     - c'est tout
+    - je veux terminer la conversation
+    - je voudrais terminer la conversation
+    - je souhaite mettre fin à la conversation
+    - arrêter la conversation
+    - stop, j'ai fini
+    - j'ai fini, merci
+    - c'est bon pour moi
+    - je n'ai plus de questions
+    - fermer le chat
+    - quitter la conversation
+    - terminer
+    - fin de la conversation
+    - je dois partir, au revoir
+    - I want to end the conversation
+    - end the conversation
+    - that's all, thank you
 
 - intent: ask_event_dates
   examples: |
@@ -1114,7 +1193,22 @@ nlu:
     - [facturer](payment_method)
 
 - intent: registration_review
+  # Enrichi VOLONTAIREMENT avec prudence. La règle « Start registration review
+  # after uploads » n'a AUCUNE condition active_loop : elle se déclenche donc
+  # aussi pendant que registration_form est actif. Des formulations comme
+  # « je confirme » ou « je veux revoir mon inscription » pourraient alors
+  # arracher l'utilisateur au formulaire en cours et l'envoyer vers un
+  # récapitulatif incomplet — une régression sur le chemin de conversion.
+  # Seules des phrases au passé, portant sur des documents déjà téléversés,
+  # sont ajoutées : personne ne les tape au milieu des 10 champs du formulaire.
+  # Corriger la règle (ajouter une condition) est recommandé en R16.
   examples: |
     - /registration_review
     - documents envoyés
     - uploads terminés
+    - mes documents sont envoyés
+    - j'ai envoyé les documents
+    - j'ai uploadé les documents
+    - les documents ont été téléversés
+    - upload terminé
+    - envoi des documents effectué
