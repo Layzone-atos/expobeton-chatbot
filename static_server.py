@@ -6,6 +6,8 @@ Simple server to serve static files and forward API requests to Rasa server
 import os
 import sys
 import json
+import time
+import threading
 import urllib.request
 import urllib.error
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
@@ -18,6 +20,16 @@ PORT = int(os.environ.get('PORT', 5005))
 # alors TOUT le chatbot pour tous les visiteurs, sans jamais se liberer.
 # Mesure en production : ~25 % des requetes n'aboutissaient pas dans les 30 s.
 RASA_PROXY_TIMEOUT = 60
+
+# Ouvreur SANS proxy pour le saut interne vers le moteur.
+# urllib.request.urlopen() emploie les proxys detectes sur la machine
+# (getproxies()), et proxy_bypass('localhost:5005') renvoie False : si la
+# plateforme definit un jour http_proxy, cet appel interne — le chemin le plus
+# emprunte du systeme — sortirait du conteneur au lieu de rester sur la boucle
+# locale. Un ProxyHandler vide supprime cette dependance.
+# Durcissement defensif, pas un correctif : rien ne prouve qu'un proxy soit
+# configure en production, mais le cout est nul et la classe de panne disparait.
+_OPENER_SANS_PROXY = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 # Racine des fichiers statiques. Fixee UNE fois au demarrage au lieu d'etre
 # changee a chaque requete : os.chdir() est global au processus, pas au thread.
@@ -37,6 +49,21 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
         # repertoire, ou tomber sur un chdir deja restaure.
         kwargs['directory'] = PROJECT_DIR
         super().__init__(*args, **kwargs)
+
+    def log_request(self, code='-', size='-'):
+        """Capture le code de reponse au moment ou send_response() l'ecrit.
+
+        log_request() est le point d'extension prevu par BaseHTTPRequestHandler
+        et il recoit le code : s'en servir evite d'instrumenter une a une les
+        quatre branches d'erreur de do_POST. Si aucune reponse n'est jamais
+        ecrite, _code_proxy reste a None — et c'est justement le signal
+        recherche : le thread est bloque avant d'avoir produit quoi que ce soit.
+
+        Une instance de handler est creee par connexion, donc cet attribut est
+        propre a la requete : aucun risque de fuite entre threads.
+        """
+        self._code_proxy = code
+        super().log_request(code, size)
 
     def do_GET(self):
         # Serve static files for web interface
@@ -73,6 +100,19 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         # Forward webhook requests to Rasa server
         if self.path.startswith('/webhooks/'):
+            t_debut = time.monotonic()
+            thread = threading.current_thread().name
+            self._code_proxy = None
+            # Journal d'ENTREE. Indispensable au diagnostic : les quatre branches
+            # ci-dessous n'impriment qu'en cas d'erreur, donc une requete dont le
+            # thread se bloque AVANT urlopen() ne laissait strictement aucune
+            # trace dans les journaux du conteneur. C'est exactement le cas
+            # observe en production : 123 s d'attente, aucun code HTTP recu, et
+            # pas de 504 alors que le delai amont est de 60 s.
+            # Ni le corps ni l'identifiant de session ne sont journalises : ce
+            # sont des donnees utilisateurs. La longueur suffit au diagnostic.
+            print(f"[proxy] --> POST {self.path} thread={thread} "
+                  f"octets={self.headers.get('Content-Length', '?')}", flush=True)
             try:
                 # Read the request data
                 content_length = int(self.headers['Content-Length'])
@@ -93,7 +133,10 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
                     pass  # If not JSON, forward as-is
                 
                 # Forward to Rasa server (assuming it's running on port 5005)
-                rasa_url = f'http://localhost:5005{self.path}'
+                # 127.0.0.1 et non localhost : aucune resolution de nom sur le
+                # chemin critique, donc aucune dependance au resolv.conf du
+                # conteneur.
+                rasa_url = f'http://127.0.0.1:5005{self.path}'
                 
                 # Create the request
                 req = urllib.request.Request(
@@ -111,7 +154,7 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
                 # ce thread pour toujours. Avec ThreadingHTTPServer les autres
                 # visiteurs ne sont plus affectes, et celui-ci recoit un 504
                 # explicite au lieu d'attendre indefiniment.
-                with urllib.request.urlopen(req, timeout=RASA_PROXY_TIMEOUT) as response:
+                with _OPENER_SANS_PROXY.open(req, timeout=RASA_PROXY_TIMEOUT) as response:
                     response_data = response.read()
                     self.send_response(response.getcode())
                     # Forward all headers from Rasa response
@@ -183,6 +226,18 @@ class StaticFileHandler(SimpleHTTPRequestHandler):
                 self.send_header('Content-Length', str(len(error_response)))
                 self.end_headers()
                 self.wfile.write(error_response)
+            finally:
+                # Journal de SORTIE, inconditionnel. La paire entree/sortie
+                # localise la pendaison sans avoir a deviner :
+                #   entree + code=504 vers 60 s   -> l'amont (Rasa) est lent ;
+                #   entree + code=AUCUN           -> thread bloque avant d'avoir
+                #                                    ecrit la moindre reponse ;
+                #   aucune entree pour la requete -> elle n'a jamais atteint le
+                #                                    conteneur (edge Railway, ou
+                #                                    redemarrage du conteneur).
+                print(f"[proxy] <-- POST {self.path} thread={thread} "
+                      f"code={self._code_proxy if self._code_proxy is not None else 'AUCUN'} "
+                      f"{time.monotonic() - t_debut:.2f}s", flush=True)
         else:
             # Handle other POST requests by sending a 404
             # Content-Length obligatoire : sans lui le client ne sait pas ou
