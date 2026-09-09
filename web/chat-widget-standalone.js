@@ -845,9 +845,13 @@
             clearTimeout(chatState.inactivityTimer);
         }
         
+        // Le message s'affiche AVANT même que l'appel backend n'aboutisse : il ne
+        // peut donc pas affirmer qu'un e-mail est parti. C'était le cas (« 📧 Un
+        // email avec le transcript a été envoyé »), alors que le SMTP de production
+        // est injoignable (Errno 101) — promesse fausse dans 100 % des sessions.
         const endMessage = isAuto 
-            ? "👋 Session terminée automatiquement après inactivité. Merci d'avoir utilisé notre chatbot ExpoBeton RDC!\n\n📧 Un email avec le transcript a été envoyé.\n\nÀ bientôt!"
-            : "👋 Merci d'avoir utilisé notre chatbot ExpoBeton RDC!\n\n📧 Un email avec le transcript a été envoyé à notre équipe.\n\nSi vous avez d'autres questions, n'hésitez pas à nous recontacter!\n\nÀ bientôt!";
+            ? "👋 Session terminée automatiquement après inactivité. Merci d'avoir utilisé notre chatbot ExpoBeton RDC!\n\n📝 Votre conversation a été enregistrée.\n\nÀ bientôt!"
+            : "👋 Merci d'avoir utilisé notre chatbot ExpoBeton RDC!\n\n📝 Votre conversation a été enregistrée.\n\nSi vous avez d'autres questions, n'hésitez pas à nous recontacter!\n\nÀ bientôt!";
         
         addMessage(endMessage, 'bot');
         

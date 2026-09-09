@@ -28,6 +28,11 @@ rules:
       - intent: ask_media_press
       - action: utter_media_press
 
+  - rule: Handle access badge inquiry
+    steps:
+      - intent: ask_access_badge
+      - action: utter_access_badge
+
   - rule: User asks for help inside registration form
     condition:
       - active_loop: registration_form

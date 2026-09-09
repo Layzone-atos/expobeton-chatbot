@@ -172,8 +172,8 @@ class ActionStartRegistration(Action):
                 f'Pour participer à **ExpoBeton RDC 2026** (07-10 octobre, Kinshasa), '
                 f'vous devez vous inscrire{greeting}.\n\n'
                 f'📋 **3 catégories disponibles :**\n'
-                f'1️⃣ 🏆 **Sponsor** (Platinum/Gold/Silver/Bronze)\n'
-                f'2️⃣ 🏗️ **Exposant** (stand 3×3m, 2×4m ou 2×3m)\n'
+                f'1️⃣ 🏆 **Sponsor** (Platinum/Gold/Bronze/Silver — de 10.000 $ à 40.000 $)\n'
+                f'2️⃣ 🏗️ **Exposant** (stand 3×3m à 5.000 $ ou 2×3m à 3.500 $)\n'
                 f'3️⃣ 👤 **Participant Simple** (Gratuit)\n\n'
                 f'👉 **Souhaitez-vous que je vous aide à vous inscrire maintenant ?**\n'
                 f'Répondez **« oui »** pour commencer l\'inscription étape par étape, '
@@ -215,16 +215,16 @@ class ActionShowCategories(Action):
 
         msg = (
             "📋 **ExpoBeton RDC 2026 — Catégories d'inscription**\n\n"
-            "1️⃣ **🏆 Sponsor**\n"
-            "   • Platinum — 40.000 $\n"
-            "   • Gold — 20.000 $\n"
-            "   • Silver — 15.000 $\n"
-            "   • Bronze — 12.000 $\n\n"
-            "2️⃣ **🏗️ Exposant**\n"
-            "   • Stand 3×3m — 5.000 $\n"
-            "   • Stand 2×4m — 3.000 $\n"
-            "   • Stand 2×3m — 2.000 $\n\n"
+            "1️⃣ **🏆 Sponsor** (paliers de partenariat)\n"
+            "   • Platinum — 40.000 $ (stand 45 m², 5 pass)\n"
+            "   • Gold — 20.000 $ (stand 20 m², 3 pass)\n"
+            "   • Bronze — 15.000 $ (stand 15 m², 2 pass)\n"
+            "   • Silver — 10.000 $ (stand 12 m², 2 pass)\n\n"
+            "2️⃣ **🏗️ Exposant** (stands du site principal)\n"
+            "   • Stand 3×3m — 9 m² — 5.000 $ (2 pass délégués, 30 places)\n"
+            "   • Stand 2×3m — 6 m² — 3.500 $ (1 pass délégué, 5 places)\n\n"
             "3️⃣ **👤 Participant Simple** (Gratuit)\n\n"
+            "💰 Montants en USD hors TVA (EXPO BÉTON ASBL, non assujettie à la TVA).\n"
             "Quelle catégorie vous intéresse ?"
         )
         dispatcher.utter_message(text=msg)
@@ -250,15 +250,14 @@ CATEGORY_MAP = {
     "1": "_sponsor_",
     "2": "_exposant_",
     "3": "Participant Simple",
-    # Sponsor sub-levels (dotted numbers)
-    "1.1": "Platinum", "1.2": "Gold", "1.3": "Silver", "1.4": "Bronze",
+    # Sponsor sub-levels (dotted numbers) — ordre du site : Bronze avant Silver
+    "1.1": "Platinum", "1.2": "Gold", "1.3": "Bronze", "1.4": "Silver",
     # Direct names
     "platinum": "Platinum",
     "gold": "Gold",
     "silver": "Silver",
     "bronze": "Bronze",
     "exposant 3x3": "Exposant Stand 3x3m",
-    "exposant 2x4": "Exposant Stand 2x4m",
     "exposant 2x3": "Exposant Stand 2x3m",
     "participant": "Participant Simple",
     "participant simple": "Participant Simple",
@@ -277,18 +276,28 @@ CATEGORY_MAP = {
     "sponsor, bronze": "Bronze",
     "sponsor,bronze": "Bronze",
     "exposant, 3x3": "Exposant Stand 3x3m",
-    "exposant, 2x4": "Exposant Stand 2x4m",
     "exposant, 2x3": "Exposant Stand 2x3m",
-    # Stand variations
+    # Stand variations — deux formats seulement (le 2×4m n'est plus commercialisé).
+    # Les formes « stand 3x3m » / « stand 2x3m » sont indispensables : sans elles,
+    # la sous-chaîne « stand 2x3 » est rejetée par la borne de mot finale (le « m »
+    # qui suit) et c'est la clé générique « stand », plus longue que « 2x3m », qui
+    # l'emporte — l'utilisateur retombe alors sur le sous-menu au lieu du format voulu.
     "stand 3x3": "Exposant Stand 3x3m",
-    "stand 2x4": "Exposant Stand 2x4m",
     "stand 2x3": "Exposant Stand 2x3m",
+    "stand 3x3m": "Exposant Stand 3x3m",
+    "stand 2x3m": "Exposant Stand 2x3m",
     "3x3": "Exposant Stand 3x3m",
-    "2x4": "Exposant Stand 2x4m",
     "2x3": "Exposant Stand 2x3m",
     "3x3m": "Exposant Stand 3x3m",
-    "2x4m": "Exposant Stand 2x4m",
     "2x3m": "Exposant Stand 2x3m",
+    # Formes en m² et formulations libres vues en conversation réelle.
+    # Le « ² » est normalisé en « 2 » par match_category, d'où les clés en "m2".
+    "9 m2": "Exposant Stand 3x3m",
+    "9m2": "Exposant Stand 3x3m",
+    "grand stand": "Exposant Stand 3x3m",
+    "6 m2": "Exposant Stand 2x3m",
+    "6m2": "Exposant Stand 2x3m",
+    "petit stand": "Exposant Stand 2x3m",
     "exposant": "_exposant_",
     "stand": "_exposant_",
     # Participant variations
@@ -296,6 +305,16 @@ CATEGORY_MAP = {
     "free": "Participant Simple",
     "simple": "Participant Simple",
     "visiteur": "Participant Simple",
+    # Formes féminines / statutaires vues en conversation réelle. « participante »
+    # n'était pas reconnu : la borne de mot empêchait la sous-chaîne « participant ».
+    "participante": "Participant Simple",
+    "participante simple": "Participant Simple",
+    "etudiant": "Participant Simple",
+    "étudiant": "Participant Simple",
+    "etudiante": "Participant Simple",
+    "étudiante": "Participant Simple",
+    "eleve": "Participant Simple",
+    "élève": "Participant Simple",
 }
 
 
@@ -319,8 +338,16 @@ def match_category(text: str) -> Optional[str]:
     """
     if not text:
         return None
-    cleaned = re.sub(r"[^0-9a-zà-ÿ .,\-+]", " ", str(text).lower())
-    cleaned = cleaned.replace("\u00d7", "x")  # multiplication sign -> x
+    raw = str(text).lower()
+    # Normalisations AVANT le filtrage : la classe de caractères ci-dessous
+    # remplace tout ce qui n'est pas [0-9a-zà-ÿ .,-+] par une espace. Sans cet
+    # ordre, « 2×3m » devenait « 2 3m » et « 9 m² » devenait « 9 m », donc
+    # aucune clé ne correspondait — alors que le bot affiche précisément ces
+    # formes dans ses menus et que les utilisateurs les recopient telles quelles.
+    raw = raw.replace("\u00d7", "x")   # × (signe multiplication) -> x
+    raw = raw.replace("\u00b2", "2")   # ² (exposant deux) -> 2
+    raw = raw.replace("\u2082", "2")   # ₂ (indice deux) -> 2, par précaution
+    cleaned = re.sub(r"[^0-9a-zà-ÿ .,\-+]", " ", raw)
     cleaned = re.sub(r"\s+", " ", cleaned).strip(" .,")
     if not cleaned:
         return None
@@ -417,7 +444,42 @@ class ActionHandleInformOutsideForm(Action):
             return []
 
         text = tracker.latest_message.get("text", "")
+        lowered = text.lower()
+
+        # ── Participant VIP : souscription payante distincte (300 $ / jour) ──
+        # « participant vip » contient la clé « participant » et démarrerait une
+        # inscription gratuite : promesse fausse. On explique avant tout mapping.
+        if re.search(r"\bvip\b", lowered):
+            dispatcher.utter_message(
+                text=(
+                    "🌟 Le **Participant VIP** est une souscription distincte : "
+                    "**300 $ par jour**, avec accès privilégiés et branding dédié sur "
+                    "les journées choisies (07-10 octobre 2026).\n\n"
+                    "Elle se règle en ligne ici :\n"
+                    "👉 https://expobetonrdc.com/sponsor/souscription-vip.php\n\n"
+                    "Ce chat gère les inscriptions **Sponsor**, **Exposant** et "
+                    "**Participant Simple** (gratuit). Pour l'accès gratuit, tapez "
+                    "**« Participant Simple »** et je démarre votre inscription."
+                )
+            )
+            return [SlotSet("registration_pending", None)]
+
         matched = match_category(text)
+
+        # ── Stand 2×4m retiré du catalogue : informer plutôt que laisser le moteur
+        # de réponses traiter « 2x4 » comme une question ouverte ──
+        if re.search(r"2\s*[x×*]\s*4", lowered):
+            dispatcher.utter_message(
+                text=(
+                    "ℹ️ Le **stand 2×4m n'est plus proposé** pour l'édition 2026.\n\n"
+                    "Deux formats sont disponibles :\n"
+                    "• **3×3m** (9 m²) — 5.000 $ — 2 pass délégués, 30 places\n"
+                    "• **2×3m** (6 m²) — 3.500 $ — 1 pass délégué, 5 places\n\n"
+                    "👉 Tapez **« 3×3m »** ou **« 2×3m »** pour démarrer votre "
+                    "inscription exposant."
+                )
+            )
+            return [SlotSet("registration_pending", None)]
 
         if not matched:
             # Not a category — let the keyword answer engine try.
@@ -474,28 +536,31 @@ class ActionAskRegCategory(Action):
     ) -> List[Dict[Text, Any]]:
         phase = tracker.get_slot("_reg_category_phase")
 
+        # Ordre et tarifs alignés sur le tunnel de souscription du site
+        # (sponsor/assets/sousc-common.js -> window.EB12.PRICES).
         if phase == "sponsor":
             dispatcher.utter_message(
-                text="🏆 **Choisissez votre niveau de sponsoring :**\n\n"
-                     "1️⃣ Platinum — 40.000 $\n"
-                     "2️⃣ Gold — 20.000 $\n"
-                     "3️⃣ Silver — 15.000 $\n"
-                     "4️⃣ Bronze — 12.000 $\n\n"
-                     "Tapez le numéro ou le nom du niveau."
+                text="🏆 **Choisissez votre palier de sponsoring :**\n\n"
+                     "1️⃣ Platinum — 40.000 $ (stand 45 m², 5 pass)\n"
+                     "2️⃣ Gold — 20.000 $ (stand 20 m², 3 pass)\n"
+                     "3️⃣ Bronze — 15.000 $ (stand 15 m², 2 pass)\n"
+                     "4️⃣ Silver — 10.000 $ (stand 12 m², 2 pass)\n\n"
+                     "💵 Montants en USD hors TVA.\n"
+                     "Tapez le numéro ou le nom du palier."
             )
         elif phase == "exposant":
             dispatcher.utter_message(
                 text="🏗️ **Choisissez votre type de stand :**\n\n"
-                     "1️⃣ Stand 3×3m — 5.000 $\n"
-                     "2️⃣ Stand 2×4m — 3.000 $\n"
-                     "3️⃣ Stand 2×3m — 2.000 $\n\n"
+                     "1️⃣ Stand 3×3m — 9 m² — 5.000 $ (2 pass délégués, 30 places)\n"
+                     "2️⃣ Stand 2×3m — 6 m² — 3.500 $ (1 pass délégué, 5 places)\n\n"
+                     "💵 Montants en USD hors TVA.\n"
                      "Tapez le numéro ou le type de stand."
             )
         else:
             dispatcher.utter_message(
                 text="📋 Pour quelle catégorie souhaitez-vous vous inscrire ?\n\n"
-                     "1️⃣ 🏆 **Sponsor** (Platinum, Gold, Silver, Bronze)\n"
-                     "2️⃣ 🏗️ **Exposant** (Stand 3×3m, 2×4m, 2×3m)\n"
+                     "1️⃣ 🏆 **Sponsor** (Platinum, Gold, Bronze, Silver)\n"
+                     "2️⃣ 🏗️ **Exposant** (Stand 3×3m ou 2×3m)\n"
                      "3️⃣ 👤 **Participant Simple** (Gratuit)\n\n"
                      "Tapez le numéro ou le nom de la catégorie."
             )
@@ -516,13 +581,62 @@ class ValidateRegistrationForm(FormValidationAction):
             return str(person).strip().split()[0].title()
         return ""
 
+    # Une question entière était enregistrée comme nom d'entreprise : une jeune
+    # étudiante avait répondu « Faut il acheter les billets pour y participer
+    # étant jeune étudiante » à l'étape 1, et cette phrase était repartie telle
+    # quelle vers l'API dans le champ société.
+    _QUESTION_OPENERS = (
+        "faut", "comment", "est-ce", "est ce", "pourquoi", "quel", "quelle",
+        "quels", "quelles", "qui ", "où ", "quand", "combien", "puis-je",
+        "puis je", "est-il", "je voudrais savoir", "je veux savoir",
+        "is ", "how ", "why ", "what ", "when ", "where ", "can i", "do i",
+    )
+
     def validate_reg_company(
         self, slot_value: Any, dispatcher: CollectingDispatcher,
         tracker: Tracker, domain: DomainDict
     ) -> Dict[Text, Any]:
-        if slot_value and len(str(slot_value).strip()) >= 2:
-            return {"reg_company": slot_value.strip(), "_reg_validation_fails": 0}
-        dispatcher.utter_message(text="Veuillez fournir un nom d'entreprise ou d'organisation valide (au moins 2 caractères).")
+        raw = str(slot_value or '').strip()
+        lowered = raw.lower()
+
+        # Libellé aligné sur le site : l'étape 1 accepte une société, une
+        # institution OU une profession (indépendants, étudiants compris).
+        ask = (
+            "🏢 J'ai besoin du nom de votre **société, institution ou "
+            "organisation**.\n\n"
+            "Si vous n'en avez pas (indépendant, étudiant, particulier), indiquez "
+            "votre **profession** ou votre **établissement**.\n\n"
+            "Exemples : *Cimenterie de Kinshasa SA*, *Ministère de l'Urbanisme*, "
+            "*Indépendant*, *Étudiante — ISTA*."
+        )
+
+        if raw.endswith("?") or raw.endswith("？") or lowered.startswith(self._QUESTION_OPENERS):
+            dispatcher.utter_message(
+                text=(
+                    "🙂 Je vois que vous me posez une question — je vais y répondre, "
+                    "mais ici j'ai besoin du **nom de votre société, institution ou "
+                    "organisation**.\n\n"
+                    "Si vous n'en avez pas, indiquez votre **profession** ou votre "
+                    "établissement (ex. *Indépendant*, *Étudiante — ISTA*).\n\n"
+                    "💡 Pour poser votre question librement, tapez "
+                    "**« contact humain »** et notre équipe vous répondra."
+                )
+            )
+            return _bump_fail(tracker, dispatcher, "reg_company")
+
+        if len(raw) > 90:
+            dispatcher.utter_message(
+                text=(
+                    "✂️ Cette réponse est trop longue pour un nom d'organisation. "
+                    "Merci d'indiquer uniquement le **nom** (90 caractères maximum), "
+                    "par exemple *Expo Béton ASBL*."
+                )
+            )
+            return _bump_fail(tracker, dispatcher, "reg_company")
+
+        if len(raw) >= 2:
+            return {"reg_company": raw, "_reg_validation_fails": 0}
+        dispatcher.utter_message(text=ask)
         return _bump_fail(tracker, dispatcher, "reg_company")
 
     def validate_reg_contact_name(
@@ -628,8 +742,10 @@ class ValidateRegistrationForm(FormValidationAction):
         action_ask_reg_category will then display the correct menu.
         We do NOT dispatch messages here — the ask action handles all prompts.
         """
-        sponsor_num = {"1": "Platinum", "2": "Gold", "3": "Silver", "4": "Bronze"}
-        stand_num = {"1": "Exposant Stand 3x3m", "2": "Exposant Stand 2x4m", "3": "Exposant Stand 2x3m"}
+        # Numérotation alignée sur les menus affichés : paliers du site
+        # (Bronze 15.000 $ avant Silver 10.000 $) et deux formats de stand.
+        sponsor_num = {"1": "Platinum", "2": "Gold", "3": "Bronze", "4": "Silver"}
+        stand_num = {"1": "Exposant Stand 3x3m", "2": "Exposant Stand 2x3m"}
         phase = tracker.get_slot("_reg_category_phase")
 
         if slot_value:
@@ -658,23 +774,60 @@ class ValidateRegistrationForm(FormValidationAction):
                 )
                 return {"reg_category": None, "_reg_validation_fails": (tracker.get_slot("_reg_validation_fails") or 0) + 1}
 
+            # ── Stand 2×4m retiré du catalogue : informer au lieu de re-demander ──
+            # Le site ne vend plus que 3×3m (5.000 $) et 2×3m (3.500 $). La valeur
+            # technique « Exposant Stand 2x4m » reste dans VALID_CATEGORIES pour les
+            # inscriptions historiques, mais aucun alias ne doit plus y mener.
+            if re.search(r'2\s*[x×*]\s*4', val):
+                dispatcher.utter_message(
+                    text=(
+                        "ℹ️ Le **stand 2×4m n'est plus proposé** pour l'édition 2026.\n\n"
+                        "Deux formats sont disponibles :\n"
+                        "• **3×3m** (9 m²) — 5.000 $ — 2 pass délégués, 30 places\n"
+                        "• **2×3m** (6 m²) — 3.500 $ — 1 pass délégué, 5 places\n\n"
+                        "👉 Tapez **1** (3×3m) ou **2** (2×3m)."
+                    )
+                )
+                # On ouvre le sous-menu exposant : l'utilisateur veut clairement un stand.
+                return _bump_fail(tracker, dispatcher, "reg_category",
+                                  extra={"_reg_category_phase": phase or "exposant"})
+
+            # ── Participant VIP : souscription en ligne distincte, hors formulaire ──
+            # 300 $ / jour sur sponsor/souscription-vip.php. Ce n'est pas une
+            # catégorie acceptée par l'API d'inscription : ne jamais la mapper sur
+            # « Participant Simple » (gratuit), ce serait une fausse promesse.
+            if re.search(r'\bvip\b', val):
+                dispatcher.utter_message(
+                    text=(
+                        "🌟 Le **Participant VIP** est une souscription distincte : "
+                        "**300 $ par jour**, avec accès privilégiés et branding dédié "
+                        "sur les journées choisies (07-10 octobre 2026).\n\n"
+                        "Elle se règle en ligne ici :\n"
+                        "👉 https://expobetonrdc.com/sponsor/souscription-vip.php\n\n"
+                        "Ce formulaire gère les catégories **Sponsor**, **Exposant** et "
+                        "**Participant Simple** (gratuit). Laquelle choisissez-vous ?"
+                    )
+                )
+                return _bump_fail(tracker, dispatcher, "reg_category",
+                                  extra={"_reg_category_phase": None})
+
             # ── Sponsor sub-menu active ──
             if phase == "sponsor":
                 if val in sponsor_num:
-                    return {"reg_category": sponsor_num[val], "_reg_category_phase": None, "_reg_validation_fails": 0}
+                    return _category_slot_updates(sponsor_num[val])
                 name_match = CATEGORY_MAP.get(val)
                 if name_match and name_match not in ("_sponsor_", "_exposant_"):
-                    return {"reg_category": name_match, "_reg_category_phase": None, "_reg_validation_fails": 0}
+                    return _category_slot_updates(name_match)
                 # Invalid input — keep phase, action_ask will re-show sponsor menu
                 return _bump_fail(tracker, dispatcher, "reg_category", extra={"_reg_category_phase": phase})
 
             # ── Exposant sub-menu active ──
             if phase == "exposant":
                 if val in stand_num:
-                    return {"reg_category": stand_num[val], "_reg_category_phase": None, "_reg_validation_fails": 0}
+                    return _category_slot_updates(stand_num[val])
                 name_match = CATEGORY_MAP.get(val)
                 if name_match and name_match not in ("_sponsor_", "_exposant_"):
-                    return {"reg_category": name_match, "_reg_category_phase": None, "_reg_validation_fails": 0}
+                    return _category_slot_updates(name_match)
                 # Invalid input — keep phase, action_ask will re-show exposant menu
                 return _bump_fail(tracker, dispatcher, "reg_category", extra={"_reg_category_phase": phase})
 
@@ -687,9 +840,9 @@ class ValidateRegistrationForm(FormValidationAction):
                 # Set phase so action_ask_reg_category shows exposant sub-menu
                 return {"reg_category": None, "_reg_category_phase": "exposant", "_reg_validation_fails": 0}
             if normalized:
-                return {"reg_category": normalized, "_reg_category_phase": None, "_reg_validation_fails": 0}
+                return _category_slot_updates(normalized)
             if slot_value in VALID_CATEGORIES:
-                return {"reg_category": slot_value, "_reg_category_phase": None, "_reg_validation_fails": 0}
+                return _category_slot_updates(slot_value)
 
         # Invalid input — reset to main menu and bump fail counter
         return _bump_fail(tracker, dispatcher, "reg_category", extra={"_reg_category_phase": None})
@@ -717,12 +870,72 @@ class ValidateRegistrationForm(FormValidationAction):
                 if val in method.lower() or method.lower() in val:
                     return {"reg_payment": method}
         dispatcher.utter_message(
-            text="Veuillez choisir un mode de paiement :\n\n"
-                 "1️⃣ Chèque\n"
-                 "2️⃣ Veuillez Facturer\n\n"
-                 "Tapez le numéro ou le nom."
+            text=(
+                "💳 Veuillez choisir un mode de paiement :\n\n"
+                "1️⃣ **Chèque** — vous réglerez par chèque à l'ordre d'EXPO BÉTON ASBL\n"
+                "2️⃣ **Veuillez Facturer** — nous vous envoyons une facture pro forma, "
+                "à régler par virement bancaire\n\n"
+                "👉 Tapez **1** ou **2**.\n\n"
+                "ℹ️ Le paiement en ligne immédiat (Visa, MasterCard, M-Pesa, Orange "
+                "Money, Airtel Money via FlexPay) se fait sur le tunnel du site : "
+                "https://expobetonrdc.com/sponsor/paiement.html"
+            )
         )
         return {"reg_payment": None}
+
+    def validate_reg_visa(
+        self, slot_value: Any, dispatcher: CollectingDispatcher,
+        tracker: Tracker, domain: DomainDict
+    ) -> Dict[Text, Any]:
+        """Oui/non strict pour l'assistance visa.
+
+        Sans validateur, le slot acceptait n'importe quel texte brut : un
+        utilisateur qui répondait « **3** » voyait « 9. Visa : **3** » dans son
+        récapitulatif, et cette valeur partait telle quelle vers l'API.
+        """
+        answer = _match_yesno(slot_value)
+        if answer is True:
+            dispatcher.utter_message(
+                text=(
+                    "🛂 Parfait. Une **lettre d'invitation officielle** vous sera "
+                    "envoyée par e-mail après validation de votre inscription, pour "
+                    "faciliter l'obtention de votre visa.\n\n"
+                    "📄 Il vous sera demandé une **copie de votre passeport** valide "
+                    "au moins 6 mois (PDF, 10 Mo maximum)."
+                )
+            )
+            return {"reg_visa": "Oui", "_reg_validation_fails": 0}
+        if answer is False:
+            return {"reg_visa": "Non", "_reg_validation_fails": 0}
+        dispatcher.utter_message(
+            text=(
+                "🛂 Avez-vous besoin d'une **lettre d'invitation** pour obtenir un "
+                "visa pour la RDC ?\n\n👉 Répondez simplement **oui** ou **non**."
+            )
+        )
+        return _bump_fail(tracker, dispatcher, "reg_visa")
+
+    def validate_reg_history(
+        self, slot_value: Any, dispatcher: CollectingDispatcher,
+        tracker: Tracker, domain: DomainDict
+    ) -> Dict[Text, Any]:
+        """Oui/non strict pour « avez-vous déjà participé à une édition ».
+
+        Même faille que ``reg_visa`` : aucun validateur n'existait, la valeur
+        brute était transmise à l'API.
+        """
+        answer = _match_yesno(slot_value)
+        if answer is True:
+            return {"reg_history": "Oui", "_reg_validation_fails": 0}
+        if answer is False:
+            return {"reg_history": "Non", "_reg_validation_fails": 0}
+        dispatcher.utter_message(
+            text=(
+                "📊 Avez-vous **déjà participé** à une édition précédente d'ExpoBeton ?\n\n"
+                "👉 Répondez simplement **oui** ou **non**."
+            )
+        )
+        return _bump_fail(tracker, dispatcher, "reg_history")
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -754,6 +967,62 @@ def _looks_like_phone(value):
     if len(digits) < 8:
         return False
     return (len(digits) / max(len(raw), 1)) >= 0.6
+
+
+def _category_slot_updates(category):
+    """Slot updates when a registration category has just been resolved.
+
+    « Participant Simple » est gratuit : l'étape « Paiement » doit être sautée.
+    Or ``reg_payment`` figure dans ``required_slots`` du formulaire — tant que le
+    slot est vide, Rasa pose la question, puis le validateur la jette. Le
+    pré-remplir avec « N/A » est le moyen natif de passer l'étape sans retoucher
+    le domaine (un slot déjà rempli n'est pas redemandé).
+    """
+    out = {
+        "reg_category": category,
+        "_reg_category_phase": None,
+        "_reg_validation_fails": 0,
+    }
+    if category == "Participant Simple":
+        out["reg_payment"] = "N/A"
+    return out
+
+
+_YESNO = {
+    "oui": True, "yes": True, "y": True, "o": True, "si": True,
+    "yep": True, "yeah": True, "ok": True, "d'accord": True,
+    "je veux": True, "j'en ai besoin": True, "besoin": True,
+    "volontiers": True,
+    "non": False, "no": False, "n": False, "nope": False,
+    "non merci": False, "pas besoin": False, "aucun besoin": False,
+}
+
+
+def _match_yesno(value):
+    """Interprète une réponse oui/non. Renvoie True, False ou None si ambigu.
+
+    Les étapes « visa » et « historique » n'avaient aucun validateur : le slot
+    acceptait n'importe quel texte brut — y compris « **3** » (markdown collé) ou
+    une question entière — qui se retrouvait tel quel dans le récapitulatif
+    envoyé à l'API.
+    """
+    if value is None:
+        return None
+    raw = str(value).strip().lower()
+    # Markdown et ponctuation retirés : « **oui** » -> « oui », « **3** » -> « 3 ».
+    raw = re.sub(r"[^0-9a-zà-ÿ' ]", " ", raw)
+    raw = re.sub(r"\s+", " ", raw).strip()
+    if not raw:
+        return None
+    if raw in _YESNO:
+        return _YESNO[raw]
+    # Formules négatives composées testées AVANT les affirmatives, sinon
+    # « pas besoin » serait lu comme « besoin » (affirmatif).
+    if re.search(r"\b(pas|aucun|aucune|no|non|never|jamais)\b", raw):
+        return False
+    if re.search(r"\b(oui|yes|besoin|veux|volontiers|ok|yep|yeah)\b", raw):
+        return True
+    return None
 
 
 def _bump_fail(tracker, dispatcher, slot_name, extra=None):
@@ -806,7 +1075,7 @@ REG_FIELDS = [
     (4,  "Telephone",   "reg_phone",        "Quel est votre numero de telephone ?"),
     (5,  "Pays",        "reg_country",      "De quel pays venez-vous ?"),
     (6,  "Ville",       "reg_city",         "Dans quelle ville etes-vous ?"),
-    (7,  "Categorie",   "reg_category",     "Quelle categorie ? (Platinum, Gold, Silver, Bronze, Exposant Stand 3x3m/2x4m/2x3m, Participant Simple)"),
+    (7,  "Categorie",   "reg_category",     "Quelle categorie ? (Platinum, Gold, Bronze, Silver, Exposant Stand 3x3m/2x3m, Participant Simple)"),
     (8,  "Paiement",    "reg_payment",      "Mode de paiement ? (1. Cheque  2. Veuillez Facturer)"),
     (9,  "Visa",        "reg_visa",         "Avez-vous besoin d'une assistance visa ? (oui/non)"),
     (10, "Historique",  "reg_history",      "Avez-vous deja participe a ExpoBeton ? (oui/non)"),
@@ -1105,13 +1374,34 @@ class ActionConfirmRegistration(Action):
                     }
                 )
 
+            # Le bot affirmait systématiquement qu'un e-mail de confirmation avait
+            # été envoyé. Or api_chatbot_register.php tourne en mode silencieux
+            # ($SILENT_REGISTRATION = true) : le champ « email_sent » vaut false et
+            # l'utilisateur attendait en vain un message qui n'arriverait jamais.
+            # On lit donc la réponse réelle de l'API.
+            email_sent = bool(result.get("data", {}).get("email_sent", False))
+            if email_sent:
+                email_line = (
+                    f"📧 Un e-mail de confirmation a été envoyé à **{data['email']}** "
+                    f"(pensez à vérifier vos courriers indésirables).\n\n"
+                    f"🎫 Votre **badge d'accès** au format PDF vous parviendra par "
+                    f"e-mail une fois le dossier validé."
+                )
+            else:
+                email_line = (
+                    f"⚠️ **Aucun e-mail automatique n'est envoyé pour le moment.** "
+                    f"Votre inscription est bien **enregistrée** — conservez votre "
+                    f"numéro de référence ci-dessus.\n\n"
+                    f"👉 Notre équipe vous contactera à **{data['email']}** dans les "
+                    f"48 heures pour la validation et l'envoi de votre **badge d'accès**."
+                )
+
             dispatcher.utter_message(
                 text=(
                     f"🎉 Félicitations{name_suffix} ! "
                     f"Votre inscription à **ExpoBeton RDC 2026** a bien été enregistrée.\n\n"
                     f"🔖 Numéro de référence : **{ref}**\n"
-                    f"📧 Un email de confirmation a été envoyé à **{data['email']}**.\n\n"
-                    f"Notre équipe vous contactera dans les 48 heures.\n"
+                    f"{email_line}\n\n"
                     f"Pour toute question : info@expobetonrdc.com"
                 )
             )
@@ -1218,8 +1508,10 @@ class ActionFormHelp(Action):
             ),
             "reg_category": (
                 "📋 Je vous demande dans quelle **catégorie** vous souhaitez participer :\n\n"
-                "• 🏆 **Sponsor** — vous soutenez l'événement (visibilité maximale, à partir de 12.000 $)\n"
-                "• 🏗️ **Exposant** — vous avez un stand pour exposer vos produits (à partir de 2.000 $)\n"
+                "• 🏆 **Sponsor** — vous soutenez l'événement (visibilité maximale, "
+                "de 10.000 $ à 40.000 $ selon le palier)\n"
+                "• 🏗️ **Exposant** — vous avez un stand pour exposer vos produits "
+                "(3×3m à 5.000 $ ou 2×3m à 3.500 $)\n"
                 "• 👤 **Participant Simple** — vous assistez sans stand (gratuit)\n\n"
                 "👉 Tapez **1**, **2** ou **3** selon votre choix."
             ),
@@ -1243,22 +1535,23 @@ class ActionFormHelp(Action):
         if slot == "reg_category" and phase == "sponsor":
             dispatcher.utter_message(
                 text=(
-                    "🏆 Choisissez votre **niveau de sponsoring** :\n\n"
-                    "• **Platinum** (40.000 $) — visibilité maximale, logo en tête d'affiche\n"
-                    "• **Gold** (20.000 $) — forte visibilité + stand premium\n"
-                    "• **Silver** (15.000 $) — bonne visibilité + stand standard\n"
-                    "• **Bronze** (12.000 $) — visibilité de base + stand standard\n\n"
-                    "👉 Tapez **1** (Platinum), **2** (Gold), **3** (Silver) ou **4** (Bronze)."
+                    "🏆 Choisissez votre **palier de sponsoring** :\n\n"
+                    "• **Platinum** (40.000 $) — visibilité maximale, stand 45 m², 5 pass\n"
+                    "• **Gold** (20.000 $) — forte visibilité, stand 20 m², 3 pass\n"
+                    "• **Bronze** (15.000 $) — bonne visibilité, stand 15 m², 2 pass\n"
+                    "• **Silver** (10.000 $) — visibilité de base, stand 12 m², 2 pass\n\n"
+                    "👉 Tapez **1** (Platinum), **2** (Gold), **3** (Bronze) ou **4** (Silver)."
                 )
             )
         elif slot == "reg_category" and phase == "exposant":
             dispatcher.utter_message(
                 text=(
                     "🏗️ Choisissez votre **type de stand** :\n\n"
-                    "• **3×3m** (5.000 $) — stand grand format, recommandé pour grosse exposition\n"
-                    "• **2×4m** (3.000 $) — stand moyen, bon rapport qualité-prix\n"
-                    "• **2×3m** (2.000 $) — stand compact, idéal découverte\n\n"
-                    "👉 Tapez **1** (3×3m), **2** (2×4m) ou **3** (2×3m)."
+                    "• **3×3m** (9 m²) — 5.000 $ — stand grand format, "
+                    "2 pass délégués et 30 places de parking\n"
+                    "• **2×3m** (6 m²) — 3.500 $ — stand compact, idéal découverte, "
+                    "1 pass délégué et 5 places\n\n"
+                    "👉 Tapez **1** (3×3m) ou **2** (2×3m)."
                 )
             )
         elif slot in helps:

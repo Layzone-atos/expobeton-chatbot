@@ -6,6 +6,8 @@ from typing import Any, Text, Dict, List
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 import os
+import re
+import math
 import glob
 import openai
 import numpy as np
@@ -52,6 +54,54 @@ SMTP_USERNAME = os.getenv('SMTP_USERNAME', '')  # Set this in environment
 SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')  # Set this in environment
 NOTIFICATION_EMAIL = 'bot@expobetonrdc.com'
 
+# Envoi des transcripts : JAMAIS bloquant.
+#
+# Sur Railway, le port sortant 587 vers smtp.gmail.com est filtré. Sans timeout,
+# smtplib.SMTP() restait en attente jusqu'au délai TCP du système (~130 s). Or
+# send_conversation_email() était appelé SYNCHRONEMENT dans le chemin du
+# fallback : l'utilisateur posait une question non reconnue, le webhook Rasa
+# n'aboutissait jamais et le widget n'affichait aucune réponse. C'est l'origine
+# des 35 sessions « no_bot_reply » des journaux (latence mesurée : 136 s).
+#
+# Trois garde-fous :
+#   1. SMTP_TIMEOUT borne chaque tentative de connexion ;
+#   2. l'envoi part dans un thread démon, comme send_analytics_event() ci-dessus ;
+#   3. un disjoncteur cesse toute tentative après SMTP_MAX_FAILURES échecs
+#      consécutifs — inutile de repayer le timeout à chaque fallback une fois
+#      qu'on sait le SMTP injoignable depuis cet environnement.
+SMTP_TIMEOUT = float(os.getenv('SMTP_TIMEOUT', '8'))
+SMTP_MAX_FAILURES = int(os.getenv('SMTP_MAX_FAILURES', '3'))
+_smtp_failures = 0
+_smtp_disabled = False
+
+# Placeholders laissés tels quels dans l'environnement de production : les
+# journaux montraient « SMTP_USERNAME: your-email@gmail.com ». Comme la valeur
+# n'est pas vide, le test « if SMTP_USERNAME and SMTP_PASSWORD » passait et le
+# code partait dans la branche réseau — donc dans le blocage — au lieu du repli
+# fichier. Une valeur manifestement non renseignée doit compter comme absente.
+SMTP_PLACEHOLDERS = (
+    "your-email", "your_email", "youremail", "your-email@gmail.com",
+    "your-password", "your_password", "yourpassword",
+    "example@gmail.com", "example@example.com", "changeme", "todo",
+    "none", "null", "xxx", "password", "motdepasse",
+    "smtp_username", "smtp_password", "dummy", "sample", "placeholder",
+)
+
+
+def _smtp_configured() -> bool:
+    """Le SMTP est-il réellement configuré (valeurs présentes ET non factices) ?"""
+    user = (SMTP_USERNAME or "").strip().lower()
+    pwd = (SMTP_PASSWORD or "").strip().lower()
+    if not user or not pwd:
+        return False
+    if user in SMTP_PLACEHOLDERS or pwd in SMTP_PLACEHOLDERS:
+        return False
+    for marker in SMTP_PLACEHOLDERS:
+        if marker in user or marker in pwd:
+            return False
+    return True
+
+
 # Cache for document embeddings
 DOCS_CACHE = None
 EMBEDDINGS_CACHE = None
@@ -87,41 +137,26 @@ def send_analytics_event(action: str, data: dict):
     except Exception as e:
         print(f"[ANALYTICS] Thread error: {e}")
 
-def send_conversation_email(session_id: str, user_info: dict, messages: list):
-    """Send complete conversation transcript via email"""
-    try:
-        # Debug: Print SMTP configuration
-        print(f"[EMAIL DEBUG] SMTP_SERVER: {SMTP_SERVER}")
-        print(f"[EMAIL DEBUG] SMTP_PORT: {SMTP_PORT}")
-        print(f"[EMAIL DEBUG] SMTP_USERNAME: {SMTP_USERNAME}")
-        print(f"[EMAIL DEBUG] SMTP_PASSWORD: {'***' if SMTP_PASSWORD else 'NOT SET'}")
-        print(f"[EMAIL DEBUG] NOTIFICATION_EMAIL: {NOTIFICATION_EMAIL}")
-        
-        msg = MIMEMultipart()
-        msg['From'] = SMTP_USERNAME or 'noreply@expobetonrdc.com'
-        msg['To'] = NOTIFICATION_EMAIL
-        msg['Subject'] = f'[Bot] Conversation - {user_info.get("name", "Utilisateur")} - {datetime.now().strftime("%Y-%m-%d %H:%M")}'
-        
-        # Build conversation transcript
-        transcript = ""
-        for msg_data in messages:
-            sender = "Utilisateur" if msg_data['sender'] == 'user' else "Bot"
-            
-            # Handle timestamp - peut être datetime ou string ISO
-            timestamp = msg_data.get('timestamp')
-            if isinstance(timestamp, str):
-                try:
-                    timestamp = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
-                except:
-                    timestamp = datetime.now()
-            elif not isinstance(timestamp, datetime):
+def _build_transcript_body(session_id: str, user_info: dict, messages: list) -> str:
+    """Construit le corps texte du transcript (aucun appel réseau)."""
+    transcript = ""
+    for msg_data in messages:
+        sender = "Utilisateur" if msg_data.get('sender') == 'user' else "Bot"
+
+        # Handle timestamp - peut être datetime ou string ISO
+        timestamp = msg_data.get('timestamp')
+        if isinstance(timestamp, str):
+            try:
+                timestamp = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+            except:
                 timestamp = datetime.now()
-            
-            time_str = timestamp.strftime("%H:%M:%S")
-            transcript += f"[{time_str}] {sender}: {msg_data['text']}\n\n"
-        
-        # Email body
-        body = f"""
+        elif not isinstance(timestamp, datetime):
+            timestamp = datetime.now()
+
+        time_str = timestamp.strftime("%H:%M:%S")
+        transcript += f"[{time_str}] {sender}: {msg_data.get('text', '')}\n\n"
+
+    return f"""
 Bonjour,
 
 Voici le transcript d'une conversation avec le chatbot ExpoBeton RDC.
@@ -142,31 +177,113 @@ Nombre de messages: {len(messages)}
 Cordialement,
 Bot ExpoBeton RDC
 """
-        
-        msg.attach(MIMEText(body, 'plain'))
-        
-        if SMTP_USERNAME and SMTP_PASSWORD:
-            print(f"[EMAIL DEBUG] Attempting to connect to {SMTP_SERVER}:{SMTP_PORT}")
-            server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-            server.starttls()
-            print(f"[EMAIL DEBUG] TLS started, logging in as {SMTP_USERNAME}")
-            server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            print(f"[EMAIL DEBUG] Logged in, sending email to {NOTIFICATION_EMAIL}")
-            server.send_message(msg)
-            server.quit()
-            print(f"✅ [SUCCESS] Conversation email sent for session: {session_id}")
-        else:
-            print(f"⚠️ [WARNING] SMTP not configured. Email not sent for session: {session_id}")
-            print(f"[CONVERSATION LOG] Logging to file instead...")
-            log_file = Path(__file__).parent.parent / 'conversations.log'
-            with open(log_file, 'a', encoding='utf-8') as f:
-                f.write(f"\n{'='*50}\n")
-                f.write(body)
-                f.write(f"\n{'='*50}\n")
+
+
+def _append_conversation_log(body: str):
+    """Repli quand le SMTP est indisponible : on ne perd pas la trace."""
+    try:
+        log_file = Path(__file__).parent.parent / 'conversations.log'
+        with open(log_file, 'a', encoding='utf-8') as f:
+            f.write(f"\n{'='*50}\n")
+            f.write(body)
+            f.write(f"\n{'='*50}\n")
     except Exception as e:
-        print(f"❌ [ERROR] Error sending conversation email: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"❌ [EMAIL] Écriture du journal de repli impossible : {e}")
+
+
+def _deliver_email(label: str, msg):
+    """Connexion SMTP réelle. Toujours exécutée dans un thread démon.
+
+    Un timeout explicite est indispensable : sans lui, la connexion vers le port
+    587 (filtré sur Railway) bloquait jusqu'au délai TCP du système. Partagée par
+    les transcripts de conversation et les questions sans réponse.
+    """
+    global _smtp_failures, _smtp_disabled
+    server = None
+    try:
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=SMTP_TIMEOUT)
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        server.send_message(msg)
+        _smtp_failures = 0
+        print(f"✅ [EMAIL] Envoyé : {label}")
+    except Exception as e:
+        _smtp_failures += 1
+        if _smtp_failures >= SMTP_MAX_FAILURES:
+            _smtp_disabled = True
+            print(f"⛔ [EMAIL] {_smtp_failures} échecs consécutifs ({e}) — "
+                  f"envoi désactivé jusqu'au redémarrage, repli fichier activé.")
+        else:
+            print(f"❌ [EMAIL] Échec d'envoi pour {label} "
+                  f"({_smtp_failures}/{SMTP_MAX_FAILURES}) : {e}")
+    finally:
+        if server is not None:
+            try:
+                server.quit()
+            except Exception:
+                pass
+
+
+def _queue_message_async(label: str, msg) -> bool:
+    """Confie un message MIME déjà construit à un thread démon.
+
+    Renvoie True si un envoi a été programmé, False si le SMTP est indisponible
+    (non configuré ou disjoncté) — l'appelant sait alors qu'il doit se reposer
+    uniquement sur son repli fichier.
+    """
+    if not _smtp_configured():
+        return False
+    if _smtp_disabled:
+        # Disjoncteur ouvert : plus aucune tentative de connexion.
+        return False
+    try:
+        import threading
+        threading.Thread(
+            target=_deliver_email,
+            args=(label, msg),
+            daemon=True,
+        ).start()
+        return True
+    except Exception as e:
+        print(f"❌ [EMAIL] Mise en file impossible pour {label} : {e}")
+        return False
+
+
+def _dispatch_email_async(label: str, subject: str, body: str) -> bool:
+    """Construit un message texte simple puis le confie à _queue_message_async."""
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = SMTP_USERNAME or 'noreply@expobetonrdc.com'
+        msg['To'] = NOTIFICATION_EMAIL
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain'))
+    except Exception as e:
+        print(f"❌ [EMAIL] Préparation impossible pour {label} : {e}")
+        return False
+    return _queue_message_async(label, msg)
+
+
+def send_conversation_email(session_id: str, user_info: dict, messages: list):
+    """Enregistre le transcript d'une conversation SANS bloquer l'action.
+
+    Le corps est construit ici (données déjà en mémoire, aucun I/O réseau), puis
+    l'envoi SMTP part dans un thread démon — même principe que
+    ``send_analytics_event``. Les quatre points d'appel restent inchangés.
+    """
+    try:
+        body = _build_transcript_body(session_id, user_info, messages)
+        subject = (
+            f'[Bot] Conversation - {user_info.get("name", "Utilisateur")} - '
+            f'{datetime.now().strftime("%Y-%m-%d %H:%M")}'
+        )
+        queued = _dispatch_email_async(f"transcript {session_id}", subject, body)
+        if not queued:
+            print(f"⚠️ [EMAIL] SMTP indisponible, transcript journalisé : {session_id}")
+            _append_conversation_log(body)
+    except Exception as e:
+        print(f"❌ [EMAIL] Préparation du transcript impossible : {e}")
+
+
 
 def log_conversation_message(session_id: str, sender: str, text: str, user_info: dict = None):
     """Log a message in the conversation"""
@@ -228,21 +345,20 @@ def send_unanswered_question_email(user_question: str):
         
         msg.attach(MIMEText(body, 'plain'))
         
-        # Send email only if SMTP is configured
-        if SMTP_USERNAME and SMTP_PASSWORD:
-            server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-            server.starttls()
-            server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            server.send_message(msg)
-            server.quit()
-            print(f"Email sent for unanswered question: {user_question}")
-        else:
-            # Log to console if email not configured
-            print(f"[UNANSWERED QUESTION] Email not configured. Question logged: {user_question}")
-            # Optionally, write to a file
-            log_file = Path(__file__).parent.parent / 'unanswered_questions.log'
-            with open(log_file, 'a', encoding='utf-8') as f:
-                f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {user_question}\n")
+        # Journal local TOUJOURS écrit. C'est la matière première de l'audit des
+        # lacunes du bot (questions non reconnues) : avant, il n'était alimenté
+        # que lorsque le SMTP n'était pas configuré — donc perdu dès qu'un envoi
+        # était tenté, c'est-à-dire précisément quand il partait en timeout.
+        log_file = Path(__file__).parent.parent / 'unanswered_questions.log'
+        with open(log_file, 'a', encoding='utf-8') as f:
+            f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {user_question}\n")
+
+        # Envoi non bloquant. Cet appel se situe JUSTE AVANT la réponse de repli
+        # envoyée à l'utilisateur : une connexion SMTP sans timeout y gelait donc
+        # la réponse (~130 s sur Railway, où le port 587 sortant est filtré).
+        # Thread démon + timeout + disjoncteur, partagés avec les transcripts.
+        if not _queue_message_async(f"question sans réponse : {user_question[:60]}", msg):
+            print(f"[UNANSWERED QUESTION] SMTP indisponible, question journalisée : {user_question}")
             
     except Exception as e:
         print(f"Error sending email: {e}")
@@ -254,29 +370,103 @@ def send_unanswered_question_email(user_question: str):
         except:
             pass
 
+# Canonical corpus files are pinned: they are the single source of truth for
+# prices, dates, venue and procedures. They must never be crowded out by the
+# ~190 legacy brochures, nor truncated by the generic character budget.
+CANONICAL_PREFIX = '00_canonical_'
+CANONICAL_CHAR_LIMIT = 16000
+LEGACY_CHAR_LIMIT = 4000
+# Per-document budget inside the LLM prompt. Canonical docs keep more text: their
+# price/procedure tables sit past the 3000-char mark and used to be cut off.
+CANONICAL_PROMPT_CHARS = 7000
+LEGACY_PROMPT_CHARS = 3000
+
+# Brochures d'éditions précédentes, exclues de l'index de recherche.
+#
+# Elles décrivent des dates, lieux, thèmes et tarifs révolus mais emploient le
+# même vocabulaire que la 12ème édition. Pire : le filtre « priority_keywords »
+# de load_and_embed_docs() les retenait EN PRIORITÉ — il contenait les années
+# « 2024 » et « 2025 », et un nom comme
+# FR_V1_Brochure_ExpoBetonRDC_Kalemie_2026.txt cumulait « brochure » et « 2026 ».
+# Ces documents passaient donc devant le corpus canonique dans le prompt :
+# origine directe des réponses « Kalemie », « avril 2026 », « Grand Katanga » et
+# des anciens tarifs relevés dans les journaux de production.
+#
+# 24 fichiers du corpus portent une année passée, dont une fiche de sponsoring
+# 2025 aux paliers périmés. L'historique reste interrogeable : le document
+# canonique 00_canonical_evenement_ed12 rappelle explicitement le thème et le
+# lieu de la 11ème édition.
+SUPERSEDED_YEARS = ('2024', '2025')
+SUPERSEDED_DOC_MARKERS = (
+    'kalemie', 'lubumbashi', 'kolwezi',              # villes hôtes des éditions passées
+    'edition_11', 'edition11', 'ed11', '11eme', '11ème',
+)
+
+
+def _is_superseded(path) -> bool:
+    """True si le document décrit une édition passée et doit rester hors index.
+
+    Les documents canoniques ne sont jamais exclus : ils sont la source de vérité,
+    y compris lorsqu'ils mentionnent une édition précédente à titre historique.
+    """
+    name = path.name.lower()
+    if name.startswith(CANONICAL_PREFIX):
+        return False
+    if any(year in name for year in SUPERSEDED_YEARS):
+        return True
+    return any(marker in name for marker in SUPERSEDED_DOC_MARKERS)
+
+
+
+def _collect_doc_files(docs_path):
+    """Deterministic .txt + .md inventory: canonical files first, deduped by stem.
+
+    Sorting matters: the previous unsorted glob() made the 30+20 selection depend
+    on filesystem enumeration order, so which brochures got indexed could vary
+    between deploys.
+    """
+    found = sorted(docs_path.glob('*.txt')) + sorted(docs_path.glob('*.md'))
+    by_stem = {}
+    for f in found:
+        # When both X.txt and X.md exist, keep the .txt twin (legacy convention).
+        if f.stem in by_stem and by_stem[f.stem].suffix == '.txt':
+            continue
+        by_stem.setdefault(f.stem, f)
+    files = [f for f in by_stem.values() if not _is_superseded(f)]
+    canonical = [f for f in files if f.name.lower().startswith(CANONICAL_PREFIX)]
+    rest = [f for f in files if not f.name.lower().startswith(CANONICAL_PREFIX)]
+    return canonical, rest
+
+
 def load_and_embed_docs():
     """Load all docs and create OpenAI embeddings"""
     global DOCS_CACHE, EMBEDDINGS_CACHE
     
     if DOCS_CACHE is not None:
-        return DOCS_CACHE, EMBEDDINGS_CACHE
+        # EMBEDDINGS_CACHE stays None when OpenAI is unavailable: callers then use
+        # the keyword fallback instead of re-reading the whole corpus each message.
+        return DOCS_CACHE, (EMBEDDINGS_CACHE if EMBEDDINGS_CACHE is not None else [])
     
     docs_path = Path(__file__).parent.parent / 'docs'
     documents = []
     
     print(f"📚 Loading documents from {docs_path}...")
     
-    # Read all .txt files (limit to first 4000 chars to avoid token limits)
-    # Also limit total number of docs to 50 most important ones
-    all_files = list(docs_path.glob('*.txt'))
+    # Inventory: .txt + .md, canonical docs pinned first (see _collect_doc_files)
+    canonical_files, rest_files = _collect_doc_files(docs_path)
+    all_files = canonical_files + rest_files
     
     # Prioritize important files (brochures, reports)
-    priority_keywords = ['brochure', 'rapport', 'final', '2024', '2025', '2026', 'invitation']
-    priority_files = [f for f in all_files if any(kw in f.name.lower() for kw in priority_keywords)]
-    other_files = [f for f in all_files if f not in priority_files]
+    # Les années passées (« 2024 », « 2025 ») ont été retirées de cette liste :
+    # elles faisaient remonter en priorité des documents périmés, désormais exclus
+    # par _is_superseded(). Ne reste que l'année de l'édition en cours.
+    priority_keywords = ['brochure', 'rapport', 'final', '2026', 'invitation']
+    priority_files = [f for f in rest_files if any(kw in f.name.lower() for kw in priority_keywords)]
+    other_files = [f for f in rest_files if f not in priority_files]
     
-    # Take top 30 priority + top 20 others = 50 total
-    selected_files = priority_files[:30] + other_files[:20]
+    # Canonical docs are always indexed and always ranked first, on top of the
+    # 30 priority + 20 legacy brochures.
+    selected_files = canonical_files + priority_files[:30] + other_files[:20]
     
     print(f"📄 Selected {len(selected_files)} documents out of {len(all_files)} (prioritizing recent/important ones)")
     
@@ -284,8 +474,12 @@ def load_and_embed_docs():
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-                # Limit content to 4000 chars (more aggressive than before)
-                content = content[:4000] if len(content) > 4000 else content
+                # Canonical docs keep their full text (source of truth for
+                # prices/procedures); legacy brochures stay capped at 4000.
+                limit = (CANONICAL_CHAR_LIMIT
+                         if file_path.name.lower().startswith(CANONICAL_PREFIX)
+                         else LEGACY_CHAR_LIMIT)
+                content = content[:limit] if len(content) > limit else content
                 documents.append({
                     'filename': file_path.name,
                     'content': content
@@ -316,17 +510,88 @@ def load_and_embed_docs():
         return documents, embeddings
     except Exception as e:
         print(f"❌ Error creating OpenAI embeddings: {e}")
-        import traceback
-        traceback.print_exc()
+        print("🔤 Retrieval falls back to keyword matching. "
+              "Set OPENAI_API_KEY to restore semantic search.")
+        # Cache the documents anyway: the keyword fallback answers from them, and
+        # we avoid re-reading ~250 KB of corpus + retrying OpenAI on every message.
+        DOCS_CACHE = documents
+        EMBEDDINGS_CACHE = None
         return documents, []
+
+def _normalize_text(text: str) -> str:
+    """Lowercase and strip accents so 'édition' matches 'edition'."""
+    import unicodedata
+    nfkd = unicodedata.normalize('NFKD', text.lower())
+    return ''.join(c for c in nfkd if not unicodedata.combining(c))
+
+
+def _prefer_canonical(docs):
+    """Canonical corpus prevails: when it matches, legacy brochures are dropped.
+
+    The rule is "one canonical document per topic". Legacy files such as
+    Fiche_Sponsoring_Stand_ExpoBeton_RDC_2025.txt or the Kalemie brochure carry
+    superseded prices and dates, so mixing them into the prompt produces
+    contradictory answers.
+    """
+    canonical = [d for d in docs if d['filename'].lower().startswith(CANONICAL_PREFIX)]
+    return canonical if canonical else docs
+
+
+def _keyword_fallback(query: str, documents, top_k: int = 3):
+    """Lexical retrieval used when OpenAI embeddings are unavailable.
+
+    Without this, a missing OPENAI_API_KEY made every open question answer with
+    silence (observed in production logs: "No documents or embeddings available").
+    """
+    tokens = {t for t in re.findall(r"[a-z0-9]+", _normalize_text(query)) if len(t) > 2}
+    if not tokens:
+        return []
+
+    scored = []
+    for doc in documents:
+        haystack = _normalize_text(doc['content'])
+        filename = _normalize_text(doc['filename'])
+        score = 0.0
+        for tok in tokens:
+            hits = haystack.count(tok)
+            if hits:
+                # Diminishing returns: a word repeated 200x is not 200x better.
+                score += len(tok) * (1 + math.log(hits))
+            if tok in filename:
+                score += 25.0
+        if score > 0:
+            # Length normalisation: a focused document must not be outranked by a
+            # long generalist one that merely repeats the query words more often.
+            score /= 1.0 + math.log(1.0 + len(haystack) / 2000.0)
+            if doc['filename'].lower().startswith(CANONICAL_PREFIX):
+                score *= 1.35  # canonical corpus wins ties against old brochures
+            scored.append((score, doc))
+
+    scored.sort(key=lambda item: item[0], reverse=True)
+    canonical_pairs = [p for p in scored
+                       if p[1]['filename'].lower().startswith(CANONICAL_PREFIX)]
+    top = (canonical_pairs or scored)[:top_k]
+    if top:
+        print(f"🔤 Keyword fallback: {len(top)} doc(s) for query '{query[:50]}'")
+        for i, (score, doc) in enumerate(top):
+            print(f"  {i+1}. {doc['filename']} (lexical score: {score:.1f})")
+    else:
+        print(f"🔤 Keyword fallback: no match for query '{query[:50]}'")
+    return [doc for _score, doc in top]
+
 
 def find_relevant_docs(query: str, top_k: int = 3):
     """Find most relevant documents using OpenAI embeddings"""
     documents, doc_embeddings = load_and_embed_docs()
     
-    if not documents or len(doc_embeddings) == 0:
-        print("⚠️ No documents or embeddings available")
+    if not documents:
+        print("⚠️ No documents available")
         return []
+    
+    if len(doc_embeddings) == 0:
+        # No OPENAI_API_KEY (or the embedding call failed): answer from the corpus
+        # lexically rather than returning nothing to the user.
+        return _keyword_fallback(query, documents, top_k)
     
     try:
         # Create embedding for query with OpenAI
@@ -342,20 +607,21 @@ def find_relevant_docs(query: str, top_k: int = 3):
             np.linalg.norm(doc_embeddings_array, axis=1) * np.linalg.norm(query_embedding)
         )
         
-        # Get top_k most relevant docs
-        top_indices = np.argsort(similarities)[-top_k:][::-1]
-        relevant_docs = [documents[i] for i in top_indices]
+        # Rank a wider pool, then let the canonical corpus prevail over the
+        # legacy brochures that carry superseded prices and dates.
+        pool = min(len(documents), top_k * 4)
+        top_indices = np.argsort(similarities)[-pool:][::-1]
+        relevant_docs = _prefer_canonical([documents[i] for i in top_indices])[:top_k]
+        sim_by_name = {documents[i]['filename']: float(similarities[i]) for i in top_indices}
         
         print(f"🔍 Found {len(relevant_docs)} relevant documents for query: {query[:50]}...")
         for i, doc in enumerate(relevant_docs):
-            print(f"  {i+1}. {doc['filename']} (similarity: {similarities[top_indices[i]]:.3f})")
+            print(f"  {i+1}. {doc['filename']} (similarity: {sim_by_name.get(doc['filename'], 0.0):.3f})")
         
         return relevant_docs
     except Exception as e:
         print(f"❌ Error finding relevant docs with OpenAI: {e}")
-        import traceback
-        traceback.print_exc()
-        return []
+        return _keyword_fallback(query, documents, top_k)
 
 # Multilingual content dictionary
 MULTILINGUAL_CONTENT = {
@@ -383,21 +649,25 @@ MULTILINGUAL_CONTENT = {
         'es': "ExpoBeton RDC es la feria internacional de construcción, infraestructura y desarrollo urbano en la República Democrática del Congo. Es un foro anual que crea un espacio de reflexión y asociación para reconstruir las ciudades congoleñas y apoyar el crecimiento económico.",
         'ar': "ExpoBeton RDC هو المعرض الدولي للبناء والبنية التحتية والتنمية الحضرية في جمهورية الكونغو الديمقراطية. إنه منتدى سنوي يخلق مساحة للتفكير والشراكة لإعادة بناء المدن الكونغولية ودعم النمو الاقتصادي."
     },
+    # Édition 12 : 07-10 octobre 2026, Kinshasa. Les variantes zh/ru/es/ar
+    # décrivaient encore la 11e édition (Kalemie, 15-18 avril 2026).
     'dates': {
         'fr': "La prochaine édition (12ème) d'ExpoBeton RDC aura lieu du 07 au 10 octobre 2026 à Kinshasa, à La Grande Résidence — Galerie La Fontaine. Cette édition est consacrée au thème « Kinshasa, Locomotive de la Transformation des Villes de la RDC ». (La 11ème édition s'est tenue dans le Grand Katanga — Lubumbashi.)",
         'en': "The next edition (12th) of ExpoBeton RDC will take place from October 7 to 10, 2026 in Kinshasa, at La Grande Residence - Galerie La Fontaine. This edition focuses on the theme 'Kinshasa, Locomotive of the Transformation of DRC Cities'. (The 11th edition was held in the Grand Katanga - Lubumbashi.)",
-        'zh': "ExpoBeton RDC下一届（第11届）将于2026年4月15日至18日在坦噶尼喀省卡莱米举行。本届将完全致力于卡莱米，它是锋都和非洲走廊的战略枢纽。",
-        'ru': "Следующее издание (11-е) ExpoBeton RDC состоится с 15 по 18 апреля 2026 года в Калеми, провинция Танганьика. Это издание полностью посвящено Калеми как литиевой столице и стратегическому узлу африканских корридоров.",
-        'es': "La próxima edición (11ª) de ExpoBeton RDC tendrá lugar del 15 al 18 de abril de 2026 en Kalemie, Provincia de Tanganyika. Esta edición está completamente dedicada a Kalemie como capital del litio y centro estratégico de los corredores africanos.",
-        'ar': "ستقام النسخة القادمة (الحادية عشرة) من ExpoBeton RDC من 15 إلى 18 أبريل 2026 في كاليمي، مقاطعة تنجانيقا. هذه النسخة مخصصة بالكامل لكاليمي باعتبارها عاصمة الليثيوم ومركز استراتيجي للممرات الأفريقية."
+        'zh': "ExpoBeton RDC下一届（第12届）将于2026年10月7日至10日在金沙萨举行，地点为 The Grand Residence — Galerie La Fontaine。本届主题为「金沙萨：刚果民主共和国城市转型的火车头」。（第11届在大加丹加地区——卢本巴希举行。）",
+        'ru': "Следующее издание (12-е) ExpoBeton RDC состоится с 7 по 10 октября 2026 года в Киншасе, в The Grand Residence — Galerie La Fontaine. Тема этого издания: «Киншаса — локомотив трансформации городов ДРК». (11-е издание прошло в регионе Большой Катанга — Лубумбаши.)",
+        'es': "La próxima edición (12ª) de ExpoBeton RDC tendrá lugar del 7 al 10 de octubre de 2026 en Kinshasa, en The Grand Residence — Galerie La Fontaine. El tema de esta edición es «Kinshasa, locomotora de la transformación de las ciudades de la RDC». (La 11ª edición se celebró en el Gran Katanga — Lubumbashi.)",
+        'ar': "ستقام النسخة القادمة (الثانية عشرة) من ExpoBeton RDC من 7 إلى 10 أكتوبر 2026 في كينشاسا، في The Grand Residence — Galerie La Fontaine. موضوع هذه النسخة: «كينشاسا، قاطرة تحول المدن في جمهورية الكونغو الديمقراطية». (أقيمت النسخة الحادية عشرة في منطقة كاتانغا الكبرى — لوبومباشي.)"
     },
+    # Deux adresses distinctes à ne jamais fusionner : le salon est à
+    # La Grande Résidence (Gombe), le secrétariat de l'ASBL est à Ngaliema.
     'location': {
-        'fr': "La prochaine édition d'ExpoBeton RDC se tiendra à Kinshasa, à La Grande Résidence — Galerie La Fontaine (07 Avenue de l'OUA, Ngaliema). Kinshasa est la locomotive économique de la RDC.",
-        'en': "The next edition of ExpoBeton RDC will be held in Kinshasa, at La Grande Residence - Galerie La Fontaine (07 Avenue de l'OUA, Ngaliema). Kinshasa is the economic engine of the DRC.",
-        'zh': "ExpoBeton RDC下一届将在坦噶尼喀省卡莱米举行。卡莱米是刚果民主共和国的锋都，也是通往非洲走廊的战略门户。",
-        'ru': "Следующее издание ExpoBeton RDC будет проходить в Калеми, провинция Танганьика. Калеми является литиевой столицей ДРК и стратегическим шлюзом к африканским корридорам.",
-        'es': "La próxima edición de ExpoBeton RDC se celebrará en Kalemie, Provincia de Tanganyika. Kalemie es la capital del litio para la RDC y una puerta de entrada estratégica a los corredores africanos.",
-        'ar': "ستقام النسخة القادمة من ExpoBeton RDC في كاليمي، مقاطعة تنجانيقا. كاليمي هي عاصمة الليثيوم في جمهورية الكونغو الديمقراطية وبوابة استراتيجية للممرات الأفريقية."
+        'fr': "Le salon se tient à **The Grand Residence — Galerie La Fontaine**, croisement des avenues des Cliniques et Batetela, **Kinshasa / Gombe**. C'est là que se déroulent l'exposition, les conférences, les panels, les rendez-vous B2B/B2G et les cérémonies.\n\n🏢 Notre **secrétariat** (adresse administrative d'EXPO BÉTON ASBL) est au **07, avenue de l'OUA, Kinshasa / Ngaliema** — ce n'est pas le lieu du salon.",
+        'en': "The show takes place at **The Grand Residence — Galerie La Fontaine**, intersection of avenues des Cliniques and Batetela, **Kinshasa / Gombe**. That is where the exhibition, conferences, panels, B2B/B2G meetings and ceremonies are held.\n\n🏢 Our **secretariat** (administrative address of EXPO BÉTON ASBL) is at **07, avenue de l'OUA, Kinshasa / Ngaliema** — this is not the show venue.",
+        'zh': "展会地点：**The Grand Residence — Galerie La Fontaine**，Cliniques 大街与 Batetela 大街交汇处，**金沙萨 / 贡贝区（Gombe）**。展览、会议、专题讨论、B2B/B2G 洽谈和开闭幕式均在此举行。\n\n🏢 **秘书处**（EXPO BÉTON ASBL 行政地址）：**金沙萨 / 恩加利埃马区（Ngaliema），OUA 大街 07 号** —— 该地址不是展会场地。",
+        'ru': "Место проведения выставки: **The Grand Residence — Galerie La Fontaine**, пересечение проспектов Cliniques и Batetela, **Киншаса / район Gombe**. Здесь проходят экспозиция, конференции, панели, деловые встречи B2B/B2G и церемонии.\n\n🏢 Наш **секретариат** (административный адрес EXPO BÉTON ASBL): **проспект де л'УА, 07, Киншаса / район Ngaliema** — это не место проведения выставки.",
+        'es': "La feria se celebra en **The Grand Residence — Galerie La Fontaine**, cruce de las avenidas des Cliniques y Batetela, **Kinshasa / Gombe**. Allí tienen lugar la exposición, las conferencias, los paneles, las reuniones B2B/B2G y las ceremonias.\n\n🏢 Nuestra **secretaría** (dirección administrativa de EXPO BÉTON ASBL) está en **07, avenida de l'OUA, Kinshasa / Ngaliema** — no es el recinto de la feria.",
+        'ar': "يُقام المعرض في **The Grand Residence — Galerie La Fontaine**، عند تقاطع شارعي Cliniques و Batetela، **كينشاسا / غومبي**. هناك تُقام المعارض والمؤتمرات وحلقات النقاش واجتماعات الأعمال ومراسم الافتتاح والاختتام.\n\n🏢 تقع **الأمانة العامة** (العنوان الإداري لجمعية EXPO BÉTON) في **07، شارع لْوا (OUA)، كينشاسا / نغاليما** — وهذا ليس موقع المعرض."
     },
     'thank_you': {
         'fr': "De rien! C'est avec plaisir! 😊\n\nSi vous avez d'autres questions sur ExpoBeton RDC, n'hésitez pas à me demander!",
@@ -424,12 +694,12 @@ MULTILINGUAL_CONTENT = {
         'ar': "فيما يتعلق بهذا السؤال، لا يمكنني تقديم إجابة في الوقت الحالي. أقترح عليك الاتصال بفريقنا عبر البريد الإلكتروني info@expobetonrdc.com.\n\n💡 إليك ما يمكنني مساعدتك به:\n• حدث ExpoBeton\n• التواريخ والموقع\n• الموضوع\n• المؤسسون\n• كيفية المشاركة\n• أن تصبح سفيراً"
     },
     'registration': {
-        'fr': "Pour participer à ExpoBeton RDC 2026, vous devez vous inscrire.\n\n📋 **3 catégories disponibles :**\n1️⃣ 🏆 Sponsor (Platinum/Gold/Silver/Bronze)\n2️⃣ 🏗️ Exposant (stand 3×3m, 2×4m ou 2×3m)\n3️⃣ 👤 Participant Simple (Gratuit)\n\n💬 Souhaitez-vous que je vous guide dans l'inscription ? Tapez « oui » ou « je veux m'inscrire » pour commencer.\n\n💡 Vous pourriez aussi demander :\n• Quelles sont les dates ?\n• Comment devenir ambassadeur ?\n• Quel est le thème ?",
-        'en': "To participate in ExpoBeton RDC 2026, you need to register.\n\n📋 **3 categories available:**\n1️⃣ 🏆 Sponsor (Platinum/Gold/Silver/Bronze)\n2️⃣ 🏗️ Exhibitor (stand 3×3m, 2×4m or 2×3m)\n3️⃣ 👤 Simple Participant (Free)\n\n💬 Would you like me to guide you through the registration? Type 'yes' or 'I want to register' to begin.\n\n💡 You might also ask:\n• What are the dates?\n• How to become an ambassador?\n• What is the theme?",
-        'zh': '要参加ExpoBeton RDC 2026，您需要注册。\n\n📋 **3个类别可选：**\n1️⃣ 🏆 赞助商\n2️⃣ 🏗️ 参展商\n3️⃣ 👤 普通参与者（免费）\n\n💬 您想让我引导您完成注册吗？输入「是」开始。',
-        'ru': "Чтобы принять участие в ExpoBeton RDC 2025, зарегистрируйтесь онлайн на https://expobetonrdc.com/#tg_register.\n\n💡 Вы также можете спросить:\n• Какие даты?\n• Как стать послом?\n• Какая тема?",
-        'es': "Para participar en ExpoBeton RDC 2025, regístrese en línea en https://expobetonrdc.com/#tg_register.\n\n💡 También podría preguntar:\n• ¿Cuáles son las fechas?\n• ¿Cómo convertirse en embajador?\n• ¿Cuál es el tema?",
-        'ar': "للمشاركة في ExpoBeton RDC 2025، سجل عبر الإنترنت على https://expobetonrdc.com/#tg_register.\n\n💡 قد تسأل أيضاً:\n• ما هي التواريخ؟\n• كيف تصبح سفيراً؟\n• ما هو الموضوع؟"
+        'fr': "Pour participer à ExpoBeton RDC 2026, vous devez vous inscrire.\n\n📋 **3 catégories disponibles :**\n1️⃣ 🏆 Sponsor (Platinum/Gold/Bronze/Silver — de 10.000 $ à 40.000 $)\n2️⃣ 🏗️ Exposant (stand 3×3m à 5.000 $ ou 2×3m à 3.500 $)\n3️⃣ 👤 Participant Simple (Gratuit)\n\n💬 Souhaitez-vous que je vous guide dans l'inscription ? Tapez « oui » ou « je veux m'inscrire » pour commencer.\n\n💡 Vous pourriez aussi demander :\n• Quelles sont les dates ?\n• Comment devenir ambassadeur ?\n• Quel est le thème ?",
+        'en': "To participate in ExpoBeton RDC 2026, you need to register.\n\n📋 **3 categories available:**\n1️⃣ 🏆 Sponsor (Platinum/Gold/Bronze/Silver — from $10,000 to $40,000)\n2️⃣ 🏗️ Exhibitor (3×3m stand at $5,000 or 2×3m stand at $3,500)\n3️⃣ 👤 Simple Participant (Free)\n\n💬 Would you like me to guide you through the registration? Type 'yes' or 'I want to register' to begin.\n\n💡 You might also ask:\n• What are the dates?\n• How to become an ambassador?\n• What is the theme?",
+        'zh': '要参加ExpoBeton RDC 2026，您需要注册。\n\n📋 **3个类别可选：**\n1️⃣ 🏆 赞助商（白金/金/铜/银 — 10,000至40,000美元）\n2️⃣ 🏗️ 参展商（3×3米展位5,000美元 或 2×3米展位3,500美元）\n3️⃣ 👤 普通参与者（免费）\n\n💬 您想让我引导您完成注册吗？输入「是」开始。',
+        'ru': "Чтобы принять участие в ExpoBeton RDC 2026, зарегистрируйтесь онлайн на https://expobetonrdc.com/#tg_register.\n\n📋 **3 категории:** спонсор (Platinum/Gold/Bronze/Silver — от 10 000 $ до 40 000 $), экспонент (стенд 3×3 м — 5 000 $ или 2×3 м — 3 500 $), простой участник (бесплатно).\n\n💡 Вы также можете спросить:\n• Какие даты?\n• Как стать послом?\n• Какая тема?",
+        'es': "Para participar en ExpoBeton RDC 2026, regístrese en línea en https://expobetonrdc.com/#tg_register.\n\n📋 **3 categorías:** patrocinador (Platinum/Gold/Bronze/Silver — de 10.000 $ a 40.000 $), expositor (stand 3×3m a 5.000 $ o 2×3m a 3.500 $), participante simple (gratuito).\n\n💡 También podría preguntar:\n• ¿Cuáles son las fechas?\n• ¿Cómo convertirse en embajador?\n• ¿Cuál es el tema?",
+        'ar': "للمشاركة في ExpoBeton RDC 2026، سجل عبر الإنترنت على https://expobetonrdc.com/#tg_register.\n\n📋 **3 فئات:** راعي (Platinum/Gold/Bronze/Silver — من 10,000 إلى 40,000 دولار)، عارض (جناح 3×3م بـ 5,000 دولار أو 2×3م بـ 3,500 دولار)، مشارك عادي (مجاني).\n\n💡 قد تسأل أيضاً:\n• ما هي التواريخ؟\n• كيف تصبح سفيراً؟\n• ما هو الموضوع؟"
     }
 }
 
@@ -525,7 +795,7 @@ class ActionGreetPersonalized(Action):
         for variant in lubumbashi_variants:
             if variant in user_message:
                 print(f"🔥🔥🔥 [GREET DEBUG] LUBUMBASHI DETECTED (variant={variant})! user_message={user_message}")
-                answer = "ℹ️ La **12ème édition d'ExpoBeton RDC (07-10 octobre 2026)** se tiendra à **Kinshasa**, à La Grande Résidence — Galerie La Fontaine (Ngaliema).\n\n**Lubumbashi** a accueilli la **11ème édition** (avril 2026, volet Grand Katanga), avec des étapes satellites à Kalemie et Kolwezi : cette édition s'est concentrée sur le Grand Katanga comme carrefour stratégique des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en infrastructures grâce aux réserves de cuivre, cobalt et lithium de la région."
+                answer = "ℹ️ La **12ème édition d'ExpoBeton RDC (07-10 octobre 2026)** se tiendra à **Kinshasa**, à La Grande Résidence — Galerie La Fontaine (Gombe).\n\n**Lubumbashi** a accueilli la **11ème édition** (avril 2026, volet Grand Katanga), avec des étapes satellites à Kalemie et Kolwezi : cette édition s'est concentrée sur le Grand Katanga comme carrefour stratégique des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en infrastructures grâce aux réserves de cuivre, cobalt et lithium de la région."
                 dispatcher.utter_message(text=answer)
                 return []
         
@@ -1094,7 +1364,7 @@ class ActionAnswerExpoBeton(Action):
         for variant in lubumbashi_variants:
             if variant in user_question:
                 print(f"🔥🔥🔥 [DEBUG LUBUMBASHI] DETECTED (variant={variant})! user_question={user_question}")
-                answer = "ℹ️ La **12ème édition d'ExpoBeton RDC (07-10 octobre 2026)** se tiendra à **Kinshasa**, à La Grande Résidence — Galerie La Fontaine (Ngaliema).\n\n**Lubumbashi** a accueilli la **11ème édition** (avril 2026, volet Grand Katanga), avec des étapes satellites à Kalemie et Kolwezi : cette édition s'est concentrée sur le Grand Katanga comme carrefour stratégique des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en infrastructures grâce aux réserves de cuivre, cobalt et lithium de la région."
+                answer = "ℹ️ La **12ème édition d'ExpoBeton RDC (07-10 octobre 2026)** se tiendra à **Kinshasa**, à La Grande Résidence — Galerie La Fontaine (Gombe).\n\n**Lubumbashi** a accueilli la **11ème édition** (avril 2026, volet Grand Katanga), avec des étapes satellites à Kalemie et Kolwezi : cette édition s'est concentrée sur le Grand Katanga comme carrefour stratégique des corridors africains du Sud, de l'Ouest et de l'Est, avec un potentiel énorme en infrastructures grâce aux réserves de cuivre, cobalt et lithium de la région."
                 dispatcher.utter_message(text=answer)
                 bot_response = answer
                 log_conversation_message(session_id, 'bot', bot_response, metadata)
@@ -1134,7 +1404,10 @@ class ActionAnswerExpoBeton(Action):
                 # Prepare context
                 context_parts = []
                 for i, doc in enumerate(docs):
-                    content = doc['content'][:3000] if len(doc['content']) > 3000 else doc['content']
+                    budget = (CANONICAL_PROMPT_CHARS
+                              if doc['filename'].lower().startswith(CANONICAL_PREFIX)
+                              else LEGACY_PROMPT_CHARS)
+                    content = doc['content'][:budget]
                     context_parts.append(f"Document {i+1} ({doc['filename']}):\n{content}")
                 context = "\n\n".join(context_parts)
                 # Call GPT-4o with timeout parameter
@@ -1203,9 +1476,9 @@ class ActionAnswerExpoBeton(Action):
             # Check for 'grand katanga' FIRST
             if 'grand katanga' in user_question or 'katanga' in user_question:
                 if detected_lang == 'fr':
-                    answer = "Le Grand Katanga est une région stratégique de la RDC comprenant trois provinces : Haut-Katanga (capitale Lubumbashi), Lualaba (capitale Kolwezi) et Tanganyika (capitale Kalemie). Cette région représente 70% des exportations nationales grâce à ses réserves massives de cobalt et cuivre. ExpoBeton 2026 se concentre sur cette région comme carrefour stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est."
+                    answer = "Le Grand Katanga est une région stratégique de la RDC comprenant trois provinces : Haut-Katanga (capitale Lubumbashi), Lualaba (capitale Kolwezi) et Tanganyika (capitale Kalemie). Cette région représente environ 70% des exportations nationales grâce à ses réserves de cobalt et de cuivre.\n\n📜 Le Grand Katanga était le thème de la **11ème édition** d'ExpoBeton RDC (Lubumbashi, avec étapes satellites à Kalemie et Kolwezi). La **12ème édition** se tient à **Kinshasa du 07 au 10 octobre 2026**, sous le thème « Kinshasa, Locomotive de la Transformation des Villes de la RDC »."
                 else:
-                    answer = "Grand Katanga is a strategic region of the DRC comprising three provinces: Haut-Katanga (capital Lubumbashi), Lualaba (capital Kolwezi) and Tanganyika (capital Kalemie). This region represents 70% of national exports thanks to its massive reserves of cobalt and copper. ExpoBeton 2026 focuses on this region as a strategic hub at the heart of African corridors from the South, West and East."
+                    answer = "Grand Katanga is a strategic region of the DRC comprising three provinces: Haut-Katanga (capital Lubumbashi), Lualaba (capital Kolwezi) and Tanganyika (capital Kalemie). The region accounts for around 70% of national exports thanks to its cobalt and copper reserves.\n\n📜 Grand Katanga was the theme of the **11th edition** of ExpoBeton RDC (Lubumbashi, with satellite stops in Kalemie and Kolwezi). The **12th edition** takes place in **Kinshasa from October 7 to 10, 2026**, under the theme 'Kinshasa, Locomotive of the Transformation of DRC Cities'."
                 dispatcher.utter_message(text=answer)
                 bot_response = answer
                 log_conversation_message(session_id, 'bot', bot_response, metadata)
@@ -1238,7 +1511,17 @@ class ActionAnswerExpoBeton(Action):
         
         # Duration / Number of days
         if any(word in user_question for word in ['combien de jours', 'durée', 'how many days', 'duration']):
-            answer = "L'événement ExpoBeton RDC 2026 durera 2 jours : du 30 avril au 1er mai 2026."
+            answer = (
+                "📅 La **12ème édition d'ExpoBeton RDC** durera **4 jours** : "
+                "du **mercredi 07 au samedi 10 octobre 2026**, à Kinshasa "
+                "(The Grand Residence — Galerie La Fontaine, Gombe).\n\n"
+                "🕘 Horaires sur le site : **09h00 – 15h30**.\n"
+                "🌆 Activités hors site : **16h00 – 19h15**, du **06 au 11 octobre 2026**.\n\n"
+                "**Jour 1 (mer 07)** : Journée Portes Ouvertes, Touristique et Culturelle\n"
+                "**Jour 2 (jeu 08)** : Cérémonie d'ouverture officielle + panels Habitat & Territoire\n"
+                "**Jour 3 (ven 09)** : Corridors transfrontaliers, ZES, Énergie\n"
+                "**Jour 4 (sam 10)** : Jeunesse & Innovation + cérémonie de clôture"
+            )
             dispatcher.utter_message(text=answer)
             bot_response = answer
             log_conversation_message(session_id, 'bot', bot_response, metadata)
@@ -1409,7 +1692,16 @@ class ActionAnswerExpoBeton(Action):
         
         # Theme
         if any(word in user_question for word in ['thème', 'theme', 'sujet']):
-            answer = "Le thème de l'édition 2026 (11ème) est : 'Grand Katanga : Carrefour Stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est'. Cette édition se concentre sur Lubumbashi, Kalemie et Kolwezi comme piliers du développement régional."
+            answer = (
+                "🎯 Le thème de la **12ème édition (2026)** est :\n\n"
+                "**« KINSHASA, LOCOMOTIVE DE LA TRANSFORMATION DES VILLES DE LA RDC »**\n\n"
+                "Cette édition met Kinshasa au centre des enjeux d'infrastructures, "
+                "d'habitat, de développement urbain et de partenariats public-privé.\n\n"
+                "📜 Le thème **« Grand Katanga : Carrefour Stratégique au cœur des "
+                "corridors africains du Sud, de l'Ouest et de l'Est »** était celui de la "
+                "**11ème édition**, organisée à Lubumbashi avec des étapes satellites à "
+                "Kalemie et Kolwezi."
+            )
             dispatcher.utter_message(text=answer)
             suggestion = "\n💡 Vous pourriez aussi demander :\n• Qui sont les fondateurs ?\n• Comment devenir ambassadeur ?\n• Où se déroule l'événement ?"
             dispatcher.utter_message(text=suggestion)
@@ -1524,9 +1816,13 @@ class ActionEndConversation(Action):
                 })
             
             # Send email with conversation
-            print(f"[ACTION END CONVERSATION] Sending email...")
+            # Libellés de journal corrigés : l'envoi est désormais asynchrone et peut
+            # être entièrement court-circuité (SMTP non configuré, identifiants
+            # factices ou disjoncteur ouvert). Annoncer « email sent » ici était faux
+            # dans la quasi-totalité des cas et a masqué le blocage décrit dans C1.
+            print(f"[ACTION END CONVERSATION] Transmission du transcript (asynchrone)...")
             send_conversation_email(session_id, user_info, formatted_messages)
-            print(f"✅ [ACTION END CONVERSATION] Conversation ended and email sent for session: {session_id}")
+            print(f"✅ [ACTION END CONVERSATION] Conversation terminée et transcript journalisé pour la session : {session_id}")
             
         # Or check if we have messages in our local storage
         elif session_id in CONVERSATION_LOGS:
@@ -1541,7 +1837,7 @@ class ActionEndConversation(Action):
                 )
                 # Clear conversation from memory
                 del CONVERSATION_LOGS[session_id]
-                print(f"✅ [ACTION END CONVERSATION] Conversation ended and email sent for session: {session_id}")
+                print(f"✅ [ACTION END CONVERSATION] Conversation terminée et transcript journalisé pour la session : {session_id}")
             else:
                 print(f"⚠️ [ACTION END CONVERSATION] No messages found in conversation log")
         else:

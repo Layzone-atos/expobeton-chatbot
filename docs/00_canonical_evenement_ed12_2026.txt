@@ -1,0 +1,140 @@
+# ExpoBeton RDC — 12ᵉ édition : fiche d'identité officielle
+
+> **Document canonique** — source de vérité pour le chatbot ExpoBeton RDC.
+> Généré le 09/09/2026 à partir du site live (`index.html`, `docs/programme expobeton.md`,
+> tunnels `sponsor/`). Toute information contradictoire dans un autre document du
+> corpus est **caduque** : ce fichier prévaut.
+
+---
+
+## 1. Identité de l'événement
+
+| Champ | Valeur officielle |
+|---|---|
+| Nom | **ExpoBeton RDC** (EXPO BÉTON RDC) |
+| Édition | **12ᵉ édition** |
+| Dates (site principal) | **Du 07 au 10 octobre 2026** (4 jours) |
+| Dates (activités hors site) | Du **06 au 11 octobre 2026** |
+| Ville | **Kinshasa**, République Démocratique du Congo |
+| Thème | **« KINSHASA, LOCOMOTIVE DE LA TRANSFORMATION DES VILLES DE LA RDC »** |
+| Organisateur | **EXPO BÉTON ASBL** (association sans but lucratif, non assujettie à la TVA) |
+| Site web | https://expobetonrdc.com |
+| Audience attendue | **+1000 participants** |
+
+### Horaires
+
+- **Site principal** : 09h00 – 15h30 (exposition, conférences, rendez-vous B2B & B2G).
+- **Activités hors site** : 16h00 – 19h15 (ambassades, sites partenaires, soirées
+  réseautage B2B & B2G, visites de terrain).
+
+---
+
+## 2. Lieux — ne pas confondre
+
+Il existe **deux adresses distinctes**. Le chatbot doit les différencier.
+
+### 2.1 Lieu de l'événement (site principal)
+
+> **THE GRAND RESIDENCE — GALERIE LA FONTAINE**
+> Croisement des avenues des Cliniques et Batetela
+> **Kinshasa / Gombe**, RD Congo
+
+- C'est là que se tiennent l'exposition, les conférences, les panels, les
+  rendez-vous IBC (B2B / B2G) et les cérémonies d'ouverture et de clôture.
+- Pavillon thématique : **« Kinshasa 2050 »**.
+- Activité spéciale sponsorisée : cocktail-networking autour de la piscine de
+  l'immeuble Galerie La Fontaine (sur invitation).
+
+### 2.2 Siège / secrétariat de l'organisation
+
+> **07, Avenue de l'OUA (OUA)**
+> **Kinshasa / Ngaliema**, RD Congo
+
+- Adresse administrative d'EXPO BÉTON ASBL (courrier, contact, secrétariat).
+- **Ce n'est pas le lieu du salon.**
+
+> ⚠️ **Erreur fréquente du chatbot à corriger** : répondre « La Grande Résidence —
+> Galerie La Fontaine, 07 Avenue de l'OUA, Ngaliema » mélange les deux adresses.
+> Réponse correcte : *« Le salon se tient à The Grand Residence — Galerie La
+> Fontaine, croisement des avenues des Cliniques et Batetela, Kinshasa/Gombe.
+> Notre secrétariat est au 07, avenue de l'OUA, Kinshasa/Ngaliema. »*
+
+---
+
+## 3. Contacts
+
+| Usage | Coordonnée |
+|---|---|
+| Informations générales | **info@expobetonrdc.com** |
+| Paiement / facturation / finances | **finance@expobetonrdc.com** |
+| Rendez-vous IBC (B2B / B2G) | Géneviève CHIRALA — +243 991 797 799 |
+| Site web | https://expobetonrdc.com |
+| Souscription en ligne | https://expobetonrdc.com/sponsor/souscription.html |
+
+> ⚠️ Le numéro affiché dans le bandeau de contact de `index.html`
+> (« +243 (8800) - 98670 ») est un **résidu de gabarit non fiable**. Ne pas le
+> citer. Rediriger vers `info@expobetonrdc.com` ou le formulaire de contact du site.
+
+---
+
+## 4. Gouvernance
+
+- **Jean Bamanisa Saïdi** — Président, promoteur, créateur et fondateur d'ExpoBeton RDC.
+  Homme d'affaires et personnalité politique congolaise, ancien gouverneur de la
+  province de l'Ituri. Il porte la vision stratégique de l'événement.
+- **Momo Sungunza** — Vice-président. Coordination opérationnelle et organisationnelle
+  du forum ; mobilisation des partenaires publics et privés.
+
+---
+
+## 5. Historique des éditions
+
+| Édition | Période | Lieu | Thème / focus |
+|---|---|---|---|
+| Création | 2016 | Kinshasa | Fondation par Jean Bamanisa Saïdi |
+| 2016 – 2022 | — | Kinshasa | Focus capitale |
+| 7ᵉ | 2023 | Kolwezi (Lualaba) | « Kolwezi-Lualaba, Eldorado du corridor sud de la RDC-SADC » |
+| 8ᵉ | Septembre 2024 | Phase 1 Kinshasa (10-12 sept) + Phase 2 Matadi, Kongo-Central (18-19 sept) | « Révolution urbaine : des solutions durables du corridor ouest pour Kinshasa et Kongo-Central » |
+| 10ᵉ | 08 – 11 octobre 2025 | Centre Culturel et Artistique pour les Pays de l'Afrique Centrale, Kinshasa | « 100 milliards USD pour rebâtir la RDC : catalyser une transformation audacieuse pour le 21ᵉ siècle » |
+| **11ᵉ** | **Avril 2026** | **Lubumbashi** (volet Grand Katanga) + étapes satellites **Kalemie** et **Kolwezi** | « Grand Katanga : Carrefour stratégique au cœur des corridors africains du Sud, de l'Ouest et de l'Est » |
+| **12ᵉ** | **07 – 10 octobre 2026** | **Kinshasa** — The Grand Residence, Galerie La Fontaine | « Kinshasa, locomotive de la transformation des villes de la RDC » |
+
+### ⚠️ Piège majeur pour le chatbot
+
+Le thème **« Grand Katanga : Carrefour stratégique… »**, les dates **« 30 avril –
+1ᵉʳ mai 2026 »** et la durée **« 2 jours »** appartiennent à la **11ᵉ édition**
+(Lubumbashi, avril 2026). **Ils ne décrivent PAS l'édition en cours.**
+
+Pour toute question sur « l'édition 2026 », « cette année », « la prochaine
+édition » → répondre **12ᵉ édition, 07–10 octobre 2026, Kinshasa, thème
+« Kinshasa, locomotive de la transformation des villes de la RDC »**.
+
+Les contenus relatifs au Grand Katanga, à Kalemie, à Kolwezi et à Lubumbashi ne
+doivent être servis que si l'utilisateur les demande **explicitement** (ou
+demande explicitement la 11ᵉ édition / les éditions précédentes).
+
+### Impact et réalisations
+
+- Création du **Ministère de la Politique de la Ville** (2024).
+- Recommandations adoptées par le gouvernement.
+- Plateforme **B2B / B2G** de référence en RDC.
+- Think tanks thématiques annuels ; concours étudiants (INBTP et universités partenaires).
+
+---
+
+## 6. Grands projets et thématiques mis en avant (12ᵉ édition)
+
+- **Projet Kiamona** (cité du jardin / KIA MONA) — présenté par le Coordonnateur
+  Thierry KATEMBWE.
+- **METROKIN** — métro de Kinshasa (conception, structuration financière, planning).
+- **Pavillon « Kinshasa 2050 »**.
+- **SOSAK**, **PDTK**, **CNE-ITP**, **PPP**, cités satellites (Maluku).
+- Financement structurant des infrastructures et des VRD (APCSC, UC-PPP, Cellule
+  Infrastructure, Banque Mondiale).
+- Aménagement du territoire, sécurisation foncière, numérisation du cadastre.
+- Énergie, eau, villes vertes, innovation et smart city.
+- Compétences et expertises locales face à la demande de la construction.
+
+Mots-clés du site : ExpoBeton, RDC, Kinshasa, construction, infrastructures,
+transformation urbaine, villes durables, Kiamona, SOSAK, PDTK, CNE-ITP, PPP,
+salon, BTP.

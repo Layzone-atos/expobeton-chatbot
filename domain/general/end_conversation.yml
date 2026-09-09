@@ -5,4 +5,6 @@ intents:
 
 responses:
   utter_end_conversation:
-    - text: "👋 Merci pour votre visite! La conversation a été enregistrée et envoyée par email."
+    # Ne plus promettre un envoi par e-mail : le SMTP de production est
+    # injoignable (Errno 101) et le transcript retombe sur un journal fichier.
+    - text: "👋 Merci pour votre visite ! Votre conversation a été enregistrée. À bientôt sur ExpoBeton RDC 2026 !"

@@ -9,7 +9,7 @@ slots:
       - Quand et où aura lieu ExpoBeton 2026 ?
       - Qui sont les intervenants ?
       - Comment s'inscrire ?
-      - Parlez-moi du lithium à Kalemie
+      - Quels sont les tarifs de souscription (sponsor, stand, participant) ?
     mappings:
       - type: custom
 
@@ -22,9 +22,9 @@ responses:
         - Le programme détaillé de la 12ème édition
         - Les intervenants et personnalités
         - L'inscription et la participation
-        - Le lithium et les gisements de Manono
-        - Les corridors africains
-        - La 10ème édition (bilan)
+        - Les tarifs : paliers sponsor, stands exposant, participant VIP
+        - Les moyens de paiement et l'obtention de votre badge
+        - L'assistance visa et la lettre d'invitation
         - Vous mettre en contact avec un agent humain
       metadata:
         rephrase: True

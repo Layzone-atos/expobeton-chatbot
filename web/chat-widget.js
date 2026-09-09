@@ -842,7 +842,12 @@ function resetInactivityTimer() {
 
 // Show Inactivity Warning
 async function showInactivityWarning() {
-    const warningMessage = "Vous avez été inactif pendant 10 minutes. Souhaitez-vous continuer la conversation ?\n\nSi vous ne répondez pas, la session sera terminée automatiquement et un email avec le transcript sera envoyé.";
+    // Quatrième emplacement de la fausse promesse d'e-mail (avec endConversation(),
+    // utter_end_conversation et la confirmation d'inscription) : l'avertissement
+    // d'inactivité annonçait lui aussi « un email avec le transcript sera envoyé ».
+    // Le SMTP de production est injoignable (Errno 101) et le transcript retombe sur
+    // un journal fichier — ce message s'affichait avant même toute tentative d'envoi.
+    const warningMessage = "Vous avez été inactif pendant 10 minutes. Souhaitez-vous continuer la conversation ?\n\nSi vous ne répondez pas, la session sera terminée automatiquement et votre conversation sera enregistrée.";
     
     await addMessage(warningMessage, 'bot');
     
@@ -859,9 +864,14 @@ async function endConversation(isAuto = false) {
         clearTimeout(chatState.inactivityTimer);
     }
     
+    // Le message s'affiche AVANT que l'appel backend n'aboutisse : il ne peut donc
+    // pas affirmer qu'un e-mail est parti. C'était pourtant le cas (« 📧 Un email
+    // avec le transcript de notre conversation a été envoyé »), alors que le SMTP
+    // de production est injoignable (Errno 101) — promesse fausse dans 100 % des
+    // sessions, et le transcript retombe en réalité sur un journal fichier.
     const endMessage = isAuto 
-        ? "👋 Session terminée automatiquement après inactivité. Merci d'avoir utilisé notre chatbot ExpoBeton RDC!\n\n📧 Un email avec le transcript de notre conversation a été envoyé.\n\nÀ bientôt!"
-        : "👋 Merci d'avoir utilisé notre chatbot ExpoBeton RDC!\n\n📧 Un email avec le transcript de notre conversation a été envoyé à notre équipe.\n\nSi vous avez d'autres questions, n'hésitez pas à nous recontacter!\n\nÀ bientôt!";
+        ? "👋 Session terminée automatiquement après inactivité. Merci d'avoir utilisé notre chatbot ExpoBeton RDC!\n\n📝 Votre conversation a été enregistrée.\n\nÀ bientôt!"
+        : "👋 Merci d'avoir utilisé notre chatbot ExpoBeton RDC!\n\n📝 Votre conversation a été enregistrée.\n\nSi vous avez d'autres questions, n'hésitez pas à nous recontacter!\n\nÀ bientôt!";
     
     await addMessage(endMessage, 'bot');
     

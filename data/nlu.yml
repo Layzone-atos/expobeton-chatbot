@@ -920,6 +920,51 @@ nlu:
     - press accreditation
     - media accreditation
 
+# Le badge d'accès (titre d'accès PDF remis au participant inscrit) n'avait aucun
+# intent propre : « badge d'accès » tombait sur ask_media_press à cause des
+# exemples « badge presse » / « badge media ». Un participant déjà inscrit
+# recevait donc la procédure d'accréditation journalistes, totalement hors sujet.
+- intent: ask_access_badge
+  examples: |
+    - comment obtenir mon badge
+    - comment avoir mon badge
+    - comment avoir mon badge d'acces
+    - comment avoir mon badge d'accès
+    - je me suis deja inscrit mais comment avoir mon badge d'acces
+    - je me suis déjà inscrit mais comment avoir mon badge d'accès
+    - je suis inscrit ou est mon badge
+    - deja inscrit comment avoir le badge
+    - ou est mon badge
+    - où est mon badge
+    - mon badge d'acces
+    - mon badge d'accès
+    - badge d'acces
+    - badge acces
+    - je n'ai pas recu mon badge
+    - je n'ai pas reçu mon badge
+    - pas recu mon badge
+    - badge non recu
+    - comment recuperer mon badge
+    - je veux mon badge
+    - renvoyer mon badge
+    - renvoyez mon badge
+    - quand vais-je recevoir mon badge
+    - le badge est envoye quand
+    - badge par email
+    - badge pdf
+    - mon ticket d'acces
+    - titre d'acces
+    - faut-il imprimer le badge
+    - le badge est-il nominatif
+    - comment scanner mon badge
+    - comment entrer avec mon badge
+    - how do i get my badge
+    - where is my badge
+    - i did not receive my badge
+    - access badge
+    - my badge
+    - my ticket
+
 - intent: restart_form
   examples: |
     - recommencer
@@ -966,7 +1011,7 @@ nlu:
     - [Gold](sponsor_level)
     - [Platinum](sponsor_level) sponsor
     - [3x3m](stand_type) stand
-    - stand [2x4m](stand_type)
+    - stand [2x3m](stand_type)
     - [Mobile Money](payment_method)
     - pay by [Cash](payment_method)
     - [Participant Simple](category)
