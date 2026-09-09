@@ -40,6 +40,11 @@ intents:
   - thank_you
   - dont_understand
   - ask_media_press
+  # Déclaré ici et non seulement dans data/nlu.yml : le Dockerfile exécute
+  # « rasa train » pendant la construction de l'image. Un intent présent dans les
+  # données d'entraînement mais absent du domaine fait échouer cette étape, donc
+  # échouer le déploiement Railway — pas seulement dégrader la classification.
+  - ask_access_badge
   - restart_form
   - inform
   - provide_company
