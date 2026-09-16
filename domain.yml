@@ -36,6 +36,10 @@ intents:
   - apply_ambassador
   - show_categories
   - ask_vip_pass
+  # Exemples hors-domaine ajoutés dans data/nlu.yml (recettes, culture générale…)
+  # pour borner DIET : sans eux, une question inconnue partait sur l'intention
+  # entraînée la plus proche (« recette… sans four » → ask_event_location).
+  - nlu_fallback
   - affirm
   - deny
   - thank_you

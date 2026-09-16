@@ -1231,3 +1231,28 @@ nlu:
     - les documents ont été téléversés
     - upload terminé
     - envoi des documents effectué
+
+- intent: nlu_fallback
+  examples: |
+    - quelle est la meilleure recette de gateau au chocolat sans four
+    - recette de gâteau au chocolat
+    - comment cuisiner du riz blanc
+    - quelle est la capitale du Canada
+    - qui a gagné la coupe du monde de football
+    - quel temps fait-il à Paris demain
+    - comment réparer un vélo crevé
+    - quelle est la meilleure équipe de basket
+    - peux-tu me raconter une blague
+    - comment apprendre à jouer de la guitare
+    - quel est le meilleur film de 2025
+    - écris-moi un poème sur l amour
+    - quelle est la racine carrée de 144
+    - comment faire une omelette
+    - what is the best chocolate cake recipe
+    - how to fix a flat tire
+    - who won the world cup
+    - what is the weather in London tomorrow
+    - tell me a joke
+    - how to learn guitar
+    - best movie of 2025
+    - square root of 144
