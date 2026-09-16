@@ -270,6 +270,11 @@ rules:
       - intent: show_categories
       - action: action_show_categories
 
+  - rule: Answer VIP pass questions
+    steps:
+      - intent: ask_vip_pass
+      - action: action_answer_vip
+
   - rule: User stops registration form
     condition:
       - active_loop: registration_form

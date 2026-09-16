@@ -1121,6 +1121,25 @@ nlu:
     - je veux participant simple
     - participant simple s'il vous plaît
 
+- intent: ask_vip_pass
+  examples: |
+    - combien coûte le pass vip
+    - combien coute le pass participant vip
+    - prix du pass vip
+    - tarif participant vip
+    - c'est quoi le pass participant vip
+    - que comprend le pass vip
+    - le pass vip comprend quoi
+    - avantages du pass participant vip
+    - comment devenir participant vip
+    - je veux un pass vip
+    - souscrire un pass vip
+    - pass vip 4 jours prix
+    - participant vip c'est combien
+    - what does the vip pass include
+    - how much is the vip pass
+    - vip pass price
+
 - intent: provide_company
   examples: |
     - [Congo Builders](company_name)

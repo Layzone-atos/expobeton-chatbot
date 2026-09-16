@@ -205,6 +205,30 @@ class ActionClearRegPending(Action):
 # Action: Show available registration categories
 # ═══════════════════════════════════════════════════════════════════════
 
+def vip_pass_message() -> str:
+    """Notice officielle du pass Participant VIP (campagne 12ème édition).
+
+    Source de vérité : sponsor/vip-participant.php — pass UNIQUE de 300 $
+    (USD hors TVA) couvrant les 4 jours du salon, paiement en ligne
+    (Visa, Mastercard, Mobile Money). L'ancien tarif « 300 $ par jour,
+    journées au choix » (vipDay) est abrogé : ne plus jamais le citer.
+    """
+    return (
+        "🌟 **Participant VIP — Expo Béton RDC 12ème édition**\n\n"
+        "Pass unique de **300 $ (USD hors TVA)** couvrant les **4 jours** du salon "
+        "(**07–10 octobre 2026**, Kinshasa — La Grande Résidence, Galerie La Fontaine, Gombe).\n\n"
+        "✅ **Inclus :**\n"
+        "• Accès privilégié au site pendant 4 jours\n"
+        "• Visite des stands + guide officiel\n"
+        "• 1 RDV IBC B2G & B2B par jour\n"
+        "• Pass conférence\n"
+        "• Cocktail VIP et activités hors site\n\n"
+        "💳 **Souscription en ligne** (Visa, Mastercard, Mobile Money), hors de ce chat :\n"
+        "👉 https://expobetonrdc.com/sponsor/vip-participant.php\n\n"
+        "💡 Autres offres (Sponsor, Exposant, Participant Simple) : tapez **« catégories »**."
+    )
+
+
 class ActionShowCategories(Action):
     def name(self) -> Text:
         return "action_show_categories"
@@ -213,8 +237,16 @@ class ActionShowCategories(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
     ) -> List[Dict[Text, Any]]:
 
-        # 4e offre ajoutée : le Participant VIP (300 $ / jour, journées au choix)
-        # existe bien sur le site — sponsor/souscription-vip.php — mais était
+        # Garde VIP : une question citant le VIP veut le pass VIP, pas le menu
+        # complet (journal de conversations : « combien coute le pass vip ? »
+        # recevait les 4 catégories puis le bloc VIP périmé « 300 $ / jour »).
+        _txt = (tracker.latest_message.get("text", "") or "").lower()
+        if re.search(r"\bvip\b", _txt):
+            dispatcher.utter_message(text=vip_pass_message())
+            return []
+
+        # 4e offre : le Participant VIP existe bien sur le site — désormais
+        # sponsor/vip-participant.php, pass unique 300 $ les 4 jours — mais était
         # absent de ce catalogue, alors que les prix des trois autres avaient déjà
         # été corrigés. Un visiteur demandant « les catégories » ne pouvait donc
         # pas découvrir l'offre payante intermédiaire.
@@ -234,15 +266,30 @@ class ActionShowCategories(Action):
             "   • Stand 3×3m — 9 m² — 5.000 $ (2 pass délégués, 30 places)\n"
             "   • Stand 2×3m — 6 m² — 3.500 $ (1 pass délégué, 5 places)\n\n"
             "3️⃣ **👤 Participant Simple** (Gratuit)\n\n"
-            "🌟 **Participant VIP** — 300 $ par jour (journées au choix), avec "
-            "accès privilégiés et branding dédié.\n"
+            "🌟 **Participant VIP** — pass unique **300 $ les 4 jours** "
+            "(07–10 octobre 2026) : accès privilégié, visite des stands + guide "
+            "officiel, 1 RDV IBC B2G & B2B par jour, pass conférence, cocktail "
+            "VIP et activités hors site.\n"
             "   ⚠️ Souscription **en ligne uniquement**, hors de ce chat :\n"
-            "   👉 https://expobetonrdc.com/sponsor/souscription-vip.php\n\n"
+            "   👉 https://expobetonrdc.com/sponsor/vip-participant.php\n\n"
             "💰 Montants en USD hors TVA (EXPO BÉTON ASBL, non assujettie à la TVA).\n"
             "ℹ️ Le **stand 2×4m n'est plus proposé** pour l'édition 2026.\n\n"
             "Quelle catégorie vous intéresse ? Tapez **1**, **2** ou **3**."
         )
         dispatcher.utter_message(text=msg)
+        return []
+
+
+class ActionAnswerVip(Action):
+    """Réponse dédiée aux questions sur le pass Participant VIP."""
+
+    def name(self) -> Text:
+        return "action_answer_vip"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: DomainDict
+    ) -> List[Dict[Text, Any]]:
+        dispatcher.utter_message(text=vip_pass_message())
         return []
 
 
@@ -461,22 +508,11 @@ class ActionHandleInformOutsideForm(Action):
         text = tracker.latest_message.get("text", "")
         lowered = text.lower()
 
-        # ── Participant VIP : souscription payante distincte (300 $ / jour) ──
+        # ── Participant VIP : souscription payante distincte (pass 300 $ / 4 j) ──
         # « participant vip » contient la clé « participant » et démarrerait une
         # inscription gratuite : promesse fausse. On explique avant tout mapping.
         if re.search(r"\bvip\b", lowered):
-            dispatcher.utter_message(
-                text=(
-                    "🌟 Le **Participant VIP** est une souscription distincte : "
-                    "**300 $ par jour**, avec accès privilégiés et branding dédié sur "
-                    "les journées choisies (07-10 octobre 2026).\n\n"
-                    "Elle se règle en ligne ici :\n"
-                    "👉 https://expobetonrdc.com/sponsor/souscription-vip.php\n\n"
-                    "Ce chat gère les inscriptions **Sponsor**, **Exposant** et "
-                    "**Participant Simple** (gratuit). Pour l'accès gratuit, tapez "
-                    "**« Participant Simple »** et je démarre votre inscription."
-                )
-            )
+            dispatcher.utter_message(text=vip_pass_message())
             return [SlotSet("registration_pending", None)]
 
         matched = match_category(text)
@@ -808,21 +844,11 @@ class ValidateRegistrationForm(FormValidationAction):
                                   extra={"_reg_category_phase": phase or "exposant"})
 
             # ── Participant VIP : souscription en ligne distincte, hors formulaire ──
-            # 300 $ / jour sur sponsor/souscription-vip.php. Ce n'est pas une
-            # catégorie acceptée par l'API d'inscription : ne jamais la mapper sur
-            # « Participant Simple » (gratuit), ce serait une fausse promesse.
+            # Pass unique 300 $ les 4 jours sur sponsor/vip-participant.php. Ce
+            # n'est pas une catégorie acceptée par l'API d'inscription : ne jamais
+            # la mapper sur « Participant Simple » (gratuit), fausse promesse.
             if re.search(r'\bvip\b', val):
-                dispatcher.utter_message(
-                    text=(
-                        "🌟 Le **Participant VIP** est une souscription distincte : "
-                        "**300 $ par jour**, avec accès privilégiés et branding dédié "
-                        "sur les journées choisies (07-10 octobre 2026).\n\n"
-                        "Elle se règle en ligne ici :\n"
-                        "👉 https://expobetonrdc.com/sponsor/souscription-vip.php\n\n"
-                        "Ce formulaire gère les catégories **Sponsor**, **Exposant** et "
-                        "**Participant Simple** (gratuit). Laquelle choisissez-vous ?"
-                    )
-                )
+                dispatcher.utter_message(text=vip_pass_message())
                 return _bump_fail(tracker, dispatcher, "reg_category",
                                   extra={"_reg_category_phase": None})
 

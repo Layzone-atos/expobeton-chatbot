@@ -248,8 +248,8 @@ billet n'est à acheter pour cette catégorie.
 > *« Non pour la catégorie **Participant Simple**, qui est **gratuite** — il
 > suffit de vous inscrire. Les formules payantes concernent les **paliers de
 > partenariat sponsors** (10 000 $ à 40 000 $), les **stands exposants**
-> (3 500 $ ou 5 000 $), le **Participant VIP** (300 $ par jour) et les options
-> de **branding** et de **newsletter**. Voulez-vous que je vous inscrive comme
+> (3 500 $ ou 5 000 $), le **Participant VIP** (pass unique 300 $ les 4 jours) et
+> les options de **branding** et de **newsletter**. Voulez-vous que je vous inscrive comme
 > Participant Simple ? »*
 
 ---

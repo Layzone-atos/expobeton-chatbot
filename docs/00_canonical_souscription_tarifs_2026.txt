@@ -18,7 +18,7 @@ Le site propose **cinq tunnels de souscription** en ligne, plus un hub.
 |---|---|---|---|
 | Hub | Fiche de souscription | `sponsor/souscription.html` | https://expobetonrdc.com/sponsor/souscription.html |
 | 1 | **Paliers de partenariat (Sponsors)** | `sponsor/souscription-partenariat.php` | https://expobetonrdc.com/sponsor/souscription-partenariat.php |
-| 2 | **Participant VIP** | `sponsor/souscription-vip.php` | https://expobetonrdc.com/sponsor/souscription-vip.php |
+| 2 | **Participant VIP** | `sponsor/vip-participant.php` | https://expobetonrdc.com/sponsor/vip-participant.php |
 | 3 | **Magazine & Newsletter** | `sponsor/magazine-newsletter.php` | https://expobetonrdc.com/sponsor/magazine-newsletter.php |
 | 4 | **Exposants (stands)** | `sponsor/souscription-exposant.php` | https://expobetonrdc.com/sponsor/souscription-exposant.php |
 | 5 | **Branding & visibilité** | `sponsor/souscription-branding.php` | https://expobetonrdc.com/sponsor/souscription-branding.php |
@@ -86,13 +86,18 @@ Quatre paliers. La hiérarchie retenue par le projet est
 
 ## 4. Catégorie 2 — Participant VIP
 
-- **Tarif : 300 $ par jour** (`vipDay: 300`).
-- Souscription **à la journée** : le participant coche les journées qu'il active ;
-  le montant est **300 $ × nombre de jours choisis**.
-- Journées activables via `?jours=lundi,mardi,mercredi,…` (jours de la semaine).
-- Comprend : accès privilégiés et branding dédié sur les jours retenus.
-- Libellé de la page : « Participant VIP — jours choisis »,
-  « 300 $ / jour · EXPO BÉTON RDC · 07 – 10 octobre 2026 · Kinshasa ».
+- **Tarif : pass UNIQUE de 300 $ (USD hors TVA)** couvrant les **4 jours** du
+  salon (07 – 10 octobre 2026, Kinshasa), par personne (`vipPass: 300`).
+- L'ancien tarif « 300 $ par jour, journées au choix » (`vipDay`) est **abrogé** :
+  ne plus jamais le citer. La page `sponsor/souscription-vip.php` est remplacée
+  par la page de campagne `sponsor/vip-participant.php`.
+- Comprend : accès privilégié au site pendant 4 jours, visite des stands +
+  guide officiel, 1 RDV IBC B2G & B2B par jour, pass conférence, cocktail VIP
+  et activités hors site.
+- Pass supplémentaire : **-50 $** par pass additionnel (`vipExtraPass: 50`).
+- Paiement en ligne : Visa, Mastercard, Mobile Money (FlexPay).
+- Libellé de la page : « Participant VIP — Expo Béton RDC 12ème édition »,
+  « Pass unique : 300 $ pour les 4 jours du salon (07 – 10 octobre 2026) ».
 
 ---
 
@@ -148,8 +153,8 @@ catégorie d'inscription **gratuite** du formulaire d'inscription général
 - **Tarif : gratuit.**
 - Étape « Paiement » **ignorée** pour cette catégorie.
 - Soumission directe après l'étape « Historique de participation ».
-- À ne pas confondre avec le **Participant VIP (300 $ / jour)**, qui est une
-  souscription payante distincte.
+- À ne pas confondre avec le **Participant VIP (pass unique 300 $ les 4 jours)**,
+  qui est une souscription payante distincte.
 
 ---
 
@@ -163,7 +168,7 @@ nl       : communique 250 | article 400 | articleRed 700 | interview 900
            portrait 800 | tribune 600 | bannerHome 800 | bannerPrem 1500
            dedicated 1500
 nlpack   : bronze 1500 | silver 3000 | gold 5000 | platinum 10000
-vipDay   : 300 (par jour)
+vipPass  : 300 (pass unique, 4 jours) | vipExtraPass : 50
 ```
 
 Source unique : `sponsor/assets/sousc-common.js` → `window.EB12.PRICES`.
