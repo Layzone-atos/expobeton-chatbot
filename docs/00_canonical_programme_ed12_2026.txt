@@ -1,8 +1,9 @@
 # ExpoBeton RDC — 12ᵉ édition : programme officiel
 
-> **Document canonique** — programme officiel de la 12ᵉ édition, tel que publié
-> (`docs/programme expobeton.md`, 30/08/2026). Remplace intégralement le
-> « programme » actuellement récité par le chatbot, qui est **inventé**.
+> **Document canonique** — programme officiel de la 12ᵉ édition, aligné sur le
+> PDF « PROGRAMME 12ᵉ EDITION du 16 septembre 2026 ». Source texte de référence :
+> `docs/programme expobeton.md`. Remplace intégralement le « programme »
+> actuellement récité par le chatbot, qui est **inventé**.
 >
 > Thème principal : **« Kinshasa, locomotive de la transformation des villes de la RDC »**
 
@@ -14,9 +15,9 @@
 |---|---|
 | **Site principal** | THE GRAND RESIDENCE — GALERIE LA FONTAINE, croisement des avenues des Cliniques et Batetela, **Kinshasa / Gombe** |
 | **Dates site principal** | **07 au 10 octobre 2026** |
-| **Horaires site principal** | **09h00 – 15h30** — exposition, conférences, B2B & B2G |
+| **Horaires site principal** | **09h00 – 16h00** — exposition, conférences, B2B & B2G |
 | **Activités hors site** | Ambassades, sites partenaires et visites de terrain, **06 au 11 octobre 2026** |
-| **Horaires hors site** | **16h00 – 19h15** — exposition, conférences, soirées B2B & B2G |
+| **Horaires hors site** | **17h00 – 20h00** — exposition, conférences, soirées B2B & B2G |
 
 ---
 
@@ -28,51 +29,54 @@
 - Thème : **« De Léopoldville à Kinshasa, pour quel patrimoine urbanistique ? »**
 - Cocktail d'avant-première, rétrospective visuelle & networking VIP, soirée
   réseautage B2B & B2G.
-- Invitée spéciale : **Mme Kelly LUNDA MAWAYA**, Coordonnatrice de l'Agence
-  Nationale pour la Protection du Patrimoine Immobilier de l'État (ANPPIE).
+- Intervenants : **Mme Kelly LUNDA MAWAYA** (Coordonnatrice de l'ANPPIE — invitée
+  spéciale) ; **Dr Anya DIEKMANN** (Professeure, Université Libre de Bruxelles) ;
+  **Expert ENABEL** ; **Prof Victor BAY MUKANYA KAYEMBE** (Architecte).
 
 ---
 
 ## 3. JOUR 1 — Mercredi 07 octobre 2026 : **Ouverture officielle**
 
 **Thème du jour : Infrastructures & mobilité urbaine.**
+**Maître de cérémonie : Madame Euphrasie KAYEMBE.**
 
-### Site principal (09h00 – 15h30)
+### Site principal (09h00 – 16h00)
 
 | Horaire | Séquence |
 |---|---|
 | 08h30 – 10h00 | Accueil et installation des invités et des officiels |
 | 10h00 – 10h30 | Présentation vidéo des **Grands Projets d'Infrastructures** |
-| 10h30 – 11h00 | Intervention de l'Honorable **Jacques NDJOLI**, Rapporteur de l'Assemblée Nationale |
+| 10h30 – 11h00 | Intervention de l'Honorable **Jacques NDJOLI**, Rapporteur de l'Assemblée Nationale — « Pour la réinvention juridique d'une Province-capitale » |
 | 11h00 | **Arrivée de S.E.M. le Président de la République, Chef de l'État** |
 | 11h05 | Mot du Président du Comité d'organisation d'EXPOBETON RDC |
 | 11h15 | Mot de **Mme Carine ONIEMBA**, Directrice Générale de l'**ANAT** |
-| 11h25 | Présentation du **Projet Kiamona** par le Coordonnateur **M. Thierry KATEMBWE** |
+| 11h25 | Présentation du **Projet Kia Mona** par **M. Thierry KATEMBWE MBALA**, Coordonnateur du CSSPEVK |
 | 11h50 | Présentation des Grands Projets d'infrastructures à Kinshasa par **S.E.M. John BANZA LUNDA**, Ministre des Infrastructures et Travaux Publics |
 | 12h00 | **Allocution d'ouverture solennelle par S.E.M. le Président de la République** |
 | 12h15 – 13h00 | Visite inaugurale des stands et du **Pavillon « Kinshasa 2050 »** par le Président et la suite officielle |
 | 13h00 – 14h00 | Pause déjeuner & visite libre des stands |
 | 14h00 – 15h30 | **Panel 1** |
-| 15h00 – 15h20 | Présentation du projet **METROKIN** (conception, structuration financière, planning) par **M. Éric ONEPUNGA**, Directeur Général |
+| 15h00 – 15h20 | Présentation du projet **METROKIN** par **M. Éric ONEPUNGA**, Directeur Général |
 | 15h20 – 16h00 | Échanges & débats |
 
 **Panel 1 — « Financement structurant face aux besoins de modernisation des
 Infrastructures, Kinshasa la Belle »**
 - Modérateur : **M. Al KITENGE**
-- Key note : **S.E.M. Doudou FWAMBA**, Ministre des Finances
-- Intervenants : **M. LODI SHEMBO** (DG APCSC — modèle de financement des VRD) ;
-  **M. François NGENYI** (DG UC-PPP — financements VRD et quartiers) ;
-  **M. Billy TSHIBAMBE** (Coordonnateur, Cellule Infrastructure) ;
-  **M. Albert ZEUFAC** (Directeur Pays, Banque Mondiale — pôles économiques,
+- Key note : **S.E.M. Doudou FWAMBA LIKUNDE**, Ministre des Finances
+- Intervenants : **M. YODI SHEMBO** (DG APCSC — modèle de financement des VRD) ;
+  **M. François NGENYI MULOWAY** (DG UC-PPP — financements VRD et quartiers) ;
+  **M. Billy TSHIBAMBE NYEMBU** (Coordonnateur, Cellule Infrastructure) ;
+  **M. Albert ZEUFACK** (Directeur Pays, Banque Mondiale — pôles économiques,
   valorisation foncière, transformation urbaine autour des équipements d'intérêt public).
+- Participants : DG de la **TMB**, **SOFIBANQUE**, DG **FONER**.
 
 ### Activités en marge sur site
-- **15h30 — Session IBC Matchmaking (B2G & B2B)** : rendez-vous d'affaires
+- **À partir de 9h00 — Session IBC Matchmaking (B2G & B2B)** : rendez-vous d'affaires
   bilatéraux préprogrammés entre décideurs publics et investisseurs/entreprises,
   pour participants **préenregistrés et présélectionnés**.
   Contact : **Géneviève CHIRALA, +243 991 797 799**.
-- **17h00 – 20h00 — Activité spéciale sponsorisée** autour de la piscine de
-  l'immeuble Galerie La Fontaine *(sur invitation)* : cocktail-networking et
+- **17h00 – 20h00 — Activité spéciale sponsorisée MCC** autour de la piscine de
+  l'immeuble The Grand Residence – Galerie La Fontaine *(sur invitation)* : cocktail-networking et
   soirée réseautage B2B & B2G.
 
 ---
@@ -82,57 +86,66 @@ Infrastructures, Kinshasa la Belle »**
 **Thème du jour : Aménagement du territoire, urbanisme, gouvernance foncière,
 qualité des ouvrages et promotion immobilière.**
 
-### Site principal (09h00 – 15h30)
+### Site principal (09h00 – 16h30)
 
 | Horaire | Séquence |
 |---|---|
 | 09h00 – 09h30 | Accueil et installation |
-| 09h30 – 11h00 | **Panel 2** |
-| 10h30 – 11h00 | Échanges & débats |
-| 11h00 – 12h30 | **Panel 3** |
+| 09h30 – 11h00 | **Panel 2** (échanges 10h30 – 11h00) |
+| 11h00 – 12h30 | **Panel 3** (échanges 12h00 – 12h30) |
 | 12h30 – 13h30 | Pause déjeuner & visite libre des stands |
-| 13h30 – 15h00 | **Panel 4** |
-| 14h30 – 15h00 | Échanges & débats |
-| 15h30 | Session **IBC Matchmaking (B2G & B2B)** |
+| 13h30 – 15h00 | **Panel 4** (échanges 14h30 – 15h00) |
+| 15h00 – 16h30 | **Panel 5** (échanges 16h00 – 16h30) |
 
 **Panel 2 — « Aménagement du territoire, sécurisation foncière et numérisation du
-cadastre pour garantir les investissements immobiliers à Kinshasa »**
+cadastre pour garantir les investissements immobiliers à Kinshasa : quel avenir pour
+les communes de N'sele, Maluku et Mont Ngafula ? »**
 - Modérateur : **M. Guy Christian MOJU**
 - Key note : **S.E.M. Jean Lucien BUSSA**, Ministre d'État, Ministre de l'Aménagement du Territoire
-- Panélistes : **S.E.M. O'Neige N'SELE**, Ministre des Affaires Foncières ;
-  **Pr Antoine MUKUNDI KABINGA**, expert en urbanisme ; **M. André BAHANGULA**,
-  DG de MCC, promoteur immobilier.
+- Panélistes : **S.E. Madame O'Neige N'SELE**, Ministre des Affaires Foncières ;
+  **M. MFUMU DIFIMA Bols** (Président du Conseil Supérieur de l'Autorité Traditionnelle au Congo) ;
+  **DEFI AUGUSTIN FATAKI WA LUHINDI** (Avocat) ; **M. André BAHANGULA** (DG de MCC, promoteur immobilier) ;
+  **Expert International**, Spécialiste en Aménagement du Territoire.
 
 **Panel 3 — « Normes de construction, contrôle technique et régulation dans le
-secteur des BTP : le rôle stratégique du CNE-ITP dans l'élaboration et la
-définition des normes des ouvrages »**
+secteur des BTP : le rôle stratégique du CNE-ITP dans l'élaboration et la définition
+des normes des ouvrages ; quel sort pour les zones habitées de Kinshasa mais construites hors normes ? »**
 - Modérateur : **M. Michel UYUMBU**
 - Key note : **M. Georges KOSHI**, Secrétaire Général aux ITP
+- Panélistes : **M. Jean-Aimé MAVAR** (DG du BTC) ; **le Secrétaire Général de l'ONICIV** ;
+  **Pr Polycarpe NKONDI** (Polytechnique UNIKIN) ; **Mme ODIA KABAKELE** (Formatrice, Coach,
+  Vice-Présidente Commission PME-FEC) ; **M. Bertin NTUMBA BULULU**.
+- Participants : **M. Norbert MUSHIGA NZIDULA** (Bourgmestre de Lingwala, DG ARCA).
 
-**Panel 4 — « Réinventer et rebâtir Kinshasa : quel rôle pour les ingénieurs,
-architectes, urbanistes et géomètres dans la création de nouvelles cités et la
+**Panel 4 — « Réinventer et rebâtir Kinshasa : quel rôle pour les Géomètres-Arpenteurs,
+Urbanistes, Architectes et Ingénieurs dans la création de nouvelles cités et la
 rénovation des vieilles villes ? »**
-- Key note : **S.E.M. Alexis GISARO**, Ministre d'État, Ministre de l'Urbanisme et Habitat
-- Panélistes : **M. Danny KAMBO** (ingénieur civil, expert en développement urbain) ;
+- Modérateur : **M. Bodom MATUNGULU**, Expert en Infrastructures
+- Keynote : **S.E.M. Alexis GISARO MUVUNYI**, Ministre d'État, Ministre de l'Urbanisme et Habitat
+- Panélistes : **M. Mahmoud NASSEF** (General Manager, Arab Contractors in DRC) ;
   **M. Joël KYANA BASILA** (Président national, Corporation des Urbanistes Congolais) ;
   **M. Fiyou NDONDOBONI** (Président, Ordre National des Architectes) ;
-  **Guylain MUKASA MATONDO** (Président, Fédération des Géomètres en RDC) —
-  présidente associée / déléguée : **Mme Godelieve PHANZU VANGU**.
+  **Mme Godelieve PHANZU VANGU** (Présidente associée, Fédération des Géomètres en RDC) ;
+  **M. Marques**.
 
-### Hors site (16h00 – 19h15) — **Panel spécial Banque Centrale du Congo**
-- **Lieu : FLEUVE CONGO HÔTEL**
-- Thème : **« L'utilisation des lingots d'or comme garantie dans le financement
-  des projets immobiliers »**
-- Modérateur : **M. Michel LOSEMBE**
-- Présentation : **M. le Gouverneur de la BCC, André WAMESO**
-- Participants : DG des banques commerciales et sociétés d'assurances ; DG des
-  sociétés immobilières et promoteurs ; **M. MIKA KAYEMBA** (DG **ACOPRIM** —
-  politique nationale du logement social, villes satellites, habitat abordable
-  adossé à des garanties souveraines et minérales) ; **M. Joseph KAZIBAZIBA**
-  (DG **DRC Gold SA**) ; DG **BOYOMA Gold Raffinerie (DGR)** avec les exploitants
-  artisanaux de la TSHOPO.
-- Invités spéciaux : députés et sénateurs, VPM Économie, ministres (Urbanisme et
-  Habitat, Aménagement du Territoire, Affaires Foncières), déléguée à la Politique de la Ville.
+**Panel 5 — « Création des corridors et construction des pôles économiques : cités
+urbaines, cités industrielles, plateformes logistiques »**
+- Modérateur : **M. Jean Dieudonné KAVESE**
+- Keynote : **M. Auguy BOLANDA MENGA**, Directeur Général AZES
+- Panélistes : **ONATRA, RVF, CVM, DGCDI, Ministère des Transports, Direction des Corridors,
+  EU Gateway, Corridor Central, ACGT, Office des Routes, Urbanistes** ;
+  **M. Ibrahim TARINI** (DG MEC) ; **M. Frank MADIMBA** (Coordonnateur UGP-MOD) ;
+  **M. Romain DENIEL** (DG Pays ARISE) ; **M. Michael HOOLANS** (General Manager MILUNA Sarl).
+
+### Activités en marge sur site
+- **À partir de 9h00 — Session IBC Matchmaking (B2G & B2B)**. Contact : **Géneviève CHIRALA, +243 991 797 799**.
+
+### Hors site (17h00 – 20h00) — **Kertel Suites**
+- Thème : **« Avenue Mongola : Kertel Suites, référence architecturale pour un PPA cohérent, moderne et attractif »**
+- Format : **Cocktail Lounge Sunset**, networking B2B/B2G & espace VVIP — soirée réseautage B2B & immobilier VVIP
+- 17h00 – 17h30 : accueil sunset & verre de bienvenue (piscine et terrasse)
+- 17h30 – 17h40 : mot d'accueil (Sokerico / Kertel Suites + organisation ExpoBeton)
+- 17h40 – 19h30 : networking libre & cocktail dînatoire
 
 ---
 
@@ -140,46 +153,75 @@ rénovation des vieilles villes ? »**
 
 **Thème du jour : Énergie, eau, villes vertes, innovation & Smart City.**
 
-### Site principal (09h00 – 15h30)
+### Site principal (09h00 – 16h00)
 
 | Horaire | Séquence |
 |---|---|
 | 09h00 – 09h30 | Accueil et installation |
-| 09h30 – 11h00 | **Panel 5** (échanges 10h00 – 10h30) |
-| 10h30 – 12h00 | **Panel 6** (échanges 11h30 – 12h00) |
-| 12h00 – 13h00 | Pause déjeuner & **démonstrations « Internet of Things » (IoT) / Smart Building** |
-| 13h00 – 14h30 | **Panel 7** (échanges 14h00 – 14h30) |
-| 14h30 – 17h00 | **Présentation des entreprises** |
-| 15h30 | Session **IBC Matchmaking (B2G & B2B)** |
+| 09h30 – 11h00 | **Panel 6** (échanges 10h00 – 10h30) |
+| 10h30 – 12h00 | **Panel 7** (échanges 11h30 – 12h00) |
+| 12h00 – 13h00 | Pause déjeuner & visite libre des stands |
+| 13h00 – 14h30 | **Panel 8** (échanges 14h00 – 14h30) |
+| 14h30 – 16h00 | **Panel Spécial — Nouvelle Ville Kia Mona** (échanges 15h30 – 16h00) |
+| 16h00 – 16h45 | Présentation des entreprises |
 
-**Panel 5 — « Transition énergétique et autonomie en eau des métropoles :
-solutions solaires, gestion des eaux pluviales et éclairage public à Kinshasa »**
+**Panel 6 — « Transition énergétique et autonomie en eau et électricité des
+métropoles : solutions solaires, gestion des eaux pluviales et éclairage public —
+Kinshasa, Ville lumière »**
+- Modérateur : **M. Louis KAHINDO**
 - Key note : **S.E.M. MOLENDO SAKOMBI**, Ministre des Ressources Hydrauliques
-- Panélistes : **Mme SORAYA AZIZ MOTO** (DG **ANSER**) ; **M. Teddy LWAMBA**
-  (DG **SNEL**) ; **M. David TSHILUMBA** (DG **REGIDESO**).
+- Panélistes : **Mme SORAYA AZIZ MOTO** (Directrice Générale de l'**ARE** — Autorité de
+  Régulation du secteur de l'Électricité) ; **M. Teddy LWAMBA** (DG **SNEL**) ;
+  **M. David TSHILUMBA** (DG **REGIDESO**) ; **M. Yves KABONGO** (DG Kinsuka Power).
+- Intervenants : opérateurs privés du secteur de l'électricité — **M. James VANHOUT** (DG EDC, UCM).
 
-**Panel 6 — « Villes vertes : planification et approche opérationnelle pour
-l'assainissement et la gestion durable des déchets »**
-- Modérateur : **Guy Christian MODJU**
-- Key note : **Ministre déléguée en charge de la Politique de la Ville**
+**Panel 7 — « Villes vertes : planification, approche opérationnelle de l'Opération
+Coup de poing pour l'assainissement et la municipalisation de la gestion durable des déchets »**
+- Modérateur : **Maître Timothée MUKENG**
+- Keynote : **S.E. Madame Marie NYANGE NDAMBO**, Ministre de l'Environnement, du Développement durable et de la Nouvelle Économie du Climat
 - Intervenants spéciaux : **M. Francis USENI** (Président, **OGEC**) ;
-  **Alexander BAMANISA** (DG **Clean Plast**) ; **Lt-Général KASONGO KABWIK**
-  (Commandant du **Service National**) ; **Me Dignité BWISA VISSER**.
+  **M. Alexander BAMANISA** (DG **Clean Plast**) ; **Lt-Général KASONGO KABWIK**
+  (Commandant du **Service National**) ; **Me Dignité BWIZA VISSER** (Cabinet Bwiza & Associates).
+- Participants : **M. MANGALIBI MOSENGO Jean** (Promoteur, Manga Flore Sarl).
 
-**Panel 7 — « Croissance démographique, planification urbaine à long terme et
+**Panel 8 — « Croissance démographique, planification urbaine à long terme et
 impacts sur la santé, le bien-être et le bien-vivre des citoyens »**
-- Key note : **S.E.M. Guylain NYEMBO**, Ministre d'État, Ministre du Plan et de la
+- Modérateur : **M. Alexis LUKAKU NZINGA** (Consultant Statisticien et Expert Évaluateur)
+- Key note : **S.E.M. Guylain NYEMBO MBWIZYA**, Ministre d'État, Ministre du Plan et de la
   Coordination de l'Aide au Développement
-- Panélistes : **S.E.M. Roger KAMBA** (Ministre de la Santé) ; **S.E.M. Léon
-  MULUMBA** (Ministre provincial de l'Environnement et Hygiène publique) ;
-  **M. John CHOTA** (ingénieur en construction, professionnel HSE).
+- Panélistes : **S.E.M. Samuel Roger KAMBA MULAMBA** (Ministre de la Santé) ; **S.E.M. Léon
+  MULUMBA MWANA NSHIYA** (Ministre Provincial de l'Environnement, Propriété Publique, Embellissement
+  de la ville et Aménagement) ; **Dr Anya DIEKMANN** (Professeure d'université, ULB) ;
+  **M. John CHOTA** (ingénieur en construction, professionnel HSE) ; **Mme Gisele BOMBELE**
+  (Conseillère au Ministère de l'Agriculture).
 
-### Hors site (16h30 – 19h15) — Soirée réseautage B2B & Immobilier VVIP
-- **Lieu : Kertel Suites**
-- Format : **Cocktail Lounge Sunset**, networking B2B/B2G & espace VVIP
-- 17h00 – 17h30 : accueil sunset & verre de bienvenue (piscine et terrasse)
-- 17h30 – 17h40 : mot d'accueil (Sokerico / Kertel Suites + organisation ExpoBeton)
-- 17h40 – 19h30 : networking libre & cocktail dînatoire
+**Panel Spécial — « Présentation de la Nouvelle Ville Kia Mona : mobilité,
+infrastructures intelligentes et cadre de vie »**
+- Modérateur : **Honorable Godé MPOYI KADIMA**
+- Keynote : **S.E. BUMBA LUBAKI Daniel**, Gouverneur de la Ville-Province de Kinshasa
+- Intervenants : **M. Thierry KATEMBWE** (Coordonnateur du CSSPEVK) ;
+  **M. Christian LEMA** (Directeur Global ESG de Nhood & Président du Club Afrique du Medef de l'Est parisien).
+- Participants : Partenaires de la Ville « Kia Mona ».
+
+### Activités en marge sur site
+- **À partir de 9h00 — Session IBC Matchmaking (B2G & B2B)**. Contact : **Géneviève CHIRALA, +243 991 797 799**.
+
+### Hors site (17h00 – 20h00) — **Panel spécial Banque Centrale du Congo**
+- **Lieu : FLEUVE CONGO HÔTEL**
+- Thème : **« Comment mobiliser davantage les ressources financières pour accélérer le
+  financement de l'immobilier et des infrastructures des villes : financer autrement
+  (marché boursier), garantir autrement (or), financer en devise locale (franc congolais) »**
+- Modérateur : **M. Michel LOSEMBE**
+- Keynote : **M. André WAMESO**, Gouverneur de la BCC
+- Intervenants : **S.E. MUKOKO SAMBA Daniel** (VPM, Ministre de l'Économie) ; **S.E. Doudou
+  FWAMBA LIKUNDE** (Ministre de l'Économie) ; **M. OSUMBA Emile** (DG FIS-RDC) ; **Mme KULE DALE
+  Alda** (DG Congo Ressources — CORES) ; DG des banques commerciales et sociétés d'assurances ;
+  Président de l'**ACB** ; **SAEMAPE** ; Gouverneurs des Provinces ; DG des sociétés immobilières
+  et promoteurs ; **M. MIKA KAYEMBA** (DG **ACOPRIM** — « Structuration des projets d'habitats
+  abordables ») ; **M. KAZIBAZIBA Joseph** (DG **DRC Gold SA**) ; **M. KIALUMBA Joseph**
+  (DG **Boyoma Gold Raffinerie — BGR**) avec la délégation des exploitants miniers artisanaux de la Tshopo.
+- Invités spéciaux : députés et sénateurs, ministres (Urbanisme et Habitat, Aménagement du
+  Territoire, Affaires Foncières), déléguée à la Politique de la Ville.
 
 ---
 
@@ -193,57 +235,61 @@ construction.**
 | Horaire | Séquence |
 |---|---|
 | 09h00 – 09h30 | Accueil et installation |
-| 09h30 – 10h30 | **Panel 8** (échanges 10h30 – 11h00) |
-| 11h00 – 12h00 | **Panel 9** (échanges 12h00 – 12h30) |
-| 12h40 | **Remise des Prix « Startups ExpoBeton — Kinshasa 2050 »** + remise des **certificats VAE** aux ouvriers des entreprises de construction |
+| 09h30 – 10h30 | **Panel 9** (échanges 10h30 – 11h00) |
+| 11h00 – 12h30 | **Panel 10** (échanges 12h00 – 12h30) |
+| 12h40 | **Remise des certificats VAE** aux ouvriers des entreprises de construction |
 | 13h00 | **Restitution des synthèses & lecture du rapport général des recommandations** de la 12ᵉ édition |
-| 13h15 | **Allocution de clôture par S.E.M. Judith SUMINWA, Première Ministre, Cheffe du Gouvernement** |
+| 13h15 | **Allocution de clôture par S.E. Madame Judith SUMINWA, Première Ministre, Cheffe du Gouvernement** |
 | 13h30 | Fin de la cérémonie de clôture |
+| 19h00 | **Soirée de Gala** *(sur invitation)* |
 
-**Panel 8 — « Qualifier, former, certifier : quels référentiels pour les métiers
+**Panel 9 — « Qualifier, former, certifier : quels référentiels pour les métiers
 du BTP ? »**
-- Key note : **S.E.M. Marc EKILA**, Ministre d'État, Ministre de la Formation professionnelle
-- Panélistes : **S.E.M. Justin KALUMBA** (Ministre des PME) ; un représentant du
-  **CLUB BTP & CMA** ; un représentant des **promoteurs immobiliers**.
+- Modérateur : **M. Gabriel NZAU NZAU** (Directeur-Chef de service en charge de la Formation, Ministère de la Formation Professionnelle)
+- Key note : **S.E.M. Marc EKILA LIKOMBO**, Ministre d'État, Ministre de la Formation professionnelle
+- Panélistes : **S.E.M. Justin KALUMBA MWANA NGONGO** (Ministre de l'Entrepreneuriat et du
+  Développement des PME) ; **M. Patrick PALMI** (DG JPG Ventures) ; **M. Mimille MAISHA MUKUNA**
+  (Secrétaire Exécutif National, CLUB BTP & CMA).
+- Participants : Président **UCONAPE** ; DG **ARSP** (M. Ted BALESHAYI), **INPP**
+  (M. Godefroy Stanislas TSHIMANGA WA MUNTUABO), **OVD** (M. Victor TUMBA) ;
+  **M. Mohamed CHERIF** (Représentant résident BAD en RDC) ; promoteurs immobiliers
+  (**IMMOROSE, SAFRIMEX, SAFRICODE, SOKERICO, MCC**).
 
-**Panel 9 — « Former les quatre corps de métiers : ingénieurs, architectes,
-urbanistes, géomètres »**
-- Key note : **S.E.M. Marie Thérèse SOMBO**, Ministre de l'ESU
-- Intervenants : **S.E.M. Ferdinand MASSAMBA WA MASSAMBA** (Ministre de l'Emploi
-  et du Travail) ; recteurs d'universités ; doyens des facultés (Polytechnique
-  UNIKIN) ; **DG INBTP** ; **DG BCECO**.
-
-### Hors site (16h00 – 19h15) — Cocktail « Sino-Congolaise du BTP »
-- **Lieu : Ambassade de Chine**
-- Format : cocktail de networking décontracté, soirée réseau B2B & B2G
-- 16h00 – 16h30 : accueil protocolaire & cocktails (jardins/salons de l'Ambassade)
-- 16h30 – 16h45 : mot de bienvenue de **S.E.M. l'Ambassadeur de Chine** et du
-  Comité d'organisation d'ExpoBeton
-- 16h45 – 19h30 : cocktail dînatoire & networking B2B/B2G entre entreprises
-  sino-congolaises ; célébration de la clôture des travaux
+**Panel 10 — « Capital humain du BTP : former, qualifier et certifier les quatre
+filières clés de la construction en RDC (Géomètres-Arpenteurs, Urbanistes, Architectes
+et Ingénieurs) »**
+- Modérateur : **M. Dechaux NGANDU**, Secrétaire Général ONA
+- Key note : **S.E. Madame SOMBO Marie Thérèse**, Ministre de l'ESU
+- Intervenants : **S.E. Madame MALU Raïssa** (Ministre de l'Éducation nationale et de la
+  Nouvelle Citoyenneté) ; **S.E.M. Ferdinand MASSAMBA WA MASSAMBA** (Ministre de l'Emploi et
+  Travail) ; recteurs d'universités ; **Pr Jean-Marie BEYA** (Doyen, Polytechnique UNIKIN) ;
+  **Pr Cédric TSHIBANGU** (DG INBTP) ; **M. Fanon BEYA NGOMBE** (DG ONEM) ; **M. Godefroy
+  Stanislas TSHIMANGA WA MUNTUABO** (INPP) ; DG **ISTA, WINWIN, Don Bosco** ; **Pr Dr. Ir Sylvain
+  ALONGO LONGOMBA** (DG a.i. BCECO) ; **M. Hervé KISULA** (Représentant DGC) ; **Pr Hubert KAZADI
+  MABIKA** (DG ISAU).
 
 ---
 
 ## 7. Dimanche 11 octobre 2026 — EXCURSION (hors site)
 
 **Thème du jour : Grands projets immobiliers de Kinshasa.**
-**Visites de sites : Cité du Jardin · Kiamona · CDUK.**
+**Visites de sites : Cité du Jardin · Kia Mona · CDUK.** *(sur invitation, inscription et/ou réservation)*
 Rassemblement et briefing logistique **à partir de 09h00**.
 
 ### Phase 1 (09h00 – 14h00) — départs séparés sur 3 sites en simultané
 
 | Groupe | Site | Transport | Programme |
 |---|---|---|---|
-| **Groupe 1** | **Kinshasa Kiamona** | **Bateau** (traversée fluviale) | Traversée et découverte du site depuis le fleuve ; visite guidée du projet de la nouvelle extension de la ville de Kinshasa ; 14h00 transfert vers la Cité du Jardin |
-| **Groupe 2** | **CDUK** | Bus de transfert officiel | Visite de l'aménagement de la **Place Ste Thérèse Ndjili**, maison communale, présentation du **PPA de la CDUK** pour Ndjili et échanges techniques avec les promoteurs ; 14h00 transfert en bus vers la Cité du Jardin |
-| **Groupe 3** | **Cité du Jardin** | Véhicules personnels ou covoiturage | Accueil sur site ; visite guidée approfondie du projet, des aménagements et des maquettes ; à partir de 15h00 accueil des groupes Kiamona et CDUK |
+| **Groupe 1** | **Kinshasa Kia Mona** | **Bateau** (traversée fluviale) | Rassemblement 09h00 au port **Majestic River / Gombe** ; traversée et découverte du site depuis le fleuve ; visite guidée du projet de la nouvelle extension de la ville de Kinshasa ; 14h00 transfert vers la Cité du Jardin |
+| **Groupe 2** | **CDUK** | Bus de transfert officiel | Rassemblement 09h00 au **CTC** ; visite de l'aménagement de la **Place Ste Thérèse Ndjili**, maison communale, présentation du **PPA (Zone de N'sele et Mont Ngafula — PDOS) / CDUK** pour Ndjili et échanges techniques avec les promoteurs ; 14h00 transfert en bus vers la Cité du Jardin |
+| **Groupe 3** | **Cité du Jardin** | Véhicules personnels ou covoiturage | Thème « Immersion terrain : exécution dans les normes des chantiers de voiries et drainage » ; rassemblement 09h00 **CTC / Gombe** ; accueil sur site 11h00 ; visite guidée approfondie du projet, des aménagements et des maquettes ; dès 15h00 accueil des groupes Kia Mona et CDUK |
 
 ### Phase 2 (14h30 – 17h00) — Convergence générale et clôture
 - **Lieu unique pour tous les participants : La Cité du Jardin**
-- 15h00 : arrivée et accueil des délégations (groupes Kiamona et CDUK), regroupement général
+- 15h00 : arrivée et accueil des délégations (groupes Kia Mona et CDUK), regroupement général
 - 15h10 – 16h30 : **grand networking B2B & B2G** sur site (investisseurs,
   bailleurs de fonds, promoteurs immobiliers, architectes) ; découverte des
-  maquettes du projet Cité du Jardin
+  maquettes du projet Cité du Jardin ; agrémentation et rafraîchissement
 - 16h30 – 17h00 : mot de clôture de la journée hors site par l'organisation
   EXPOBETON et **fin des activités de la 12ᵉ édition**
 
@@ -251,12 +297,20 @@ Rassemblement et briefing logistique **à partir de 09h00**.
 
 ## 8. À ne jamais dire (programme inventé actuellement servi par le bot)
 
-Le chatbot récite aujourd'hui un programme **erroné** :
+Le chatbot récitait aujourd'hui un programme **erroné** :
 
 | Affirmation du bot | Réalité officielle |
 |---|---|
 | « Jour 1 (mer 07 oct) : Journée Portes Ouvertes, Touristique et Culturelle — visites, danses traditionnelles, concerts, pêche lacustre, cocktail 17h » | **Jour 1 = mercredi 07 octobre : OUVERTURE OFFICIELLE** par le Président de la République ; thème *Infrastructures & mobilité urbaine* ; Panel 1 + METROKIN. La journée portes ouvertes a lieu le **mardi 06 octobre** |
-| « Jour 2 (jeu 08 oct) : Ouverture officielle (Président) + panels Habitat & Territoire » | **Jour 2 = jeudi 08 octobre** : thème *Aménagement du territoire, urbanisme, gouvernance foncière, qualité des ouvrages, promotion immobilière* — Panels 2, 3, 4 + panel spécial **BCC** au Fleuve Congo Hôtel |
-| « Jour 3 (ven 09 oct) : Corridors transfrontaliers, ZES, Énergie — panels CIRGL, Corridor Central, Agriculture » | **Jour 3 = vendredi 09 octobre** : thème *Énergie, eau, villes vertes, innovation & Smart City* — Panels 5, 6, 7 + IoT/Smart Building + soirée **Kertel Suites** |
-| « Jour 4 (sam 10 oct) : Jeunesse & Innovation, formation, entrepreneuriat, pitchs » | **Jour 4 = samedi 10 octobre : CLÔTURE OFFICIELLE** — thème *Compétences et expertises locales face à la demande de la construction* ; Panels 8 et 9 ; **Prix « Startups ExpoBeton — Kinshasa 2050 »** ; clôture par la **Première Ministre Judith SUMINWA** |
-| (absent) | **Mardi 06 octobre** : portes ouvertes + Ambassade de Belgique. **Dimanche 11 octobre** : excursion Cité du Jardin / Kiamona / CDUK |
+| « Jour 2 (jeu 08 oct) : Ouverture officielle (Président) + panels Habitat & Territoire » | **Jour 2 = jeudi 08 octobre** : thème *Aménagement du territoire, urbanisme, gouvernance foncière, qualité des ouvrages, promotion immobilière* — **Panels 2, 3, 4, 5** + soirée **Kertel Suites** |
+| « Jour 3 (ven 09 oct) : Corridors transfrontaliers, ZES, Énergie — panels CIRGL, Corridor Central, Agriculture » | **Jour 3 = vendredi 09 octobre** : thème *Énergie, eau, villes vertes, innovation & Smart City* — **Panels 6, 7, 8 + Panel Spécial Kia Mona** + panel spécial **BCC** au Fleuve Congo Hôtel |
+| « Jour 4 (sam 10 oct) : Jeunesse & Innovation, formation, entrepreneuriat, pitchs » | **Jour 4 = samedi 10 octobre : CLÔTURE OFFICIELLE** — thème *Compétences et expertises locales face à la demande de la construction* ; **Panels 9 et 10** ; **remise des certificats VAE** ; clôture par la **Première Ministre Judith SUMINWA** ; **Soirée de Gala 19h00** |
+| (absent) | **Mardi 06 octobre** : portes ouvertes + Ambassade de Belgique. **Dimanche 11 octobre** : excursion Cité du Jardin / Kia Mona / CDUK |
+
+**Corrections clés à retenir :**
+- **Soraya AZIZ MOTO** est **Directrice Générale de l'ARE** (Autorité de Régulation du
+  secteur de l'Électricité), et **non** de l'ANSER.
+- Le salon s'étend sur **6 journées** (06 → 11 octobre), et non 4.
+- **Horaires site principal : 09h00 – 16h00** (et non 15h30) ; **hors site : 17h00 – 20h00**.
+- **10 panels** au total (Panels 1 à 10) + Panel Spécial Kia Mona + Panel spécial BCC.
+- **Maître de cérémonie du Jour 1 : Euphrasie KAYEMBE.**

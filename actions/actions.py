@@ -916,7 +916,7 @@ class ActionGreetPersonalized(Action):
                 "🏢 **Secrétariat / adresse administrative** d'EXPO BÉTON ASBL : "
                 "**07, avenue de l'OUA, commune de Ngaliema**, Kinshasa.\n"
                 "⚠️ Attention : le secrétariat n'est **pas** le lieu du salon.\n\n"
-                "📅 Dates : du **07 au 10 octobre 2026** (4 jours)."
+                "📅 **Dates :** site principal du **07 au 10 octobre 2026** (09h00–16h00) ; activités hors site du **06 au 11 octobre 2026** (17h00–20h00) — 6 journées."
             )
             dispatcher.utter_message(text=answer)
             return []
@@ -976,6 +976,147 @@ class ActionGreetPersonalized(Action):
         
         dispatcher.utter_message(text=message)
         return []
+
+# ─────────────────────────────────────────────────────────────────────────
+# Programme officiel de la 12ᵉ édition (06 → 11 octobre 2026, Kinshasa).
+# Source : docs/00_canonical_programme_ed12.md.
+# Ces réponses sont DÉTERMINISTES (mots-clés) et n'utilisent pas le RAG : en
+# production la clé OPENAI est absente, donc la génération LLM échoue et retombe
+# sur un aide-générique. Le programme est donc servi ici, aligné sur le PDF du
+# 16/09/2026 (Soraya = DG de l'ARE, Euphrasie KAYEMBE, panels 1→10 sur 6 jours).
+# ─────────────────────────────────────────────────────────────────────────
+
+PROGRAMME_RESUME = (
+    "🗓️ **Programme de la 12ᵉ édition — 6 journées (06 → 11 octobre 2026), Kinshasa**\n\n"
+    "📍 Site principal : **The Grand Residence – Galerie La Fontaine** (Gombe).\n"
+    "🕘 Site : **09h00 – 16h00** · 🌆 Activités hors site : **17h00 – 20h00**.\n\n"
+    "• **Mar. 06/10 — Avant-première** : portes ouvertes sur site + soirée à l'**Ambassade de Belgique** « De Léopoldville à Kinshasa, quel patrimoine urbanistique ? ».\n"
+    "• **Mer. 07/10 — JOUR 1 : Ouverture officielle** par le **Président de la République**. Thème *Infrastructures & mobilité urbaine*. Maître de cérémonie : **Euphrasie KAYEMBE**. Panel 1 + METROKIN.\n"
+    "• **Jeu. 08/10 — JOUR 2** : *Aménagement du territoire, urbanisme, foncier, qualité des ouvrages, promotion immobilière* → **Panels 2 à 5**. Hors site : **Kertel Suites**.\n"
+    "• **Ven. 09/10 — JOUR 3** : *Énergie, eau, villes vertes, innovation & Smart City* → **Panels 6 à 8 + Panel Spécial Kia Mona**. Hors site : **Panel BCC** au Fleuve Congo Hôtel.\n"
+    "• **Sam. 10/10 — JOUR 4 : Clôture officielle** : *Compétences & expertises locales* → **Panels 9 & 10**, remise des **certificats VAE**, clôture par la **PM Judith SUMINWA**, **Soirée de Gala à 19h**.\n"
+    "• **Dim. 11/10 — Excursion** hors site : **Cité du Jardin · Kia Mona · CDUK**.\n\n"
+    "💡 Précisez un **jour**, un **panel**, un **thème** ou un **intervenant** pour plus de détail."
+)
+
+# (mots-clés normalisés SANS accents, réponse). Ordre = priorité.
+_PROGRAMME_DETAILS = [
+    # ── Personnalités / affiliations clés ──
+    (("soraya","autorite de regulation"," are ","autorite de régulation","electricite","regulation du secteur"),
+     "⚡ **Panel 6 (JOUR 3)** — **Mme SORAYA AZIZ MOTO**, **Directrice Générale de l'ARE** "
+     "(Autorité de Régulation du secteur de l'Électricité). À ses côtés : **Teddy LWAMBA** (DG SNEL), "
+     "**David TSHILUMBA** (DG REGIDESO), **Yves KABONGO** (Kinsuka Power) ; keynote **S.E.M. Moledo Sakombi** "
+     "(Ministre des Ressources hydrauliques), mod. **Louis KAHINDO**. (Ce n'est PAS l'ANSER.)"),
+    (("euphrasie","maitre de ceremonie","maître de cérémonie","animation jour 1"),
+     "🎙️ Le **maître de cérémonie du JOUR 1** (ouverture officielle, mer. 07/10) est **Madame Euphrasie KAYEMBE**."),
+    (("suminwa","premiere ministre","première ministre","cloture","clôture","ceremonie de cloture","soiree de gala","gala"),
+     "🏁 **JOUR 4 — Sam. 10/10 : Clôture officielle.** Restitution des synthèses et rapport général (13h00) ; "
+     "**allocution de clôture par S.E. Mme Judith SUMINWA, Première Ministre** (13h15) ; fin de cérémonie 13h30. "
+     "🎉 **Soirée de Gala à 19h00** (sur invitation). Thème du jour : *Compétences & expertises locales face à la demande de la construction*."),
+    (("bcc","banque centrale","fleuve congo","financement immobilier"),
+     "🏦 **Hors site JOUR 3 (17h00–20h00) — Panel spécial Banque Centrale du Congo**, au **Fleuve Congo Hôtel**. "
+     "Mod. **Michel LOSEMBE** ; keynote **André WAMESO** (Gouverneur BCC) ; interviennent S.E. **Mukoko Samba**, "
+     "S.E. **Doudou Fwamba Likunde**, **Osumba Emile** (FIS-RDC), **Kule Dale Alda** (CORES), **Mika Kayemba** (ACOPRIM), "
+     "**Kazibaziba Joseph** (DRC Gold), **Kialumba Joseph** (Boyoma Gold Raffinerie). Thème : mobiliser le financement de l'immobilier."),
+    (("kertel","suite kertel","avenue mongola"),
+     "🌇 **Hors site JOUR 2 (17h00–20h00) — Kertel Suites** (Avenue Mongola). Cocktail Lounge Sunset, networking B2B/B2G & espace VVIP, "
+     "autour du thème « Kertel Suites, référence architecturale pour un PPA cohérent, moderne et attractif »."),
+    (("kia mona","nouvelle ville","ki a mona","csspev"),
+     "🏙️ **Panel Spécial — Nouvelle Ville Kia Mona (JOUR 3, 14h30–16h00)**. Mod. **Hon. Godé MPOYI KADIMA** ; keynote "
+     "**S.E. Bumba Lubaki Daniel** (Gouverneur de Kinshasa) ; **Thierry KATEMBWE** (Coordonnateur CSSPEVK), **Christian LEMA** (Nhood). "
+     "Le projet est aussi présenté à l'ouverture (JOUR 1) et visité lors de l'excursion du 11/10."),
+    (("excursion","cite du jardin","cité du jardin","cduk","majestic","traversee","bateau","visite de site","11 oct","dimanche"),
+     "🚌 **Excursion — Dim. 11/10 (hors site)**, thème *Grands projets immobiliers de Kinshasa* : visites de sites "
+     "**Cité du Jardin · Kia Mona · CDUK** (sur invitation/réservation). Rassemblement dès 09h00. Phase 1 (09h00–14h00) : Groupe 1 "
+     "Kia Mona (bateau, port Majestic River/Gombe), Groupe 2 CDUK (bus, CTC), Groupe 3 Cité du Jardin (covoiturage, CTC/Gombe). "
+     "Phase 2 (14h30–17h00) : convergence à la Cité du Jardin, grand networking B2B/B2G puis clôture des activités."),
+    # ── Par jour ──
+    (("avant-premiere","mardi 06","mar 06","06 oct","ambassade de belgique","porte ouverte","portes ouvertes","journee porte"),
+     "🎞️ **Avant-première — Mar. 06/10.** Sur site (09h00–15h30) : journée portes ouvertes (Galerie La Fontaine, Gombe). "
+     "Hors site (soirée, invitation) : **Ambassade de Belgique**, thème « De Léopoldville à Kinshasa, pour quel patrimoine urbanistique ? ». "
+     "Intervenants : **Mme Kelly Lunda Maway** (ANPPIE), **Dr Anya Diekmann** (ULB), un expert **Enabel**, **Pr Victor Bay Mukanya Kayembe**."),
+    (("jour 1","1er jour","premier jour","mercredi 07","mer 07","07 oct","ouverture officielle","inauguration","president de la republique","pavillon kinshasa 2050","kinshasa 2050","metrokin"),
+     "🎬 **JOUR 1 — Mer. 07/10 : Ouverture officielle.** Thème *Infrastructures & mobilité urbaine* ; maître de cérémonie **Euphrasie KAYEMBE**.\n"
+     "• 10h30 **Jacques NDJOLI** (Rapporteur AN) ; 11h00 arrivée du **Président de la République** ; 11h15 **Carine ONIEMBA** (ANAT) ; "
+     "11h25 projet **Kia Mona** (Thierry Katembwe) ; 11h50 **John Banza Lunda** (ITP) ; 12h00 **allocution d'ouverture** + visite du Pavillon « Kinshasa 2050 ».\n"
+     "• **Panel 1** ; 15h00 **METROKIN** (Éric Onepunga)."),
+    (("jour 2","2eme jour","deuxieme jour","jeudi 08","jeu 08","08 oct","amenagement du territoire","promotion immobiliere","gouvernance fonciere"),
+     "🏗️ **JOUR 2 — Jeu. 08/10.** Thème *Aménagement du territoire, urbanisme, gouvernance foncière, qualité des ouvrages, promotion immobilière*.\n"
+     "Au programme : **Panels 2, 3, 4 et 5** (sur site 09h00–16h30) + soirée hors site **Kertel Suites**.\n"
+     "💡 Dites « panel 2 », « panel 3 », « panel 4 » ou « panel 5 » pour le détail."),
+    (("jour 3","3eme jour","troisieme jour","vendredi 09","ven 09","09 oct","smart city","energie, eau","villes vertes","energie"),
+     "💡 **JOUR 3 — Ven. 09/10.** Thème *Énergie, eau, villes vertes, innovation & Smart City*.\n"
+     "Au programme : **Panels 6, 7, 8 + Panel Spécial Kia Mona** (sur site) + **Panel BCC** au Fleuve Congo Hôtel (hors site).\n"
+     "💡 Dites « panel 6 », « panel 7 » ou « panel 8 » pour le détail."),
+    (("jour 4","4eme jour","quatrieme jour","samedi 10","sam 10","10 oct","competences","expertise locale","vae","cloture officielle"),
+     "🏁 **JOUR 4 — Sam. 10/10 : Clôture.** Thème *Compétences & expertises locales face à la demande de la construction*.\n"
+     "**Panels 9 & 10**, remise des **certificats VAE** (12h40), clôture par la **PM Judith Suminwa**, **Soirée de Gala 19h**."),
+    # ── Panels 1 → 10 (numéro ou thème) ──
+    (("panel 1","panel1","financement structurant","kitenge","yodi shembo","ngenyi","apcsc","uc-ppp","zeufack"),
+     "🎯 **Panel 1 (JOUR 1)** — « Financement structurant face aux besoins de modernisation des infrastructures, Kinshasa la Belle ».\n"
+     "Mod. **Al Kitenge** ; keynote **Doudou Fwamba Likunde** (Min. Finances) ; panélistes **Yodi Shembo** (APCSC), "
+     "**François Ngenyi Muloway** (UC-PPP), **Billy Tshibambe Nyembu** (Cellule Infrastructure), **Albert Zeufack** (Banque Mondiale). Participants : TMB, Sofibank, DG FONER."),
+    (("panel 2","panel2","securisation fonciere","numerisation du cadastre","n'sele","nsеле","mont ngafula","maluku","o'neige","neige nselle","bussa","moju"),
+     "🎯 **Panel 2 (JOUR 2 — Jeu. 08/10, 09h30–11h00)** — « Aménagement du territoire, sécurisation foncière et numérisation du cadastre pour garantir les investissements immobiliers à Kinshasa : quel avenir pour les communes de N'sele, Maluku et Mont Ngafula ? ».\n"
+     "Mod. **Guy Christian MOJU** ; keynote **S.E.M. Jean Lucien BUSSA** (Ministre d'État, Aménagement du Territoire) ; panélistes **S.E. Mme O'Neige N'SELE** (Affaires Foncières), "
+     "**MFUMU DIFIMA Bols** (Conseil Supérieur de l'Autorité Traditionnelle), **Defi Augustin Fataki Wa Luhindi** (Avocat), **André BAHANGULA** (DG MCC, promoteur), un **Expert International** en aménagement."),
+    (("panel 3","panel3","normes de construction","controle technique","cne-itp","cne itp","oniciv","mavar","mushiga","uyumbu","nkondi"),
+     "🎯 **Panel 3 (JOUR 2 — Jeu. 08/10, 11h00–12h30)** — « Normes de construction, contrôle technique et régulation des BTP : le rôle stratégique du CNE-ITP ; quel sort pour les zones habitées de Kinshasa construites hors normes ? ».\n"
+     "Mod. **Michel UYUMBU** ; keynote **Georges KOSHI** (SG ITP) ; panélistes **Jean-Aimé MAVAR** (DG BTC), le **SG de l'ONICIV**, **Pr Polycarpe NKONDI** (Polytechnique UNIKIN), "
+     "**Mme Odia Kabakele** (Vice-Présidente Commission PME-FEC), **Bertin NTUMBA BULULU** ; participant **Norbert MUSHIGA NZIDULA** (Bourgmestre de Lingwala, DG ARCA)."),
+    (("panel 4","panel4","geometre","urbaniste","architecte","rebatir","bâtir kinshasa","gisaro","nassef","bodom","kyana","ndondoboni","phanzu"),
+     "🎯 **Panel 4 (JOUR 2 — Jeu. 08/10, 13h30–15h00)** — « Réinventer et rebâtir Kinshasa : rôle des Géomètres-Arpenteurs, Urbanistes, Architectes et Ingénieurs dans la création de nouvelles cités et la rénovation des vieilles villes ».\n"
+     "Mod. **Bodom MATUNGULU** (Expert Infrastructures) ; keynote **S.E.M. Alexis GISARO MUVUNYI** (Ministre d'État, Urbanisme et Habitat) ; panélistes **Mahmoud NASSEF** (Arab Contractors), **Joël KYANA BASILA** (Urbanistes Congolais), **Fiyou NDONDOBONI** (Ordre National des Architectes), **Godelieve PHANZU VANGU** (Fédération des Géomètres), **M. Marques**."),
+    (("panel 5","panel5","corridor","pole economique","logistique","cite urbaine","bolanda","kaves","onatra","arise","miluna","hoolans","madimba","deniel","tarini"),
+     "🎯 **Panel 5 (JOUR 2 — Jeu. 08/10, 15h00–16h30)** — « Création des corridors et construction des pôles économiques : cités urbaines, cités industrielles, plateformes logistiques ».\n"
+     "Mod. **Jean Dieudonné KAVESE** ; keynote **Auguy BOLANDA MENGA** (DG AZES) ; panélistes : **ONATRA, RVF, CVM, DGCDI, Ministère des Transports, Direction des Corridors, EU Gateway, Corridor Central, ACGT, Office des Routes, Urbanistes** ; "
+     "**Ibrahim TARINI** (DG MEC), **Frank MADIMBA** (Coord. UGP-MOD), **Romain DENIEL** (DG Pays ARISE), **Michael HOOLANS** (GM MILUNA Sarl)."),
+    (("panel 6","panel6","solaire","eclairage public","ville lumiere","snel","regideso","kahindo","molen","lwamba","tshilumba","kinsuka"),
+     "⚡ **Panel 6 (JOUR 3 — Ven. 09/10, 09h30–11h00)** — « Transition énergétique et autonomie en eau et électricité des métropoles : solaire, eaux pluviales, éclairage public — Kinshasa, Ville lumière ».\n"
+     "Mod. **Louis KAHINDO** ; keynote **S.E.M. MOLENDO SAKOMBI** (Ministre des Ressources Hydrauliques) ; panélistes **Mme SORAYA AZIZ MOTO** (DG de l'**ARE**), **Teddy LWAMBA** (DG SNEL), **David TSHILUMBA** (DG REGIDESO), **Yves KABONGO** (Kinsuka Power) ; **James VANHOUT** (DG EDC, UCM)."),
+    (("panel 7","panel7","ville verte","villes vertes","dechets","assainissement","coup de poing","clean plast","ogec","nyange","mukeng","useni","zmanisa","bwiza"),
+     "🌱 **Panel 7 (JOUR 3 — Ven. 09/10, 10h30–12h00)** — « Villes vertes : planification, Opération Coup de poing, assainissement et municipalisation de la gestion durable des déchets ».\n"
+     "Mod. **Maître Timothée MUKENG** ; keynote **S.E. Mme Marie NYANGE NDAMBO** (Ministre de l'Environnement) ; intervenants **Francis USENI** (OGEC), **Alexander BAMANISA** (DG Clean Plast), **Lt-Général KASONGO KABWIK** (Service National), **Me Dignité BWIZA VISSER** (Cabinet Bwiza & Associates)."),
+    (("panel 8","panel8","croissance demographique","sante","bien-etre","planification urbaine a long terme","nyembo","kamba","lukaku","mulumba","bombelle","chota"),
+     "🧑\u200d⚕️ **Panel 8 (JOUR 3 — Ven. 09/10, 13h00–14h30)** — « Croissance démographique, planification urbaine à long terme et impacts sur la santé, le bien-être et le bien-vivre des citoyens ».\n"
+     "Mod. **Alexis LUKAKU NZINGA** (Consultant Statisticien) ; keynote **S.E.M. Guylain NYEMBO MBWIZYA** (Ministre d'État, Plan) ; panélistes **S.E.M. Samuel Roger KAMBA MULAMBA** (Santé), **S.E.M. Léon MULUMBA MWANA NSHIYA** (Environnement/Kinshasa), **Dr Anya DIEKMANN** (ULB), **John CHOTA** (ingénieur HSE), **Gisele BOMBELE** (Conseillère Agriculture)."),
+    (("panel 9","panel9","referentiel","former","qualifier","certifier","ekila","nzau","maisha","palmi","kalumba","baleshayi","tshimanga","cherif"),
+     "🛠️ **Panel 9 (JOUR 4 — Sam. 10/10, 09h30–10h30)** — « Qualifier, former, certifier : quels référentiels pour les métiers du BTP ? ».\n"
+     "Mod. **Gabriel NZAU NZAU** (Formation professionnelle) ; keynote **S.E.M. Marc EKILA LIKOMBO** (Ministre d'État, Formation professionnelle) ; panélistes **S.E.M. Justin KALUMBA MWANA NGONGO** (Entrepreneuriat/PME), **Patrick PALMI** (DG JPG Ventures), **Mimille MAISHA MUKUNA** (Club BTP & CMA) ; participants ARSP **Ted BALESHAYI**, INPP **Godefroy TSHIMANGA**, OVD **Victor TUMBA**, **Mohamed CHERIF** (BAD)."),
+    (("panel 10","panel10","capital humain","quatre filieres","sumbo","alongo","kazadi mabika","massamba","beya","tshibangu","ngandu","be ya ngombe","onem","inau","isa u","bceco"),
+     "🎓 **Panel 10 (JOUR 4 — Sam. 10/10, 11h00–12h30)** — « Capital humain du BTP : former, qualifier et certifier les quatre filières clés (Géomètres-Arpenteurs, Urbanistes, Architectes et Ingénieurs) ».\n"
+     "Mod. **Dechaux NGANDU** (SG ONA) ; keynote **S.E. Mme SOMBO Marie Thérèse** (Ministre de l'ESU) ; intervenants **Mme MALU Raïssa** (Éducation nationale), **S.E.M. Ferdinand MASSAMBA WA MASSAMBA** (Emploi), **Pr Jean-Marie BEYA** (Polytechnique UNIKIN), "
+     "**Pr Cédric TSHIBANGU** (DG INBTP), **Fanon BEYA NGOMBE** (DG ONEM), **Pr Dr. Ir Sylvain ALONGO LONGOMBA** (DG a.i. BCECO), **Pr Hubert KAZADI MABIKA** (DG ISAU)."),
+]
+
+
+def _program_detail_answer(q: str):
+    """Renvoie la réponse ciblée si le (normalisé) correspond à un sujet connu.
+
+    En cas de correspondances multiples (« panel 1 » est inclus dans
+    « panel 10 », « panel1 » dans « panel10 »…), la clé la plus longue —
+    donc la plus spécifique — l'emporte, afin de ne pas servir Panel 1 à la
+    place de Panel 10. À clé égale, l'ordre de la liste fait foi (priorité).
+    """
+    best = None
+    best_len = -1
+    for keys, text in _PROGRAMME_DETAILS:
+        for k in keys:
+            if k in q and len(k) > best_len:
+                best, best_len = text, len(k)
+    return best
+
+
+def _program_is_generic(q: str) -> bool:
+    return any(k in q for k in (
+        'programme', 'program', 'agenda', 'deroule', 'deroulement', 'que se passe',
+        'comment se passe', 'au programme', 'activite prevue', 'activites prevues',
+        'les jours', 'chaque jour', 'intervenants', 'orateurs', 'conferences',
+        'les panels', 'panel', 'duree', 'duration', 'how many days', 'how long',
+        'horaires', 'heure', 'combien de jours', 'quand', 'when',
+        'calendrier', 'se derouler', 'comment ca va',
+    ))
+
 
 class ActionAnswerExpoBeton(Action):
     def name(self) -> Text:
@@ -1270,26 +1411,28 @@ class ActionAnswerExpoBeton(Action):
                 "🏢 **Secrétariat / adresse administrative** d'EXPO BÉTON ASBL : "
                 "**07, avenue de l'OUA, commune de Ngaliema**, Kinshasa.\n"
                 "⚠️ Attention : le secrétariat n'est **pas** le lieu du salon.\n\n"
-                "🕘 **Horaires sur le site :** 09h00 – 15h30.\n\n"
-                "📅 Dates : du **07 au 10 octobre 2026** (4 jours)."
+                "🕘 **Horaires — site principal :** 09h00 – 16h00.  🌆 **Activités hors site :** 17h00 – 20h00.\n\n"
+                "📅 **Dates :** site principal du **07 au 10 octobre 2026** ; activités hors site du **06 au 11 octobre 2026** (6 journées)."
             )
             dispatcher.utter_message(text=answer)
             bot_response = answer
             log_conversation_message(session_id, 'bot', bot_response, metadata)
             return []
         
+        # --- Programme détaillé : jours, panels, intervenants, horaires ---
+        nq_programme = _normalize_text(user_question)
+        detail = _program_detail_answer(nq_programme)
+        if detail is not None or _program_is_generic(nq_programme):
+            answer = detail if detail is not None else PROGRAMME_RESUME
+            dispatcher.utter_message(text=answer)
+            bot_response = answer
+            log_conversation_message(session_id, 'bot', bot_response, metadata)
+            return []
+
         # --- Date questions (often combined with greeting too) ---
         if any(kw in user_question for kw in ['date', 'quand', 'when', 'calendrier', 'duree', 'combien de jours', 'period']):
             if any(w in user_question for w in ['expobeton', 'salon', 'edition', 'edtion', 'editon', 'evenement', '2026']):
-                answer = (
-                    "La 12eme edition d'ExpoBeton RDC se tiendra du **07 au 10 octobre 2026** "
-                    "(4 jours) a **Kinshasa**, a La Grande Residence - Galerie La Fontaine.\n\n"
-                    "Programme resume :\n"
-                    "• Mer 07 oct : Journee Portes Ouvertes, Touristique et Culturelle\n"
-                    "• Jeu 08 oct : Ouverture officielle + Panels Habitat & Territoire\n"
-                    "• Ven 09 oct : Corridors transfrontaliers, ZES, Energie\n"
-                    "• Sam 10 oct : Jeunesse & Innovation + CLOTURE"
-                )
+                answer = PROGRAMME_RESUME
                 dispatcher.utter_message(text=answer)
                 bot_response = answer
                 log_conversation_message(session_id, 'bot', bot_response, metadata)
@@ -1614,15 +1757,19 @@ class ActionAnswerExpoBeton(Action):
         # Duration / Number of days
         if any(word in user_question for word in ['combien de jours', 'durée', 'how many days', 'duration']):
             answer = (
-                "📅 La **12ème édition d'ExpoBeton RDC** durera **4 jours** : "
-                "du **mercredi 07 au samedi 10 octobre 2026**, à Kinshasa "
-                "(The Grand Residence — Galerie La Fontaine, Gombe).\n\n"
-                "🕘 Horaires sur le site : **09h00 – 15h30**.\n"
-                "🌆 Activités hors site : **16h00 – 19h15**, du **06 au 11 octobre 2026**.\n\n"
-                "**Jour 1 (mer 07)** : Journée Portes Ouvertes, Touristique et Culturelle\n"
-                "**Jour 2 (jeu 08)** : Cérémonie d'ouverture officielle + panels Habitat & Territoire\n"
-                "**Jour 3 (ven 09)** : Corridors transfrontaliers, ZES, Énergie\n"
-                "**Jour 4 (sam 10)** : Jeunesse & Innovation + cérémonie de clôture"
+                "📅 La **12ème édition d'ExpoBeton RDC** se développe sur **6 journées**, "
+                "du **mardi 06 au dimanche 11 octobre 2026**, à Kinshasa.\n\n"
+                "🏛️ **Site principal** (The Grand Residence — Galerie La Fontaine, Gombe) : "
+                "**du 07 au 10 octobre**, **09h00 – 16h00**.\n"
+                "🌆 **Activités hors site** (ambassades, partenaires, visites de terrain) : "
+                "**du 06 au 11 octobre**, **17h00 – 20h00**.\n\n"
+                "• **Mar. 06** : Avant-première (portes ouvertes + Ambassade de Belgique)\n"
+                "• **Mer. 07** : Jour 1 — Ouverture officielle\n"
+                "• **Jeu. 08** : Jour 2 — Panels 2 à 5\n"
+                "• **Ven. 09** : Jour 3 — Panels 6 à 8 + Panel Spécial Kia Mona\n"
+                "• **Sam. 10** : Jour 4 — Panels 9 & 10, clôture + Soirée de Gala\n"
+                "• **Dim. 11** : Excursion (Cité du Jardin · Kia Mona · CDUK)\n\n"
+                "💡 Dites « programme » pour le détail, ou précisez un jour / un panel."
             )
             dispatcher.utter_message(text=answer)
             bot_response = answer
