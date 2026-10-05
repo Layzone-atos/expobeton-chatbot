@@ -228,15 +228,16 @@
                 opacity: 0;
             }
             
-            /* Fenêtre de chat */
+            /* Fenêtre de chat : hauteur adaptée au viewport (jamais tronquée
+               dans l'iframe 400×640), ouverture/fermeture en transition douce
+               (opacity + transform, pas de display brutal). */
             #expobeton-chat-window {
-                display: none;
                 position: fixed;
                 ${CONFIG.position.includes('bottom') ? 'bottom: 90px;' : 'top: 90px;'}
                 ${CONFIG.position.includes('right') ? 'right: 20px;' : 'left: 20px;'}
                 width: 380px;
-                height: 600px;
-                max-height: 80vh;
+                height: calc(100vh - 110px);
+                max-height: 600px;
                 background: white;
                 border-radius: 16px;
                 box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -244,11 +245,19 @@
                 flex-direction: column;
                 overflow: hidden;
                 z-index: 99998;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(16px) scale(0.98);
+                pointer-events: none;
+                transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
             }
             
             #expobeton-chat-window.open {
-                display: flex;
-                animation: slideUp 0.3s ease;
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0) scale(1);
+                pointer-events: auto;
+                transition: opacity 0.25s ease, transform 0.25s ease;
             }
             
             @keyframes slideUp {
@@ -300,7 +309,8 @@
             
             /* Zone de messages */
             .expobeton-chat-messages {
-                flex: 1;
+                flex: 1 1 auto;
+                min-height: 0;
                 overflow-y: auto;
                 padding: 20px;
                 background: #f8fafc;
@@ -547,6 +557,9 @@
                     <p style="font-size:12px;color:#475569;background:#f1f5f9;border-left:3px solid #0A2A66;padding:8px 10px;border-radius:6px;margin:0 0 16px 0;line-height:1.4;">
                         📞 Vos coordonnées permettront à l'équipe ExpoBeton de vous contacter pour vous tenir informé(e) des autres aspects de l'événement.
                     </p>
+                    <div id="expobeton-live-hint" style="display:none;font-size:12px;color:#065f46;background:#ecfdf5;border:1px solid #10b981;border-radius:8px;padding:8px 10px;margin:0 0 12px 0;line-height:1.4;">
+                        🟢 Un conseiller est disponible actuellement — réponse en direct.
+                    </div>
                     <div class="expobeton-form-group">
                         <label>Nom complet *</label>
                         <input type="text" id="expobeton-name" placeholder="Ex: Jean Dupont" required>
@@ -998,6 +1011,12 @@
         if (msgGroup && form) {
             msgGroup.style.display = (chatState.mode === 'live' && form.style.display !== 'none') ? 'block' : 'none';
         }
+        // Encart de disponibilité du formulaire : visible dès l'ouverture,
+        // avant même le premier message.
+        const hint = document.getElementById('expobeton-live-hint');
+        if (hint) {
+            hint.style.display = (chatState.mode === 'live' && form && form.style.display !== 'none') ? 'block' : 'none';
+        }
     }
 
     // Re-vérification toutes les 60 s. Règles de transition :
@@ -1031,7 +1050,8 @@
             nom: info.name || 'Visiteur',
             telephone: info.phone || '',
             email: info.email || '',
-            message: firstMessage || ''
+            message: firstMessage || '',
+            metadata: Object.assign({}, _deviceMetadata)
         };
         if (botTranscript && botTranscript.length > 0) {
             payload.bot_transcript = botTranscript.map(m => ({ sender: m.sender, text: m.text }));
@@ -1051,22 +1071,26 @@
         const banner = document.getElementById('expobeton-handoff');
         if (banner) banner.remove();
         if (chatState.livePollTimer) clearInterval(chatState.livePollTimer);
-        chatState.livePollTimer = setInterval(pollLiveMessages, 6000);
+        chatState.livePollTimer = setInterval(pollLiveMessages, 3500);
     }
 
     async function pollLiveMessages() {
         if (!chatState.liveToken) return;
         try {
             const url = ADMINCB_LIVECHAT_URL + '?action=poll&token=' + encodeURIComponent(chatState.liveToken)
-                + '&after_id=' + encodeURIComponent(chatState.liveLastId);
+                + '&after=' + encodeURIComponent(chatState.liveLastId);
             const resp = await fetch(url, { cache: 'no-store' });
             if (!resp.ok) return;
             const data = await resp.json();
             if (!data || !data.ok) return;
             if (data.messages && data.messages.length > 0) {
                 for (const m of data.messages) {
+                    /* Anti-doublon : tout id déjà vu est ignoré. */
+                    if (!m || typeof m.id === 'undefined' || m.id <= chatState.liveLastId) continue;
+                    chatState.liveLastId = m.id;
+                    /* Le marqueur système est réservé au fil opérateur. */
+                    if (m.sender === 'system') continue;
                     addMessage(m.body, m.sender === 'operator' ? 'operator' : 'bot');
-                    if (m.id > chatState.liveLastId) chatState.liveLastId = m.id;
                 }
             }
             if (data.statut === 'closed') {
@@ -1092,8 +1116,8 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token: chatState.liveToken, message: message })
         }).then(r => r.json()).then(data => {
-            if (data && data.ok && data.last_id && data.last_id > chatState.liveLastId) {
-                chatState.liveLastId = data.last_id;
+            if (data && data.ok && data.id && data.id > chatState.liveLastId) {
+                chatState.liveLastId = data.id;
             } else if (!data || !data.ok) {
                 addMessage("⚠️ Message non transmis. Veuillez réessayer.", 'bot');
             }
@@ -1212,14 +1236,6 @@
             chatState.isOpen = !chatState.isOpen;
             document.getElementById('expobeton-chat-button').classList.toggle('is-open', chatState.isOpen);
             
-            // Première ouverture : choix du mode (live si un opérateur est
-            // connecté) puis re-vérification toutes les 60 s.
-            if (!chatState.modeChecked) {
-                chatState.modeChecked = true;
-                refreshMode();
-                chatState.statusTimer = setInterval(refreshMode, 60000);
-            }
-            
             // Enlever la notification
             document.getElementById('expobeton-chat-button').classList.remove('has-notification');
         });
@@ -1327,6 +1343,13 @@
         
         // Initialiser les événements
         initializeEventListeners();
+        
+        // Disponibilité des opérateurs vérifiée immédiatement : badge et
+        // encart du formulaire sont à jour dès l'ouverture du widget, avant
+        // toute action visiteur ; entretien toutes les 60 s.
+        chatState.modeChecked = true;
+        refreshMode();
+        chatState.statusTimer = setInterval(refreshMode, 60000);
         
         console.log('ExpoBeton Chat Widget initialized');
     }

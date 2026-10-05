@@ -45,6 +45,13 @@ function livechat_page_message($m)
     <?php
 }
 
+/** Valeur de métadonnée lisible, ou tiret si absente (sessions antérieures). */
+function livechat_meta($session, $key)
+{
+    $v = isset($session[$key]) ? trim((string)$session[$key]) : '';
+    return $v !== '' ? $v : '-';
+}
+
 $sessionId = (int)(isset($_GET['session']) ? $_GET['session'] : 0);
 $session = $sessionId ? livechat_session_by_id($sessionId) : null;
 
@@ -112,13 +119,14 @@ if ($session) {
                         </div>
 
                         <?php if ($session['statut'] === 'open' && canEditData()): ?>
-                        <form method="POST" class="mt-3">
-                            <input type="hidden" name="act" value="reply">
-                            <input type="hidden" name="session_id" value="<?= (int)$session['id'] ?>">
+                        <!-- Réponse en AJAX : aucun rechargement, le message
+                             s'affiche dès l'ACK serveur (latence minimale). -->
+                        <form id="livechat-reply-form" class="mt-3">
                             <div class="input-group">
-                                <input type="text" name="message" class="form-control" placeholder="Répondre au visiteur…" required maxlength="2000">
-                                <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i> Envoyer</button>
+                                <input type="text" id="livechat-reply-input" class="form-control" placeholder="Répondre au visiteur…" required maxlength="2000" autocomplete="off">
+                                <button class="btn btn-primary" id="livechat-reply-send" type="submit"><i class="bi bi-send"></i> Envoyer</button>
                             </div>
+                            <div id="livechat-reply-status" class="small text-danger mt-1" style="display:none;"></div>
                         </form>
                         <form method="POST" class="mt-2 text-end">
                             <input type="hidden" name="act" value="close">
@@ -143,6 +151,25 @@ if ($session) {
                         <?php if ($session['closed_at']): ?>
                         <p class="mb-1"><i class="bi bi-check2-circle"></i> Close le <?= escape(date('d/m/Y H:i', strtotime($session['closed_at']))) ?></p>
                         <?php endif; ?>
+                        <?php
+                        $deviceIcons = ['desktop' => 'bi-display', 'mobile' => 'bi-phone', 'tablet' => 'bi-tablet'];
+                        $devKey = strtolower(trim((string)($session['device_type'] ?? '')));
+                        $devIcon = isset($deviceIcons[$devKey]) ? $deviceIcons[$devKey] : 'bi-cpu';
+                        ?>
+                        <hr>
+                        <h6 class="card-title">Appareil & contexte</h6>
+                        <p class="mb-1"><i class="bi bi-geo-alt"></i> Pays : <?= escape(livechat_meta($session, 'country')) ?></p>
+                        <p class="mb-1"><i class="bi <?= $devIcon ?>"></i> Appareil : <?= escape(livechat_meta($session, 'device_type')) ?></p>
+                        <p class="mb-1"><i class="bi bi-globe"></i> Navigateur : <?= escape(livechat_meta($session, 'browser')) ?></p>
+                        <p class="mb-1"><i class="bi bi-cpu"></i> Système : <?= escape(livechat_meta($session, 'os')) ?></p>
+                        <p class="mb-1"><i class="bi bi-translate"></i> Langue : <?= escape(livechat_meta($session, 'language')) ?></p>
+                        <p class="mb-1"><i class="bi bi-clock"></i> Fuseau : <?= escape(livechat_meta($session, 'timezone')) ?></p>
+                        <?php if (livechat_meta($session, 'referrer') !== '-'): ?>
+                        <p class="mb-1 text-break"><i class="bi bi-link-45deg"></i> Provenance : <?= escape(livechat_meta($session, 'referrer')) ?></p>
+                        <?php endif; ?>
+                        <?php if (livechat_meta($session, 'user_agent') !== '-'): ?>
+                        <details><summary class="text-muted">User-Agent</summary><pre class="small text-muted mb-0" style="white-space: pre-wrap;"><?= escape($session['user_agent']) ?></pre></details>
+                        <?php endif; ?>
                         <?php if ($session['bot_transcript']): ?>
                         <hr>
                         <h6 class="card-title">Conversation bot précédente</h6>
@@ -155,36 +182,83 @@ if ($session) {
 
         <?php if ($session['statut'] === 'open'): ?>
         <script>
-        /* Poll des nouveaux messages : le fil reste vivant sans recharger
-           (le brouillon de réponse n'est pas perdu). */
+        /* Fil vivant : poll 4 s (rendu quasi instantané) + réponse en AJAX.
+           Chaque message n'est ajouté qu'une fois : les id <= lastId sont
+           ignorés (protection contre toute redelivery serveur). */
         (function () {
             var lastId = <?= (int)$lastId ?>;
+            var sessionId = <?= (int)$session['id'] ?>;
             var thread = document.getElementById('livechat-thread');
             var labels = { visitor: 'Visiteur', operator: 'Opérateur', system: 'Système' };
-            setInterval(function () {
-                fetch('api_livechat.php?action=operator_poll&session_id=<?= (int)$session['id'] ?>&after=' + lastId,
+
+            function appendMessage(sender, body, timeStr) {
+                var wrap = document.createElement('div');
+                wrap.className = 'livechat-msg livechat-msg-' + sender + ' mb-2';
+                var meta = document.createElement('div');
+                meta.className = 'small text-muted mb-1';
+                meta.textContent = (labels[sender] || sender) + ' · ' + timeStr;
+                var bubble = document.createElement('div');
+                bubble.className = 'livechat-bubble';
+                bubble.textContent = body;
+                wrap.appendChild(meta);
+                wrap.appendChild(bubble);
+                thread.appendChild(wrap);
+                thread.scrollTop = thread.scrollHeight;
+            }
+
+            function poll() {
+                fetch('api_livechat.php?action=operator_poll&session_id=' + sessionId + '&after=' + lastId,
                       { credentials: 'same-origin', cache: 'no-store' })
                     .then(function (r) { return r.json(); })
                     .then(function (data) {
                         if (!data.ok || !data.messages || !data.messages.length) return;
                         data.messages.forEach(function (m) {
-                            lastId = Math.max(lastId, m.id);
-                            var wrap = document.createElement('div');
-                            wrap.className = 'livechat-msg livechat-msg-' + m.sender + ' mb-2';
-                            var meta = document.createElement('div');
-                            meta.className = 'small text-muted mb-1';
-                            meta.textContent = (labels[m.sender] || m.sender) + ' · ' + (m.created_at || '').substr(11, 5);
-                            var bubble = document.createElement('div');
-                            bubble.className = 'livechat-bubble';
-                            bubble.textContent = m.body;
-                            wrap.appendChild(meta);
-                            wrap.appendChild(bubble);
-                            thread.appendChild(wrap);
+                            if (!m || typeof m.id === 'undefined' || m.id <= lastId) return;
+                            lastId = m.id;
+                            appendMessage(m.sender, m.body, (m.created_at || '').substr(11, 5));
                         });
-                        thread.scrollTop = thread.scrollHeight;
                     })
                     .catch(function () {});
-            }, 8000);
+            }
+            setInterval(poll, 4000);
+
+            /* Réponse sans rechargement : ACK serveur puis bulle locale. */
+            var form = document.getElementById('livechat-reply-form');
+            var input = document.getElementById('livechat-reply-input');
+            var btn = document.getElementById('livechat-reply-send');
+            var status = document.getElementById('livechat-reply-status');
+            if (!form) return;
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var text = input.value.trim();
+                if (!text || btn.disabled) return;
+                btn.disabled = true;
+                status.style.display = 'none';
+                fetch('api_livechat.php?action=operator_send', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId, message: text })
+                }).then(function (r) { return r.json(); }).then(function (data) {
+                    btn.disabled = false;
+                    if (data && data.ok) {
+                        if (data.id && data.id > lastId) lastId = data.id;
+                        var now = new Date();
+                        appendMessage('operator', text,
+                            ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2));
+                        input.value = '';
+                        input.focus();
+                    } else {
+                        status.textContent = '⚠️ Envoi refusé : ' + ((data && data.error) || 'erreur inconnue');
+                        status.style.display = 'block';
+                    }
+                }).catch(function () {
+                    btn.disabled = false;
+                    status.textContent = '⚠️ Envoi impossible (réseau). Réessayez.';
+                    status.style.display = 'block';
+                });
+            });
         })();
         </script>
         <?php endif; ?>

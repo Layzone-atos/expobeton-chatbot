@@ -65,6 +65,26 @@ function livechat_ensure_tables()
         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         KEY idx_livechat_session (session_id, id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    /* Métadonnées visiteur (device metadata du widget + pays géolocalisé) :
+       migration idempotente, même motif que ensureRbacMigrations. */
+    $alters = [
+        "ALTER TABLE livechat_sessions ADD COLUMN country VARCHAR(64) NULL",
+        "ALTER TABLE livechat_sessions ADD COLUMN device_type VARCHAR(32) NULL",
+        "ALTER TABLE livechat_sessions ADD COLUMN browser VARCHAR(64) NULL",
+        "ALTER TABLE livechat_sessions ADD COLUMN os VARCHAR(64) NULL",
+        "ALTER TABLE livechat_sessions ADD COLUMN language VARCHAR(32) NULL",
+        "ALTER TABLE livechat_sessions ADD COLUMN timezone VARCHAR(64) NULL",
+        "ALTER TABLE livechat_sessions ADD COLUMN referrer VARCHAR(255) NULL",
+        "ALTER TABLE livechat_sessions ADD COLUMN user_agent VARCHAR(500) NULL",
+    ];
+    foreach ($alters as $sql) {
+        try {
+            $db->exec($sql);
+        } catch (PDOException $e) {
+            /* colonne déjà présente */
+        }
+    }
 }
 
 /* ------------------------------------------------------------------ */
@@ -91,6 +111,48 @@ function livechat_input()
 function livechat_str($v, $max)
 {
     return mb_substr(trim((string)$v), 0, $max);
+}
+
+/** Chaîne nettoyée, NULL si vide (colonnes métadonnées optionnelles). */
+function livechat_null_str($v, $max)
+{
+    $s = livechat_str($v, $max);
+    return $s === '' ? null : $s;
+}
+
+/** IP réelle du client (proxies inclus), même logique que l'analytics. */
+function livechat_client_ip()
+{
+    $keys = ['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_X_CLIENT_IP', 'REMOTE_ADDR'];
+    foreach ($keys as $k) {
+        if (!empty($_SERVER[$k])) {
+            $ip = trim(explode(',', $_SERVER[$k])[0]);
+            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return $ip;
+            }
+        }
+    }
+    return null;
+}
+
+/** Pays via ip-api.com (gratuit) ; échec silencieux, timeout 2 s. */
+function livechat_country()
+{
+    $ip = livechat_client_ip();
+    if (!$ip) return null;
+    $ch = curl_init('http://ip-api.com/json/' . urlencode($ip) . '?fields=status,country');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 2,
+        CURLOPT_CONNECTTIMEOUT => 2,
+    ]);
+    $resp = curl_exec($ch);
+    curl_close($ch);
+    $data = $resp !== false ? json_decode($resp, true) : null;
+    if (is_array($data) && isset($data['status']) && $data['status'] === 'success' && !empty($data['country'])) {
+        return livechat_null_str($data['country'], 64);
+    }
+    return null;
 }
 
 function livechat_session_by_token($token)
@@ -280,11 +342,23 @@ switch ($action) {
         }
         $token = bin2hex(random_bytes(32));
         $db = getDB();
+        $meta = isset($input['metadata']) && is_array($input['metadata']) ? $input['metadata'] : [];
         $stmt = $db->prepare(
-            "INSERT INTO livechat_sessions (token, nom, telephone, email, bot_transcript)
-             VALUES (?, ?, ?, ?, ?)"
+            "INSERT INTO livechat_sessions (token, nom, telephone, email, bot_transcript,
+                 country, device_type, browser, os, language, timezone, referrer, user_agent)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
-        $stmt->execute([$token, $nom, $tel, $email !== '' ? $email : null, $botTranscript]);
+        $stmt->execute([
+            $token, $nom, $tel, $email !== '' ? $email : null, $botTranscript,
+            livechat_country(),
+            isset($meta['device_type']) ? livechat_null_str($meta['device_type'], 32) : null,
+            isset($meta['browser']) ? livechat_null_str($meta['browser'], 64) : null,
+            isset($meta['os']) ? livechat_null_str($meta['os'], 64) : null,
+            isset($meta['language']) ? livechat_null_str($meta['language'], 32) : null,
+            isset($meta['timezone']) ? livechat_null_str($meta['timezone'], 64) : null,
+            isset($meta['referrer']) ? livechat_null_str($meta['referrer'], 255) : null,
+            isset($meta['user_agent']) ? livechat_null_str($meta['user_agent'], 500) : null,
+        ]);
         $sessionId = (int)$db->lastInsertId();
         if ($message !== '') {
             livechat_add_message($sessionId, 'visitor', $message);
@@ -310,7 +384,7 @@ switch ($action) {
 
     case 'poll':
         $token = livechat_str(isset($_GET['token']) ? $_GET['token'] : (isset($input['token']) ? $input['token'] : ''), 64);
-        $after = (int)(isset($_GET['after']) ? $_GET['after'] : (isset($input['after']) ? $input['after'] : 0));
+        $after = (int)(isset($_GET['after']) ? $_GET['after'] : (isset($_GET['after_id']) ? $_GET['after_id'] : (isset($input['after']) ? $input['after'] : (isset($input['after_id']) ? $input['after_id'] : 0))));
         $session = livechat_session_by_token($token);
         if (!$session) {
             livechat_out(['ok' => false, 'error' => 'session introuvable'], 404);
@@ -318,7 +392,8 @@ switch ($action) {
         livechat_out([
             'ok' => true,
             'statut' => $session['statut'],
-            'messages' => livechat_messages_since($session['id'], $after, ['operator', 'system']),
+            /* Le marqueur système reste réservé au fil opérateur. */
+            'messages' => livechat_messages_since($session['id'], $after, ['operator']),
         ]);
         break;
 
@@ -351,7 +426,7 @@ switch ($action) {
     case 'operator_poll':
         if (!isLoggedIn()) livechat_out(['ok' => false, 'error' => 'non connecté'], 401);
         $sessionId = (int)(isset($_GET['session_id']) ? $_GET['session_id'] : 0);
-        $after = (int)(isset($_GET['after']) ? $_GET['after'] : 0);
+        $after = (int)(isset($_GET['after']) ? $_GET['after'] : (isset($_GET['after_id']) ? $_GET['after_id'] : 0));
         $session = livechat_session_by_id($sessionId);
         if (!$session) {
             livechat_out(['ok' => false, 'error' => 'session introuvable'], 404);
