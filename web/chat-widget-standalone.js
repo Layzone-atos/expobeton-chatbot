@@ -115,39 +115,117 @@
                 width: 60px;
                 height: 60px;
                 border-radius: 50%;
-                background: linear-gradient(135deg, ${CONFIG.primaryColor} 0%, #1e3a8a 100%);
-                border: none;
+                background:
+                    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 45%),
+                    linear-gradient(140deg, #1e3a8a 0%, ${CONFIG.primaryColor} 55%, #0d3f9e 100%);
+                border: 2px solid rgba(255, 255, 255, 0.9);
                 cursor: pointer;
-                box-shadow: 0 4px 12px rgba(10, 42, 102, 0.4);
+                box-shadow: 0 6px 18px rgba(10, 42, 102, 0.45), 0 2px 6px rgba(10, 42, 102, 0.28);
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 24px;
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
                 position: relative;
+                -webkit-tap-highlight-color: transparent;
             }
             
             #expobeton-chat-button:hover {
-                transform: scale(1.1);
-                box-shadow: 0 6px 20px rgba(10, 42, 102, 0.6);
+                transform: scale(1.08);
+                box-shadow: 0 10px 26px rgba(10, 42, 102, 0.55), 0 4px 10px rgba(10, 42, 102, 0.32);
             }
+            
+            #expobeton-chat-button:active {
+                transform: scale(0.94);
+            }
+            
+            /* Halo pulsé derrière le bouton : signale le chat sans agresser */
+            #expobeton-chat-button::before {
+                content: '';
+                position: absolute;
+                inset: -2px;
+                border-radius: 50%;
+                border: 2px solid rgba(30, 58, 138, 0.5);
+                animation: expobeton-halo 2.6s ease-out infinite;
+                pointer-events: none;
+            }
+            
+            #expobeton-chat-button:hover::before,
+            #expobeton-chat-button.is-open::before {
+                animation: none;
+                opacity: 0;
+            }
+            
+            @keyframes expobeton-halo {
+                0%   { transform: scale(1);   opacity: 0.65; }
+                70%  { transform: scale(1.5); opacity: 0; }
+                100% { transform: scale(1.5); opacity: 0; }
+            }
+            
+            /* Icônes SVG nettes : bulle fermée, croix ouverte */
+            #expobeton-chat-button .expobeton-btn-icon {
+                width: 28px;
+                height: 28px;
+                fill: #ffffff;
+                filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+                transition: transform 0.25s ease;
+            }
+            
+            #expobeton-chat-button:hover .expobeton-btn-icon {
+                transform: scale(1.08);
+            }
+            
+            #expobeton-chat-button .expobeton-icon-close { display: none; }
+            #expobeton-chat-button.is-open .expobeton-icon-chat { display: none; }
+            #expobeton-chat-button.is-open .expobeton-icon-close { display: block; }
             
             #expobeton-chat-button.has-notification::after {
                 content: '';
                 position: absolute;
-                top: 5px;
-                right: 5px;
-                width: 12px;
-                height: 12px;
+                top: -3px;
+                right: -3px;
+                width: 16px;
+                height: 16px;
                 background: #ef4444;
                 border-radius: 50%;
-                border: 2px solid white;
+                border: 2.5px solid white;
+                box-shadow: 0 2px 6px rgba(239, 68, 68, 0.45);
                 animation: pulse 2s infinite;
             }
             
             @keyframes pulse {
                 0%, 100% { transform: scale(1); opacity: 1; }
-                50% { transform: scale(1.2); opacity: 0.8; }
+                50% { transform: scale(1.15); opacity: 0.85; }
+            }
+            
+            /* Étiquette discrète révélée au survol (pointeur fin uniquement) */
+            #expobeton-chat-label {
+                position: absolute;
+                bottom: 15px;
+                ${CONFIG.position.includes('right') ? 'right: 72px;' : 'left: 72px;'}
+                background: #ffffff;
+                color: ${CONFIG.primaryColor};
+                font-size: 13px;
+                font-weight: 600;
+                padding: 9px 16px;
+                border-radius: 22px;
+                border: 1px solid rgba(10, 42, 102, 0.12);
+                box-shadow: 0 6px 18px rgba(10, 42, 102, 0.25);
+                white-space: nowrap;
+                opacity: 0;
+                transform: translateX(${CONFIG.position.includes('right') ? '8px' : '-8px'});
+                pointer-events: none;
+                transition: opacity 0.25s ease, transform 0.25s ease;
+            }
+            
+            @media (hover: hover) and (pointer: fine) {
+                #expobeton-chat-button:hover + #expobeton-chat-label {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            #expobeton-chat-button.is-open + #expobeton-chat-label {
+                opacity: 0;
             }
             
             /* Fenêtre de chat */
@@ -442,9 +520,15 @@
         container.id = 'expobeton-chat-container';
         
         container.innerHTML = `
-            <button id="expobeton-chat-button" class="has-notification" title="Chatbot ExpoBeton RDC">
-                ${CONFIG.buttonText}
+            <button id="expobeton-chat-button" class="has-notification" title="Chatbot ExpoBeton RDC" aria-label="Ouvrir le chat ExpoBeton RDC">
+                <svg class="expobeton-btn-icon expobeton-icon-chat" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12 2.5c-5.4 0-9.8 3.9-9.8 8.7 0 2.3 1 4.4 2.7 6L4 21.6l4.6-1.7c1.1.3 2.2.5 3.4.5 5.4 0 9.8-3.9 9.8-8.7S17.4 2.5 12 2.5zM8 12.7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                </svg>
+                <svg class="expobeton-btn-icon expobeton-icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
             </button>
+            <div id="expobeton-chat-label">Une question ? Discutez avec nous</div>
             
             <div id="expobeton-chat-window">
                 <div class="expobeton-chat-header">
@@ -1126,6 +1210,7 @@
             const chatWindow = document.getElementById('expobeton-chat-window');
             chatWindow.classList.toggle('open');
             chatState.isOpen = !chatState.isOpen;
+            document.getElementById('expobeton-chat-button').classList.toggle('is-open', chatState.isOpen);
             
             // Première ouverture : choix du mode (live si un opérateur est
             // connecté) puis re-vérification toutes les 60 s.
@@ -1143,6 +1228,7 @@
         document.getElementById('expobeton-close-chat').addEventListener('click', () => {
             document.getElementById('expobeton-chat-window').classList.remove('open');
             chatState.isOpen = false;
+            document.getElementById('expobeton-chat-button').classList.remove('is-open');
         });
         
         // Formulaire de démarrage
