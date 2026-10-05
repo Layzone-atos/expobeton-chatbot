@@ -14,14 +14,18 @@
  * Ce fichier expose aussi ses fonctions à livechat.php (page opérateur) :
  * le dispatch ci-dessous ne tourne que lorsqu'il est appelé directement.
  */
-header('Content-Type: application/json; charset=UTF-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+/* En-têtes API posés seulement en appel direct : inclus par livechat.php,
+   ce fichier ne doit pas imposer son Content-Type JSON à la page HTML. */
+if (basename($_SERVER['SCRIPT_FILENAME']) === 'api_livechat.php') {
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(200);
+        exit;
+    }
 }
 
 require_once __DIR__ . '/auth.php';
