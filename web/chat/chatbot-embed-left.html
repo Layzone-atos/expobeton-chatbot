@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpoBeton Chatbot</title>
+    <style>
+        /* Reset and base styles for iframe */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: transparent;
+            overflow: hidden;
+            /* CRITICAL: let clicks pass through the iframe to the host page */
+            pointer-events: none;
+        }
+
+        /* Only the chat widget itself is interactive */
+        #expobeton-chat-container,
+        #expobeton-chat-container * {
+            pointer-events: auto;
+        }
+
+        /* Position the standalone widget on the LEFT (bottom-left corner) */
+        #expobeton-chat-container {
+            right: auto !important;
+            left: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Le widget autonome injecte ses propres styles et son HTML ;
+         il choisit son mode (live/bot) via api_live_status.php. -->
+    <script src="/chat/chat-widget-standalone.js"></script>
+</body>
+</html>

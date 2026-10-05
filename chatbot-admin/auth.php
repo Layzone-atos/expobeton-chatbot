@@ -42,6 +42,9 @@ function ensureRbacMigrations() {
         "ALTER TABLE admin_users ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1",
         "ALTER TABLE admin_users ADD COLUMN last_login_at DATETIME NULL",
         "ALTER TABLE admin_users ADD COLUMN created_by INT NULL",
+        /* Présence opérateur : heartbeat du dashboard, lu par api_live_status.php
+           pour basculer le widget public entre chat live et chatbot. */
+        "ALTER TABLE admin_users ADD COLUMN last_presence_at DATETIME NULL",
     ];
     foreach ($alters as $sql) {
         try { $db->exec($sql); } catch (Exception $e) { /* column already exists */ }
@@ -175,6 +178,7 @@ function renderNavbar($active = '') {
             <div class="navbar-nav ms-auto d-flex flex-row gap-2 flex-wrap">
                 <a class="nav-link<?= $activeCls('dashboard') ?>" href="dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
                 <a class="nav-link<?= $activeCls('conversations') ?>" href="conversations.php"><i class="bi bi-chat-dots"></i> Conversations</a>
+                <a class="nav-link<?= $activeCls('livechat') ?>" href="livechat.php"><i class="bi bi-headset"></i> Live Chat</a>
                 <a class="nav-link<?= $activeCls('analytics') ?>" href="analytics.php"><i class="bi bi-bar-chart"></i> Analytics</a>
                 <a class="nav-link<?= $activeCls('users') ?>" href="users.php"><i class="bi bi-people"></i> Visitors</a>
                 <a class="nav-link<?= $activeCls('registrations') ?>" href="registrations.php"><i class="bi bi-person-vcard"></i> Registrations</a>
@@ -190,5 +194,17 @@ function renderNavbar($active = '') {
             </div>
         </div>
     </nav>
+    <script>
+    /* Présence opérateur : heartbeat léger pour que le widget public sache
+       si un humain est disponible (mode live) ou non (mode chatbot). */
+    (function () {
+        function ping() {
+            fetch('api_live_presence.php', { credentials: 'same-origin', cache: 'no-store' })
+                .catch(function () {});
+        }
+        ping();
+        setInterval(ping, 45000);
+    })();
+    </script>
     <?php
 }
